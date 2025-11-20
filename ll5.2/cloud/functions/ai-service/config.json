@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "openapi": []
+  },
+  "triggers": [],
+  "envVariables": {
+    "QWEN_API_KEY": "",
+    "QWEN_BASE_URL": "https://dashscope.aliyuncs.com/api/v1",
+    "QWEN_MODEL": "qwen-turbo"
+  }
+}
+

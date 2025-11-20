@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "openapi": []
+  },
+  "env": {
+    "USE_CUSTOM_MODEL": "false",
+    "CUSTOM_MODEL_URL": "http://localhost:8000",
+    "CUSTOM_MODEL_NAME": "qwen3-14b-finetuned",
+    "QWEN_API_KEY": ""
+  }
+}
+
+
