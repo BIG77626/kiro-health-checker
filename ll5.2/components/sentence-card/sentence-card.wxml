@@ -1,0 +1,72 @@
+<!--components/sentence-card/sentence-card.wxml-->
+<view class="sentence-card">
+  
+  <!-- 头部: 标签 + 收藏 -->
+  <view class="card-header">
+    <view class="tags">
+      <text class="tier-tag tier-{{sentence.tier}}">
+        {{tierName}}
+      </text>
+      <text class="difficulty-tag">
+        {{difficultyStars}}
+      </text>
+      <text 
+        wx:for="{{displayTags}}" 
+        wx:key="*this" 
+        class="custom-tag"
+      >
+        {{item}}
+      </text>
+    </view>
+    <view class="favorite-btn" bindtap="onFavorite">
+      <text class="fav-icon">{{isFavorite ? '⭐' : '☆'}}</text>
+    </view>
+  </view>
+  
+  <!-- 句子内容 -->
+  <view class="card-body">
+    <text class="english-text">{{sentence.english}}</text>
+    <text class="chinese-text">{{sentence.chinese}}</text>
+    
+    <!-- 占位符提示 -->
+    <view wx:if="{{sentence.placeholders.length > 0}}" class="placeholders">
+      <text class="ph-label">替换词:</text>
+      <view class="ph-list">
+        <text 
+          wx:for="{{sentence.placeholders}}" 
+          wx:key="key"
+          class="ph-item"
+        >
+          {{item.key}} = {{item.description}}
+        </text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 元信息 -->
+  <view class="card-meta">
+    <view class="meta-item">
+      <text class="meta-icon">📊</text>
+      <text class="meta-text">{{usageCountText}}</text>
+    </view>
+    <view class="meta-item">
+      <text class="meta-icon">✅</text>
+      <text class="meta-text">成功率{{successRateText}}%</text>
+    </view>
+    <view class="meta-item">
+      <text class="meta-icon">{{categoryIcon}}</text>
+      <text class="meta-text">{{categoryName}}</text>
+    </view>
+  </view>
+  
+  <!-- 操作按钮 -->
+  <view class="card-actions">
+    <button class="action-btn secondary" bindtap="onDetail">
+      <text class="btn-text">详情 ({{sentence.variants.length}}变体)</text>
+    </button>
+    <button class="action-btn primary" bindtap="onInsert">
+      <text class="btn-text">插入</text>
+    </button>
+  </view>
+  
+</view>

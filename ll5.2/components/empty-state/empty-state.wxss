@@ -1,0 +1,122 @@
+/* components/empty-state/empty-state.wxss */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400rpx;
+  padding: 80rpx 40rpx;
+  background-color: #FFFFFF;
+}
+
+.empty-state__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600rpx;
+}
+
+/* 图标 */
+.empty-state__icon {
+  margin-bottom: 32rpx;
+}
+
+.empty-state__icon-text {
+  font-size: 120rpx;
+  line-height: 1;
+}
+
+/* 标题 */
+.empty-state__title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #000000;
+  line-height: 44rpx;
+  text-align: center;
+  margin-bottom: 16rpx;
+}
+
+/* 描述 */
+.empty-state__desc {
+  font-size: 28rpx;
+  color: rgba(0, 0, 0, 0.6);
+  line-height: 40rpx;
+  text-align: center;
+  margin-bottom: 48rpx;
+}
+
+/* 操作按钮 */
+.empty-state__action {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.empty-state__button {
+  width: 360rpx;
+  height: 88rpx;
+  background-color: #07C160;
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 500;
+  border-radius: 16rpx;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state__button::after {
+  border: none;
+}
+
+.empty-state__button--hover {
+  opacity: 0.8;
+  background-color: #06AD56;
+}
+
+/* 副操作按钮 */
+.empty-state__secondary-action {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 24rpx;
+}
+
+.empty-state__secondary-button {
+  width: 360rpx;
+  height: 88rpx;
+  background-color: transparent;
+  color: #07C160;
+  font-size: 32rpx;
+  font-weight: 500;
+  border-radius: 16rpx;
+  border: 2rpx solid #07C160;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state__secondary-button::after {
+  border: none;
+}
+
+.empty-state__secondary-button--hover {
+  opacity: 0.8;
+  background-color: rgba(7, 193, 96, 0.1);
+}
+
+/* 暗色模式适配 */
+.empty-state.dark {
+  background-color: #1A1A1A;
+}
+
+.empty-state.dark .empty-state__title {
+  color: #FFFFFF;
+}
+
+.empty-state.dark .empty-state__desc {
+  color: rgba(255, 255, 255, 0.6);
+}
+

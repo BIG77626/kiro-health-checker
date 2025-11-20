@@ -1,0 +1,22 @@
+<!--components/recommendation-card/recommendation-card.wxml-->
+<view class="recommendation-card" bindtap="onCardTap">
+  <view class="rec-content">
+    <view class="rec-header">
+      <text class="rec-title">{{title}}</text>
+      <view class="priority-badge priority-{{priority}}">
+        <text>{{priorityText[priority]}}</text>
+      </view>
+    </view>
+    
+    <text class="rec-desc">{{description}}</text>
+    
+    <view class="rec-meta">
+      <text class="rec-count">{{count}}道题</text>
+      <text class="rec-divider">·</text>
+      <text class="rec-time">约{{estimatedTime}}分钟</text>
+    </view>
+  </view>
+  
+  <image src="/images/chevron-right.png" class="rec-arrow" mode="aspectFit"></image>
+</view>
+

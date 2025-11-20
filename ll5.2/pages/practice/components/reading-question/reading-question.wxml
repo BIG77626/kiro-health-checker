@@ -1,0 +1,114 @@
+<!--components/reading-question/reading-question.wxml-->
+<view class="reading-question">
+  
+  <!-- 文章标题 -->
+  <view class="passage-header">
+    <text class="passage-title">{{passage.title}}</text>
+    <text class="passage-meta">Passage {{passageIndex + 1}} / {{totalPassages}}</text>
+  </view>
+
+  <!-- 文章内容 -->
+  <scroll-view scroll-y class="passage-content" scroll-into-view="{{scrollTarget}}">
+    <view 
+      wx:for="{{passage.paragraphs}}" 
+      wx:key="index"
+      class="paragraph {{highlightedPara === index ? 'para-highlighted' : ''}}"
+      id="para-{{index}}"
+      data-index="{{index}}"
+    >
+      <text class="para-number">¶{{index + 1}}</text>
+      <text class="para-text selectable" user-select="{{true}}" bindlongpress="onTextLongPress" data-text="{{item}}">{{item}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 题目列表 -->
+  <view class="questions-section">
+    <text class="section-title">相关题目</text>
+    
+    <view 
+      wx:for="{{questions}}" 
+      wx:key="id"
+      class="question-item {{currentQuestionIndex === index ? 'question-active' : ''}}"
+    >
+      <!-- 题目标题 -->
+      <view class="question-header">
+        <text class="question-num">{{index + 1}}.</text>
+        <text class="question-text">{{item.content}}</text>
+      </view>
+
+      <!-- 选项 -->
+      <view class="options-list">
+        <view 
+          wx:for="{{item.options}}" 
+          wx:for-item="option"
+          wx:key="option"
+          class="option {{userAnswers[item.id] === option ? 'option-selected' : ''}} {{showAnswer && item.answer === option ? 'option-correct' : ''}} {{showAnswer && userAnswers[item.id] === option && item.answer !== option ? 'option-wrong' : ''}}"
+          bindtap="selectAnswer"
+          data-question-id="{{item.id}}"
+          data-option="{{option}}"
+        >
+          <view class="option-label">{{option}}</view>
+          <view wx:if="{{showAnswer && item.answer === option}}" class="option-icon">✓</view>
+          <view wx:elif="{{showAnswer && userAnswers[item.id] === option && item.answer !== option}}" class="option-icon">✗</view>
+        </view>
+      </view>
+
+      <!-- 答案解析 -->
+      <view wx:if="{{showAnswer}}" class="explanation">
+        <view class="explanation-header">
+          <text class="explanation-title">💡 答案解析</text>
+        </view>
+        <text class="explanation-text">{{item.explanation}}</text>
+        
+        <!-- 关键词提示 -->
+        <view wx:if="{{item.keywords && item.keywords.length > 0}}" class="keywords">
+          <text class="keywords-label">🔑 关键词：</text>
+          <text 
+            wx:for="{{item.keywords}}" 
+            wx:for-item="keyword"
+            wx:key="keyword"
+            class="keyword-tag"
+            bindtap="locateKeyword"
+            data-keyword="{{keyword}}"
+          >
+            {{keyword}}
+          </text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="reading-actions">
+    <button class="btn btn-secondary" bindtap="toggleAnswer">
+      {{showAnswer ? '隐藏答案' : '查看答案'}}
+    </button>
+    <button class="btn btn-primary" bindtap="nextPassage">
+      下一篇 →
+    </button>
+  </view>
+  
+  <!-- 单词弹窗组件 -->
+  <word-popup
+    show="{{showWordPopup}}"
+    word="{{selectedWord}}"
+    context="{{selectedContext}}"
+    bind:close="onCloseWordPopup"
+    bind:addtovocab="onWordAddToVocab"
+    bind:addtoweakness="onWordAddToWeakness"
+  />
+  
+  <!-- 句子分析卡片组件 -->
+  <sentence-card
+    show="{{showSentenceCard}}"
+    sentence="{{selectedSentence}}"
+    bind:close="onCloseSentenceCard"
+    bind:addtopractice="onSentenceAddToPractice"
+    bind:variationchange="onVariationChange"
+  />
+
+  <!-- 阅读AI提示（新增） -->
+  <include src="./reading-ai-hint.wxml" />
+
+</view>
+

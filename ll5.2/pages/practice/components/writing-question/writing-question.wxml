@@ -1,0 +1,403 @@
+<!--components/writing-question/writing-question.wxml-->
+<view class="writing-container">
+  
+  <!-- 作文题目 -->
+  <view class="topic-section">
+    <view class="topic-header">
+      <view class="topic-title-row">
+        <text class="topic-number">第{{currentQuestionIndex + 1}}题</text>
+        <text class="topic-title-text">{{writingData.title}}</text>
+      </view>
+      <view class="analysis-btn-small" bindtap="showAnalysis">
+        <text class="analysis-text">解析</text>
+      </view>
+    </view>
+    <view class="topic-content">
+      <text class="topic-text">{{writingData.topic}}</text>
+    </view>
+    
+    <!-- 图画描述 -->
+    <view wx:if="{{writingData.imageDescription}}" class="image-desc">
+      <text class="desc-label">图画内容：</text>
+      <text class="desc-text">{{writingData.imageDescription}}</text>
+    </view>
+    
+    <!-- 写作要求 -->
+    <view wx:if="{{writingData.requirements}}" class="requirements">
+      <text class="requirements-title">写作要求：</text>
+      <view class="requirements-list">
+        <text wx:for="{{writingData.requirements}}" wx:key="index" class="requirement-item">
+          {{index + 1}}. {{item}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 编辑区 -->
+  <view wx:if="{{!isSubmitted}}" class="editor-section">
+    <view class="editor-header">
+      <text class="editor-title">你的作文</text>
+      <view class="editor-stats">
+        <text class="stat-item stat-words">字数：{{charCount}}</text>
+        <text wx:if="{{lastSaveTime}}" class="save-time">{{lastSaveTime}} 已保存</text>
+      </view>
+    </view>
+    
+    <textarea
+      class="essay-editor"
+      placeholder="请在此输入作文内容...\n\n提示：系统会自动保存草稿"
+      value="{{essayContent}}"
+      bindinput="onInput"
+      maxlength="-1"
+      auto-height
+      disabled="{{isGrading}}"
+    />
+
+    <!-- 写作辅助工具 -->
+    <view class="writing-tools">
+      <button class="tool-btn" bindtap="openSentenceDrawer">
+        <text class="tool-text">万金油句库</text>
+      </button>
+      <button class="tool-btn" bindtap="toggleAIRecommendation">
+        <text class="tool-text">{{aiRecommendEnabled ? 'AI推荐已开' : 'AI推荐已关'}}</text>
+      </button>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="editor-actions">
+      <button 
+        class="btn-submit-full {{essayContent.length > 0 ? '' : 'disabled'}}"
+        bindtap="submitEssay"
+        disabled="{{isGrading || !essayContent}}"
+      >
+        <text>{{isGrading ? 'AI批改中...' : '提交批改'}}</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- AI推荐面板 -->
+  <view wx:if="{{!isSubmitted && aiRecommendEnabled && recommendedSentences.length > 0}}" class="ai-recommend-panel">
+    <view class="panel-header">
+      <text class="panel-title">AI推荐下一句</text>
+      <view class="close-recommend" bindtap="toggleAIRecommendation">
+        <text>✕</text>
+      </view>
+    </view>
+    <scroll-view class="recommend-list" scroll-y>
+      <view 
+        wx:for="{{recommendedSentences}}" 
+        wx:key="id"
+        class="recommend-item"
+        bindtap="insertRecommended"
+        data-sentence="{{item}}"
+      >
+        <text class="recommend-english">{{item.english}}</text>
+        <text class="recommend-chinese">{{item.chinese}}</text>
+        <view class="recommend-action">
+          <text class="action-text">点击插入</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- AI批改结果 -->
+  <view wx:if="{{isSubmitted && gradingResult}}" class="result-section">
+    
+    <!-- 总分卡片 -->
+    <view class="score-card">
+      <view class="total-score">
+        <text class="score-value">{{gradingResult.totalScore}}</text>
+        <text class="score-label">/ 30分</text>
+      </view>
+    </view>
+
+    <!-- 维度评分条 -->
+    <view class="score-bars">
+      <view class="section-header">
+        <text class="section-title">评分详情</text>
+      </view>
+      <view class="score-bar-item">
+        <view class="bar-header">
+          <text class="bar-label">内容</text>
+          <text class="bar-value">{{gradingResult.contentScore}}/10</text>
+        </view>
+        <view class="bar-container">
+          <view 
+            class="bar-fill bar-content" 
+            style="width: {{gradingResult.contentScore * 10}}%"
+          />
+        </view>
+      </view>
+      
+      <view class="score-bar-item">
+        <view class="bar-header">
+          <text class="bar-label">语言</text>
+          <text class="bar-value">{{gradingResult.languageScore}}/10</text>
+        </view>
+        <view class="bar-container">
+          <view 
+            class="bar-fill bar-language" 
+            style="width: {{gradingResult.languageScore * 10}}%"
+          />
+        </view>
+      </view>
+      
+      <view class="score-bar-item">
+        <view class="bar-header">
+          <text class="bar-label">结构</text>
+          <text class="bar-value">{{gradingResult.structureScore}}/10</text>
+        </view>
+        <view class="bar-container">
+          <view 
+            class="bar-fill bar-structure" 
+            style="width: {{gradingResult.structureScore * 10}}%"
+          />
+        </view>
+      </view>
+    </view>
+
+    <!-- AI评语 -->
+    <view class="comments-section">
+      <view class="section-header">
+        <text class="section-title">AI评语</text>
+      </view>
+      <view class="comments-content">
+        <text class="comments-text">{{gradingResult.comments}}</text>
+      </view>
+    </view>
+
+    <!-- 优点 -->
+    <view wx:if="{{gradingResult.strengths && gradingResult.strengths.length > 0}}" class="strengths-section">
+      <view class="section-header">
+        <text class="section-title">✨ 亮点</text>
+      </view>
+      <view class="list-content">
+        <view wx:for="{{gradingResult.strengths}}" wx:key="index" class="list-item strength">
+          <text class="list-bullet">•</text>
+          <text class="list-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 改进建议 -->
+    <view wx:if="{{gradingResult.suggestions && gradingResult.suggestions.length > 0}}" class="suggestions-section">
+      <view class="section-header">
+        <text class="section-title">💡 改进建议</text>
+      </view>
+      <view class="list-content">
+        <view wx:for="{{gradingResult.suggestions}}" wx:key="index" class="list-item suggestion">
+          <text class="list-bullet">{{index + 1}}.</text>
+          <text class="list-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 改进示例 -->
+    <view wx:if="{{gradingResult.improvedVersion}}" class="improved-section">
+      <view class="section-header">
+        <text class="section-title">✍️ 改进示例</text>
+      </view>
+      <view class="improved-content">
+        <text class="improved-text">{{gradingResult.improvedVersion}}</text>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="result-actions">
+      <button class="btn-action-single" bindtap="reEdit">
+        <text>重新编辑</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 解析浮窗 -->
+  <view wx:if="{{showAnalysisModal}}" class="analysis-modal">
+    <view class="modal-mask" bindtap="hideAnalysis"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">题目解析</text>
+        <view class="modal-close" bindtap="hideAnalysis">
+          <text>✕</text>
+        </view>
+      </view>
+      <scroll-view class="modal-body" scroll-y>
+        <view class="analysis-section">
+          <text class="analysis-title">参考范文</text>
+          <text class="analysis-text">{{writingData.sampleEssay}}</text>
+        </view>
+        
+        <view wx:if="{{writingData.rubric}}" class="analysis-section">
+          <text class="analysis-title">评分标准</text>
+          <view class="rubric-list">
+            <view class="rubric-item">
+              <text class="rubric-label">内容（{{writingData.rubric.content.maxScore}}分）：</text>
+              <text class="rubric-criteria">{{writingData.rubric.content.criteria.join('、')}}</text>
+            </view>
+            <view class="rubric-item">
+              <text class="rubric-label">语言（{{writingData.rubric.language.maxScore}}分）：</text>
+              <text class="rubric-criteria">{{writingData.rubric.language.criteria.join('、')}}</text>
+            </view>
+            <view class="rubric-item">
+              <text class="rubric-label">结构（{{writingData.rubric.structure.maxScore}}分）：</text>
+              <text class="rubric-criteria">{{writingData.rubric.structure.criteria.join('、')}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <view class="analysis-section">
+          <text class="analysis-title">写作技巧</text>
+          <view class="tips-list">
+            <text class="tip-item">• 开头段：描述图画内容，引出话题</text>
+            <text class="tip-item">• 主体段：分析原因、影响或意义</text>
+            <text class="tip-item">• 结尾段：总结观点，提出建议或展望</text>
+            <text class="tip-item">• 使用过渡词连接段落，保持逻辑连贯</text>
+            <text class="tip-item">• 适当使用高级词汇和复杂句式</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 万金油句库抽屉 -->
+  <view class="sentence-drawer-container" wx:if="{{showSentenceDrawer}}">
+    <!-- 遮罩层 -->
+    <view class="drawer-mask" bindtap="closeSentenceDrawer"></view>
+    
+    <!-- 抽屉主体 -->
+    <view class="drawer-content">
+      <!-- 顶部把手 -->
+      <view class="drawer-handle">
+        <view class="handle-bar"></view>
+      </view>
+      
+      <!-- 头部 -->
+      <view class="drawer-header">
+        <view class="header-left">
+          <text class="header-title">万金油句库</text>
+          <text class="header-count">({{filteredSentences.length}})</text>
+        </view>
+        <view class="header-right">
+          <view class="icon-btn" bindtap="toggleFavoriteFilter">
+            <text class="icon">{{showFavoriteOnly ? '⭐' : '☆'}}</text>
+            <text class="btn-text">收藏</text>
+          </view>
+          <view class="icon-btn" bindtap="closeSentenceDrawer">
+            <text class="icon">✕</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 搜索栏 -->
+      <view class="search-section">
+        <view class="search-box">
+          <text class="search-icon">🔍</text>
+          <input 
+            class="search-input"
+            placeholder="搜索句子、功能、标签..."
+            value="{{searchKeyword}}"
+            bindinput="onSearchSentence"
+          />
+          <text 
+            wx:if="{{searchKeyword}}" 
+            class="clear-icon"
+            bindtap="clearSearch"
+          >✕</text>
+        </view>
+      </view>
+      
+      <!-- 筛选Tab -->
+      <view class="filter-section">
+        <!-- 层级筛选 -->
+        <view class="tier-tabs">
+          <view 
+            wx:for="{{tiers}}" 
+            wx:key="id"
+            class="tier-tab {{activeTier === item.id ? 'active' : ''}}"
+            bindtap="onTierChange"
+            data-tier="{{item.id}}"
+          >
+            <text class="tier-name">{{item.name}}</text>
+          </view>
+        </view>
+        
+        <!-- 分类Tab -->
+        <scroll-view class="category-tabs" scroll-x>
+          <view class="tab-group">
+            <text class="tab-label">位置:</text>
+            <view 
+              wx:for="{{positions}}" 
+              wx:key="id"
+              class="category-tab {{activePosition === item.id ? 'active' : ''}}"
+              bindtap="onPositionChange"
+              data-position="{{item.id}}"
+            >
+              <text class="tab-icon">{{item.icon}}</text>
+              <text class="tab-text">{{item.name}}</text>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+      
+      <!-- 句子列表 -->
+      <scroll-view class="sentence-list" scroll-y>
+        <view wx:if="{{filteredSentences.length === 0}}" class="empty-state">
+          <text class="empty-icon">🔍</text>
+          <text class="empty-text">未找到相关句子</text>
+          <text class="empty-hint">试试其他关键词或筛选条件</text>
+        </view>
+        
+        <view wx:else>
+          <view 
+            wx:for="{{filteredSentences}}" 
+            wx:key="id"
+            class="sentence-card-mini"
+          >
+            <!-- 头部 -->
+            <view class="card-header-mini">
+              <view class="tags-mini">
+                <text class="tier-tag tier-{{item.tier}}">{{tierNames[item.tier]}}</text>
+                <text class="difficulty-tag" wx:if="{{item.meta.difficulty === 1}}">★</text>
+                <text class="difficulty-tag" wx:if="{{item.meta.difficulty === 2}}">★★</text>
+                <text class="difficulty-tag" wx:if="{{item.meta.difficulty === 3}}">★★★</text>
+                <text class="difficulty-tag" wx:if="{{item.meta.difficulty === 4}}">★★★★</text>
+                <text class="difficulty-tag" wx:if="{{item.meta.difficulty === 5}}">★★★★★</text>
+              </view>
+              <view class="favorite-btn-mini" bindtap="toggleFavoriteSentence" data-id="{{item.id}}">
+                <text class="fav-icon">{{favoriteSentenceIds.includes(item.id) ? '⭐' : '☆'}}</text>
+              </view>
+            </view>
+            
+            <!-- 句子内容 -->
+            <view class="card-body-mini">
+              <text class="english-text-mini">{{item.english}}</text>
+              <text class="chinese-text-mini">{{item.chinese}}</text>
+            </view>
+            
+            <!-- 操作按钮 -->
+            <view class="card-actions-mini">
+              <button class="action-btn-mini secondary" bindtap="showSentenceDetail" data-sentence="{{item}}">
+                详情({{item.variants.length}}变体)
+              </button>
+              <button class="action-btn-mini primary" bindtap="insertSentence" data-sentence="{{item}}">
+                插入
+              </button>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 句子详情弹窗 -->
+  <sentence-detail-modal
+    visible="{{showDetailModal}}"
+    sentence="{{selectedSentence}}"
+    isFavorite="{{favoriteSentenceIds.includes(selectedSentence.id)}}"
+    bind:close="closeDetailModal"
+    bind:insert="insertSentence"
+    bind:favorite="toggleFavoriteSentence"
+  />
+
+</view>
+
+

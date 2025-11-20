@@ -1,0 +1,45 @@
+<!--
+  反馈按钮组件 - P1-002
+  应用Skills: development-discipline v4.0 + clean-architecture
+  依赖注入: 通过ServiceContainer获取FeedbackService
+-->
+
+<view class="feedback-button-container">
+  <!-- 顶/踩按钮 -->
+  <view class="feedback-buttons">
+    <view 
+      class="feedback-btn {{feedbackType === 'thumbUp' ? 'active' : ''}}"
+      bindtap="onThumbUp"
+      hover-class="feedback-btn-hover"
+    >
+      <text class="icon">👍</text>
+      <text class="label">有用</text>
+    </view>
+    
+    <view 
+      class="feedback-btn {{feedbackType === 'thumbDown' ? 'active' : ''}}"
+      bindtap="onThumbDown"
+      hover-class="feedback-btn-hover"
+    >
+      <text class="icon">👎</text>
+      <text class="label">无用</text>
+    </view>
+  </view>
+  
+  <!-- 评论输入（点击踩后展开） -->
+  <view class="feedback-comment {{showComment ? 'show' : 'hide'}}">
+    <textarea
+      class="comment-input"
+      placeholder="可以告诉我们哪里不够好吗？（选填）"
+      value="{{comment}}"
+      maxlength="500"
+      bindinput="onCommentInput"
+      auto-height
+    />
+    
+    <view class="comment-actions">
+      <button class="btn-cancel" bindtap="onCancelComment" size="mini">取消</button>
+      <button class="btn-submit" bindtap="onSubmitComment" size="mini" type="primary">提交</button>
+    </view>
+  </view>
+</view>

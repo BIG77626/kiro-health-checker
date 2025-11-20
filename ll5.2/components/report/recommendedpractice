@@ -1,0 +1,116 @@
+import React from "react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { BookOpen, ArrowRight, Target } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
+export default function RecommendedPractice({ studyRecords, isLoading }) {
+  const getRecommendations = () => {
+    // Analyze weak areas and recommend practice
+    const sectionStats = {};
+    
+    studyRecords.forEach(record => {
+      const section = record.section_type;
+      if (!sectionStats[section]) {
+        sectionStats[section] = { total: 0, correct: 0 };
+      }
+      sectionStats[section].total++;
+      if (record.is_correct) {
+        sectionStats[section].correct++;
+      }
+    });
+
+    const recommendations = Object.entries(sectionStats)
+      .map(([section, stats]) => ({
+        section,
+        accuracy: stats.total > 0 ? (stats.correct / stats.total * 100).toFixed(1) : 0,
+        total: stats.total
+      }))
+      .filter(r => r.accuracy < 80 && r.total >= 5) // Show sections with <80% accuracy and at least 5 questions
+      .sort((a, b) => a.accuracy - b.accuracy);
+
+    return recommendations.slice(0, 3); // Top 3 weak areas
+  };
+
+  const sectionLabels = {
+    reading_a: "阅读理解A",
+    reading_b: "阅读理解B",
+    translation: "翻译",
+    cloze: "完形填空",
+    writing: "写作"
+  };
+
+  const recommendations = getRecommendations();
+
+  return (
+    <Card className="border-0 bg-white shadow-sm">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Target className="w-5 h-5 text-green-600" />
+          推荐练习
+        </CardTitle>
+        <p className="text-sm text-gray-500">
+          基于错因分析，为你推荐针对性练习
+        </p>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="space-y-4">
+            {Array(3).fill(0).map((_, i) => (
+              <div key={i} className="p-4 border border-gray-200 rounded-xl animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-32 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-48 mb-3"></div>
+                <div className="h-8 bg-gray-200 rounded w-20"></div>
+              </div>
+            ))}
+          </div>
+        ) : recommendations.length > 0 ? (
+          <div className="space-y-4">
+            {recommendations.map((rec, index) => (
+              <div key={rec.section} className="p-4 border border-gray-200 rounded-xl hover:border-blue-200 transition-colors">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-1">
+                      {sectionLabels[rec.section]}
+                    </h4>
+                    <p className="text-sm text-gray-500">
+                      当前正确率 {rec.accuracy}% · 已练习{rec.total}题
+                    </p>
+                  </div>
+                  <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                    需要加强
+                  </Badge>
+                </div>
+                
+                <Link to={createPageUrl("Study") + `?section=${rec.section}`}>
+                  <Button variant="outline" size="sm" className="group">
+                    开始练习
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Target className="w-8 h-8 text-green-600" />
+            </div>
+            <h4 className="font-medium text-gray-900 mb-2">表现优秀！</h4>
+            <p className="text-sm text-gray-500 mb-4">
+              各个题型都已掌握得不错，继续保持
+            </p>
+            <Link to={createPageUrl("Study")}>
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                继续练习
+                <BookOpen className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}

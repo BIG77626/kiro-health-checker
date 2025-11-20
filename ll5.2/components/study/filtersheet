@@ -1,0 +1,158 @@
+import React from "react";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+
+export default function FilterSheet({ 
+  open, 
+  onClose, 
+  filters, 
+  onFiltersChange, 
+  typeLabels, 
+  sectionLabels, 
+  difficultyLabels 
+}) {
+  const updateFilter = (key, value) => {
+    onFiltersChange(prev => ({ ...prev, [key]: value }));
+  };
+
+  const toggleSection = (section) => {
+    onFiltersChange(prev => ({
+      ...prev,
+      sections: prev.sections.includes(section)
+        ? prev.sections.filter(s => s !== section)
+        : [...prev.sections, section]
+    }));
+  };
+
+  const clearFilters = () => {
+    onFiltersChange({
+      type: "all",
+      sections: [],
+      difficulty: "all",
+      year: "all"
+    });
+  };
+
+  return (
+    <Sheet open={open} onOpenChange={onClose}>
+      <SheetContent side="bottom" className="max-h-[80vh]">
+        <SheetHeader>
+          <SheetTitle className="flex justify-between items-center">
+            <span>筛选试卷</span>
+            <Button variant="ghost" size="sm" onClick={clearFilters}>
+              重置
+            </Button>
+          </SheetTitle>
+        </SheetHeader>
+
+        <div className="py-6 space-y-6">
+          {/* 试卷类型 */}
+          <div>
+            <h3 className="font-medium text-gray-900 mb-3">试卷类型</h3>
+            <div className="flex gap-2">
+              <Button
+                variant={filters.type === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => updateFilter("type", "all")}
+              >
+                全部
+              </Button>
+              {Object.entries(typeLabels).map(([key, label]) => (
+                <Button
+                  key={key}
+                  variant={filters.type === key ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => updateFilter("type", key)}
+                >
+                  {label}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* 题型 */}
+          <div>
+            <h3 className="font-medium text-gray-900 mb-3">题型</h3>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(sectionLabels).map(([key, label]) => (
+                <Button
+                  key={key}
+                  variant={filters.sections.includes(key) ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => toggleSection(key)}
+                  className="text-xs"
+                >
+                  {label}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* 难度 */}
+          <div>
+            <h3 className="font-medium text-gray-900 mb-3">难度等级</h3>
+            <div className="flex gap-2">
+              <Button
+                variant={filters.difficulty === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => updateFilter("difficulty", "all")}
+              >
+                全部
+              </Button>
+              {Object.entries(difficultyLabels).map(([key, label]) => (
+                <Button
+                  key={key}
+                  variant={filters.difficulty === key ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => updateFilter("difficulty", key)}
+                >
+                  {label}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* 年份 */}
+          <div>
+            <h3 className="font-medium text-gray-900 mb-3">年份</h3>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={filters.year === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => updateFilter("year", "all")}
+              >
+                全部
+              </Button>
+              {[2023, 2022, 2021, 2020, 2019, 2018].map(year => (
+                <Button
+                  key={year}
+                  variant={filters.year === year.toString() ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => updateFilter("year", year.toString())}
+                >
+                  {year}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-3 pt-4 border-t">
+          <Button variant="outline" className="flex-1" onClick={onClose}>
+            取消
+          </Button>
+          <Button className="flex-1" onClick={onClose}>
+            确定
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}

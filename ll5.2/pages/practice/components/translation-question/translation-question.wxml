@@ -1,0 +1,166 @@
+<!--components/translation-question/translation-question.wxml-->
+<view class="translation-container">
+  
+  <!-- 翻译类型标签 -->
+  <view class="translation-type">
+    <text class="type-badge {{translationData.type === 'en-zh' ? 'en-zh' : 'zh-en'}}">
+      {{translationData.type === 'en-zh' ? '英译汉' : '汉译英'}}
+    </text>
+    <text class="difficulty">{{translationData.difficulty}}</text>
+  </view>
+
+  <!-- 原文 -->
+  <view class="source-section">
+    <view class="section-header">
+      <text class="section-title">原文</text>
+    </view>
+    <view class="source-content">
+      <text class="source-text">{{translationData.sourceText}}</text>
+    </view>
+  </view>
+
+  <!-- 用户输入区 -->
+  <view class="input-section">
+    <view class="section-header">
+      <text class="section-title">你的翻译</text>
+      <text class="word-count">{{wordCount}} 词</text>
+    </view>
+    <textarea
+      class="translation-input"
+      placeholder="请在此输入翻译..."
+      value="{{currentAnswer}}"
+      bindinput="onInput"
+      maxlength="-1"
+      auto-height
+      disabled="{{showReference}}"
+    />
+  </view>
+
+  <!-- 提交按钮 -->
+  <view wx:if="{{!showReference}}" class="action-section">
+    <button class="btn-submit" bindtap="submitAnswer">
+      <text>提交答案</text>
+    </button>
+  </view>
+
+  <!-- 参考答案和对比 -->
+  <view wx:if="{{showReference}}" class="result-section">
+    
+    <!-- 相似度徽章 -->
+    <view class="similarity-badge">
+      <text class="similarity-label">相似度:</text>
+      <text class="similarity-value {{similarity >= 80 ? 'high' : similarity >= 60 ? 'medium' : 'low'}}">{{similarity}}%</text>
+    </view>
+
+    <!-- 参考答案 -->
+    <view class="reference-section">
+      <view class="section-header">
+        <text class="section-title">参考答案</text>
+      </view>
+      <view class="reference-content">
+        <text class="reference-text">{{translationData.referenceAnswer}}</text>
+      </view>
+    </view>
+
+    <!-- 差异高亮显示 -->
+    <view wx:if="{{differences.length > 0}}" class="differences-section">
+      <view class="section-header">
+        <text class="section-title">🔍 差异高亮对比</text>
+      </view>
+      <view class="differences-content">
+        <view class="diff-highlight-container">
+          <block wx:for="{{differences}}" wx:key="index">
+            <text wx:if="{{item.type === 'equal'}}" class="diff-segment equal">{{item.text}}</text>
+            <text wx:elif="{{item.type === 'removed'}}" class="diff-segment removed">{{item.text}}</text>
+            <text wx:elif="{{item.type === 'added'}}" class="diff-segment added">{{item.text}}</text>
+          </block>
+        </view>
+        
+        <view class="diff-legend">
+          <view class="legend-item">
+            <view class="legend-color equal"></view>
+            <text>正确</text>
+          </view>
+          <view class="legend-item">
+            <view class="legend-color removed"></view>
+            <text>缺少</text>
+          </view>
+          <view class="legend-item">
+            <view class="legend-color added"></view>
+            <text>多余/错误</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- AI评分结果 -->
+    <view wx:if="{{aiEvaluation}}" class="ai-evaluation-section">
+      <view class="section-header ai-header">
+        <text class="section-title">🤖 AI专业评分</text>
+      </view>
+      
+      <view class="score-display">
+        <text class="score-label">综合得分</text>
+        <text class="score-value">{{aiEvaluation.score}}</text>
+        <text class="score-max">/100</text>
+      </view>
+
+      <view class="evaluation-details">
+        <view class="detail-item">
+          <text class="detail-label">准确性</text>
+          <text class="detail-score">{{aiEvaluation.accuracy}}/30</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">流畅性</text>
+          <text class="detail-score">{{aiEvaluation.fluency}}/30</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">完整性</text>
+          <text class="detail-score">{{aiEvaluation.completeness}}/20</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">表达力</text>
+          <text class="detail-score">{{aiEvaluation.expression}}/20</text>
+        </view>
+      </view>
+
+      <view class="ai-feedback">
+        <text class="feedback-title">💬 AI点评</text>
+        <text class="feedback-content">{{aiEvaluation.feedback}}</text>
+      </view>
+
+      <view wx:if="{{aiEvaluation.suggestions}}" class="ai-suggestions">
+        <text class="suggestions-title">💡 改进建议</text>
+        <text class="suggestions-content">{{aiEvaluation.suggestions}}</text>
+      </view>
+    </view>
+
+    <!-- AI评分加载中 -->
+    <view wx:if="{{isEvaluating}}" class="ai-loading">
+      <text class="loading-icon">⏳</text>
+      <text class="loading-text">AI评分中，请稍候...</text>
+    </view>
+
+    <!-- 解析（如果有） -->
+    <view wx:if="{{translationData.explanation}}" class="explanation-section">
+      <view class="section-header">
+        <text class="section-title">翻译要点</text>
+      </view>
+      <view class="explanation-content">
+        <text class="explanation-text">{{translationData.explanation}}</text>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-section">
+      <button class="btn-secondary" bindtap="retranslate">
+        <text>重新翻译</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 翻译AI侧边栏（新增） -->
+  <include src="./translation-ai-sidebar.wxml" />
+
+</view>
+

@@ -1,0 +1,95 @@
+import React from "react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { Clock, BookOpen, ChevronRight, Star } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export default function PaperCard({ paper, typeLabels, sectionLabels }) {
+  const getDifficultyColor = (difficulty) => {
+    switch (difficulty) {
+      case "easy": return "bg-green-50 text-green-700 border-green-200";
+      case "medium": return "bg-yellow-50 text-yellow-700 border-yellow-200"; 
+      case "hard": return "bg-red-50 text-red-700 border-red-200";
+      default: return "bg-gray-50 text-gray-700 border-gray-200";
+    }
+  };
+
+  return (
+    <Link to={createPageUrl("PaperDetail") + `?id=${paper.id}`}>
+      <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-0 bg-white rounded-2xl">
+        <CardHeader className="pb-3">
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-lg text-gray-900 group-hover:text-blue-700 transition-colors">
+                {paper.title}
+              </CardTitle>
+              <p className="text-gray-500 text-sm mt-1">
+                {paper.year}年 · {typeLabels[paper.type]}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              {paper.difficulty && (
+                <Badge className={`text-xs ${getDifficultyColor(paper.difficulty)}`}>
+                  {paper.difficulty === "easy" ? "简单" : paper.difficulty === "medium" ? "中等" : "困难"}
+                </Badge>
+              )}
+              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="pt-0">
+          <div className="flex flex-wrap gap-2 mb-4">
+            {paper.sections?.slice(0, 4).map(section => (
+              <Badge 
+                key={section} 
+                variant="secondary" 
+                className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+              >
+                {sectionLabels[section]}
+              </Badge>
+            ))}
+            {paper.sections?.length > 4 && (
+              <Badge variant="secondary" className="text-xs bg-gray-50 text-gray-600">
+                +{paper.sections.length - 4}
+              </Badge>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between text-sm text-gray-500">
+            <div className="flex items-center gap-4">
+              {paper.estimated_time && (
+                <div className="flex items-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  <span>{paper.estimated_time}分钟</span>
+                </div>
+              )}
+              <div className="flex items-center gap-1">
+                <BookOpen className="w-4 h-4" />
+                <span>{paper.content?.questions?.length || 0}题</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-1 text-yellow-500">
+              <Star className="w-4 h-4 fill-current" />
+              <span className="text-gray-600">4.8</span>
+            </div>
+          </div>
+
+          {/* Progress indicator if started */}
+          <div className="mt-4 bg-gray-100 rounded-full h-2 overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
+              style={{ width: `${Math.random() * 100}%` }}
+            />
+          </div>
+          <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
+            <span>学习进度</span>
+            <span>{Math.floor(Math.random() * 100)}%</span>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}

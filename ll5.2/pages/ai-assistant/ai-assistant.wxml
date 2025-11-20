@@ -1,0 +1,233 @@
+<!--pages/ai-assistant/ai-assistant.wxml-->
+<view class="ai-page {{themeClass}}">
+  
+  <!-- Tab切换（已隐藏精讲课程） -->
+  <view class="ai-tabs" style="display: none;">
+    <view 
+      class="tab-item {{activeTab === 'chat' ? 'active' : ''}}"
+      bindtap="switchTab"
+      data-tab="chat"
+    >
+      <text>AI对话</text>
+    </view>
+    <!-- 精讲课程 Tab 已隐藏 -->
+    <!--     <view 
+      wx:if="{{false}}"
+      class="tab-item {{activeTab === 'courses' ? 'active' : ''}}"
+      bindtap="switchTab"
+      data-tab="courses"
+    >
+      <text>精讲课程</text>
+    </view> -->
+  </view>
+
+  <!-- AI对话Tab -->
+  <view wx:if="{{activeTab === 'chat'}}" class="chat-tab">
+    
+    <!-- 骨架屏（数据加载期间显示） -->
+    <skeleton 
+      wx:if="{{isLoading}}" 
+      type="ai-assistant"
+    />
+    
+    <!-- 欢迎语（首次进入显示） -->
+    <view wx:if="{{messages.length === 0 && !isLoading}}" class="welcome-section">
+      <!-- ⭐ 移除顶部图标 -->
+      <text class="welcome-title"> 你好！我是AI学习伙伴</text>
+      <text class="welcome-subtitle">我可以帮你解答问题、分析学习数据、制定学习计划</text>
+      
+      <view class="welcome-suggestions">
+        <text class="suggestions-title">试试问我：</text>
+        <view 
+          wx:for="{{quickSuggestions}}" 
+          wx:key="*this"
+          class="suggestion-btn"
+          bindtap="sendQuickQuestion"
+          data-question="{{item}}"
+        >
+          <text>{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 消息列表 -->
+    <scroll-view 
+      wx:else
+      scroll-y 
+      class="chat-messages"
+      scroll-into-view="{{scrollToView}}"
+      scroll-with-animation
+    >
+      <view 
+        wx:for="{{messages}}" 
+        wx:key="id"
+        id="msg-{{item.id}}"
+        class="message-wrapper {{item.role === 'user' ? 'user-message' : 'ai-message'}}"
+      >
+        <view class="message-container">
+          <view class="message-avatar-placeholder">{{item.role === 'user' ? '👤' : '🤖'}}</view>
+          <view class="message-bubble">
+            <text class="message-text">{{item.content}}</text>
+            
+            <!-- AI消息的操作卡片（可选） -->
+            <view wx:if="{{item.actionCard}}" class="action-card">
+              <text class="action-title">{{item.actionCard.title}}</text>
+              <text class="action-desc">{{item.actionCard.description}}</text>
+              <button 
+                class="action-btn"
+                bindtap="handleActionCard"
+                data-action="{{item.actionCard.action}}"
+                data-params="{{item.actionCard.params}}"
+              >
+                {{item.actionCard.buttonText}}
+              </button>
+            </view>
+            
+            <!-- AI Native: 反馈按钮（P1-002集成） -->
+            <feedback-button
+              wx:if="{{item.role === 'ai' && item.id}}"
+              content-id="{{item.id}}"
+              content-type="conversation"
+              context="{{item.feedbackContext}}"
+              bind:feedbackSubmit="onFeedbackSubmit"
+            />
+          </view>
+        </view>
+        <text class="message-time">{{item.time}}</text>
+      </view>
+      
+      <!-- AI打字中动画 -->
+      <view wx:if="{{aiTyping}}" class="message-wrapper ai-message">
+        <view class="message-container">
+          <view class="message-avatar-placeholder">🤖</view>
+          <view class="message-bubble typing-bubble">
+            <view class="typing-indicator">
+              <view class="typing-dot"></view>
+              <view class="typing-dot"></view>
+              <view class="typing-dot"></view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 快捷功能按钮 - 简化版（仅文字） -->
+    <view class="quick-actions">
+      <scroll-view scroll-x class="actions-scroll" show-scrollbar="{{false}}">
+        <view class="actions-list">
+          <view 
+            wx:for="{{quickActions}}" 
+            wx:key="id"
+            class="action-item-simple"
+            bindtap="sendQuickAction"
+            data-action="{{item.action}}"
+          >
+            <text class="action-label-simple">{{item.label}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 输入栏 - 简化版（移除清除图标） -->
+    <view class="input-bar">
+      <view class="input-wrapper">
+        <input 
+          class="message-input"
+          placeholder="输入消息..."
+          value="{{inputText}}"
+          bindinput="onInput"
+          bindconfirm="sendMessage"
+          confirm-type="send"
+          adjust-position="{{true}}"
+        />
+      </view>
+      <button 
+        class="send-btn {{inputText ? 'active' : ''}}"
+        bindtap="sendMessage"
+        disabled="{{!inputText}}"
+      >
+        发送
+      </button>
+    </view>
+  </view>
+
+  <!-- 精讲课程Tab - 暂时隐藏 -->
+  <view wx:if="{{false && activeTab === 'courses'}}" class="courses-tab">
+    <scroll-view scroll-y class="courses-scroll">
+      
+      <!-- 课程分类 -->
+      <view class="course-categories">
+        <scroll-view scroll-x class="categories-scroll">
+          <view class="categories-list">
+            <view 
+              wx:for="{{courseCategories}}" 
+              wx:key="id"
+              class="category-btn {{selectedCategory === item.id ? 'active' : ''}}"
+              bindtap="selectCategory"
+              data-id="{{item.id}}"
+            >
+              <text>{{item.name}}</text>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+
+      <!-- 课程列表 -->
+      <view class="courses-list">
+        <view 
+          wx:for="{{filteredCourses}}" 
+          wx:key="id"
+          class="course-card"
+          bindtap="goToCourseDetail"
+          data-id="{{item.id}}"
+        >
+          <view class="course-cover">
+            <image src="{{item.cover || '/images/placeholder.png'}}" mode="aspectFill"></image>
+            <view wx:if="{{item.progress > 0}}" class="course-progress-overlay">
+              <text class="progress-text">已学{{item.progress}}%</text>
+            </view>
+          </view>
+          
+          <view class="course-info">
+            <text class="course-title">{{item.title}}</text>
+            <text class="course-instructor">{{item.instructor}}</text>
+            
+            <view class="course-meta">
+              <view class="meta-item">
+                <text class="rating">{{item.rating}} ⭐</text>
+              </view>
+              <text class="meta-divider">·</text>
+              <view class="meta-item">
+                <text>{{item.students}}人学习</text>
+              </view>
+            </view>
+            
+            <view class="course-tags">
+              <view class="tag">{{item.difficulty}}</view>
+              <view class="tag">{{item.lessons}}课时</view>
+              <view class="tag">{{item.duration}}</view>
+            </view>
+            
+            <button 
+              class="course-btn {{item.progress > 0 ? 'btn-continue' : 'btn-start'}}"
+              bindtap="startCourse"
+              catchtap=""
+              data-id="{{item.id}}"
+            >
+              {{item.progress > 0 ? '继续学习' : '开始学习'}}
+            </button>
+          </view>
+        </view>
+        
+        <!-- 空状态 -->
+        <view wx:if="{{filteredCourses.length === 0}}" class="empty-state">
+          <view class="empty-icon-placeholder">📚</view>
+          <text class="empty-text">该分类暂无课程</text>
+        </view>
+      </view>
+      
+    </scroll-view>
+  </view>
+
+</view>
+

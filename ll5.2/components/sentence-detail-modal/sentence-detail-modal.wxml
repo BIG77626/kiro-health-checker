@@ -1,0 +1,180 @@
+<!--components/sentence-detail-modal/sentence-detail-modal.wxml-->
+<view class="modal-container" wx:if="{{visible}}">
+  
+  <!-- 遮罩层 -->
+  <view class="modal-mask" bindtap="onClose"></view>
+  
+  <!-- 弹窗主体 -->
+  <scroll-view class="modal-content" scroll-y>
+    
+    <!-- 头部 -->
+    <view class="modal-header">
+      <view class="header-left">
+        <text class="header-icon">💎</text>
+        <text class="header-title">句子详情</text>
+      </view>
+      <view class="close-btn" bindtap="onClose">
+        <text class="close-icon">✕</text>
+      </view>
+    </view>
+    
+    <!-- 原句 -->
+    <view class="section original-section">
+      <view class="section-title">
+        <text class="title-icon">📝</text>
+        <text class="title-text">原句</text>
+      </view>
+      <view class="original-content">
+        <text class="english-text">{{sentence.english}}</text>
+        <text class="chinese-text">{{sentence.chinese}}</text>
+      </view>
+    </view>
+    
+    <!-- 占位符说明 -->
+    <view class="section placeholder-section" wx:if="{{sentence.placeholders && sentence.placeholders.length > 0}}">
+      <view class="section-title">
+        <text class="title-icon">🔄</text>
+        <text class="title-text">替换说明</text>
+      </view>
+      <view class="placeholder-list">
+        <view 
+          wx:for="{{sentence.placeholders}}" 
+          wx:key="key"
+          class="placeholder-item"
+        >
+          <view class="ph-key">{{item.key}}</view>
+          <view class="ph-desc">{{item.description}}</view>
+          <view class="ph-examples">
+            <text class="ph-example-label">示例:</text>
+            <text 
+              wx:for="{{item.examples}}" 
+              wx:for-item="example"
+              wx:key="*this"
+              class="ph-example"
+            >
+              • {{example}}
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 5个变体 -->
+    <view class="section variants-section">
+      <view class="section-title">
+        <text class="title-icon">🔀</text>
+        <text class="title-text">同义变体 ({{sentence.variants ? sentence.variants.length : 0}}个)</text>
+      </view>
+      <view class="variants-list">
+        <view 
+          wx:for="{{sentence.variants}}" 
+          wx:key="id"
+          class="variant-card"
+        >
+          <view class="variant-header">
+            <text class="variant-number">变体 {{index + 1}}</text>
+            <button class="variant-insert-btn" bindtap="onInsertVariant" data-variant="{{item}}">
+              插入
+            </button>
+          </view>
+          <text class="variant-english">{{item.english}}</text>
+          <text class="variant-chinese">{{item.chinese}}</text>
+          <view class="variant-diff">
+            <text class="diff-label">区别:</text>
+            <text class="diff-text">{{item.difference}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 应用示例 -->
+    <view class="section examples-section" wx:if="{{sentence.examples && sentence.examples.length > 0}}">
+      <view class="section-title">
+        <text class="title-icon">📚</text>
+        <text class="title-text">应用示例</text>
+      </view>
+      <view class="examples-list">
+        <view 
+          wx:for="{{sentence.examples}}" 
+          wx:key="topic"
+          class="example-card"
+        >
+          <view class="example-topic">
+            <text class="topic-icon">🏷️</text>
+            <text class="topic-text">{{item.topic}}</text>
+          </view>
+          <text class="example-english">{{item.english}}</text>
+          <text class="example-chinese">{{item.chinese}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 语法点 -->
+    <view class="section grammar-section" wx:if="{{sentence.grammar && sentence.grammar.length > 0}}">
+      <view class="section-title">
+        <text class="title-icon">💡</text>
+        <text class="title-text">语法点</text>
+      </view>
+      <view class="grammar-list">
+        <view 
+          wx:for="{{sentence.grammar}}" 
+          wx:key="name"
+          class="grammar-item"
+        >
+          <view class="grammar-name">{{item.chinese}}</view>
+          <view class="grammar-explain">{{item.explanation}}</view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 改写建议 -->
+    <view class="section rewrite-section" wx:if="{{sentence.rewriteTips && sentence.rewriteTips.length > 0}}">
+      <view class="section-title">
+        <text class="title-icon">✏️</text>
+        <text class="title-text">改写建议</text>
+      </view>
+      <view class="rewrite-list">
+        <view 
+          wx:for="{{sentence.rewriteTips}}" 
+          wx:key="*this"
+          class="rewrite-item"
+        >
+          <text class="rewrite-bullet">•</text>
+          <text class="rewrite-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 注意事项 -->
+    <view class="section warnings-section" wx:if="{{sentence.warnings && sentence.warnings.length > 0}}">
+      <view class="section-title">
+        <text class="title-icon">⚠️</text>
+        <text class="title-text">注意事项</text>
+      </view>
+      <view class="warnings-list">
+        <view 
+          wx:for="{{sentence.warnings}}" 
+          wx:key="*this"
+          class="warning-item"
+        >
+          <text class="warning-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 底部操作按钮 -->
+    <view class="modal-footer">
+      <button class="footer-btn secondary" bindtap="onFavorite">
+        <text class="btn-icon">{{isFavorite ? '⭐' : '☆'}}</text>
+        <text class="btn-text">{{isFavorite ? '已收藏' : '收藏'}}</text>
+      </button>
+      <button class="footer-btn primary" bindtap="onInsertOriginal">
+        <text class="btn-text">插入原句</text>
+      </button>
+    </view>
+    
+  </scroll-view>
+  
+</view>
+
+

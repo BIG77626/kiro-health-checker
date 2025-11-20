@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "word-popup": "/components/word-popup/word-popup",
+    "sentence-card": "/components/sentence-card/sentence-card"
+  }
+}
+

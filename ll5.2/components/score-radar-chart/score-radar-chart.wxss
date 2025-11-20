@@ -1,0 +1,14 @@
+.chart-container {
+  width: 100%;
+  height: 360rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.radar-canvas {
+  width: 100%;
+  height: 100%;
+}
+

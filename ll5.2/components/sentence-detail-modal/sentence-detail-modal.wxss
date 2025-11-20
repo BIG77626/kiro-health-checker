@@ -1,0 +1,517 @@
+/* components/sentence-detail-modal/sentence-detail-modal.wxss */
+
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  animation: fadeIn 0.3s;
+}
+
+.modal-content {
+  position: relative;
+  width: 90%;
+  max-height: 80vh;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  animation: slideUp 0.3s;
+  z-index: 1;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 头部 */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40rpx 32rpx 24rpx;
+  border-bottom: 1rpx solid #E2E8F0;
+  position: sticky;
+  top: 0;
+  background: #FFFFFF;
+  z-index: 10;
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.header-icon {
+  font-size: 40rpx;
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #0F172A;
+}
+
+.close-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F1F5F9;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.close-btn:active {
+  background: #E2E8F0;
+  transform: scale(0.9);
+}
+
+.close-icon {
+  font-size: 32rpx;
+  color: #64748B;
+}
+
+/* 通用区块 */
+.section {
+  padding: 32rpx;
+  border-bottom: 1rpx solid #F1F5F9;
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.title-icon {
+  font-size: 32rpx;
+}
+
+.title-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #0F172A;
+}
+
+/* 原句 */
+.original-content {
+  padding: 24rpx;
+  background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+  border-radius: 16rpx;
+  border-left: 4rpx solid #4F7FE8;
+}
+
+.english-text {
+  display: block;
+  font-size: 32rpx;
+  line-height: 1.6;
+  color: #1E293B;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+
+.chinese-text {
+  display: block;
+  font-size: 28rpx;
+  line-height: 1.5;
+  color: #64748B;
+}
+
+/* 占位符 */
+.placeholder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.placeholder-item {
+  padding: 24rpx;
+  background: #F8FAFC;
+  border-radius: 12rpx;
+  border: 1rpx solid #E2E8F0;
+}
+
+.ph-key {
+  display: inline-block;
+  padding: 8rpx 16rpx;
+  background: #4F7FE8;
+  color: #FFFFFF;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+
+.ph-desc {
+  font-size: 26rpx;
+  color: #475569;
+  margin-bottom: 16rpx;
+}
+
+.ph-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.ph-example-label {
+  font-size: 24rpx;
+  color: #64748B;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.ph-example {
+  display: block;
+  font-size: 24rpx;
+  color: #64748B;
+  line-height: 1.5;
+  padding-left: 16rpx;
+}
+
+/* 变体 */
+.variants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.variant-card {
+  padding: 24rpx;
+  background: #F8FAFC;
+  border-radius: 12rpx;
+  border: 2rpx solid #E2E8F0;
+  transition: all 0.2s;
+}
+
+.variant-card:active {
+  border-color: #4F7FE8;
+  background: #F1F5F9;
+}
+
+.variant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.variant-number {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #4F7FE8;
+}
+
+.variant-insert-btn {
+  padding: 8rpx 20rpx;
+  height: auto;
+  line-height: 1;
+  background: #4F7FE8;
+  color: #FFFFFF;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  border: none;
+}
+
+.variant-insert-btn::after {
+  border: none;
+}
+
+.variant-english {
+  display: block;
+  font-size: 28rpx;
+  line-height: 1.6;
+  color: #1E293B;
+  margin-bottom: 8rpx;
+}
+
+.variant-chinese {
+  display: block;
+  font-size: 26rpx;
+  line-height: 1.5;
+  color: #64748B;
+  margin-bottom: 16rpx;
+}
+
+.variant-diff {
+  display: flex;
+  gap: 8rpx;
+  padding: 12rpx 16rpx;
+  background: #FEF3C7;
+  border-radius: 8rpx;
+}
+
+.diff-label {
+  font-size: 24rpx;
+  color: #D97706;
+  font-weight: 600;
+}
+
+.diff-text {
+  flex: 1;
+  font-size: 24rpx;
+  color: #92400E;
+  line-height: 1.5;
+}
+
+/* 示例 */
+.examples-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.example-card {
+  padding: 24rpx;
+  background: #ECFDF5;
+  border-radius: 12rpx;
+  border-left: 4rpx solid #10B981;
+}
+
+.example-topic {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.topic-icon {
+  font-size: 24rpx;
+}
+
+.topic-text {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #10B981;
+}
+
+.example-english {
+  display: block;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: #1E293B;
+  margin-bottom: 8rpx;
+}
+
+.example-chinese {
+  display: block;
+  font-size: 24rpx;
+  line-height: 1.5;
+  color: #64748B;
+}
+
+/* 语法点 */
+.grammar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.grammar-item {
+  padding: 20rpx;
+  background: #FEF3C7;
+  border-radius: 12rpx;
+  border-left: 4rpx solid #F59E0B;
+}
+
+.grammar-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #D97706;
+  margin-bottom: 8rpx;
+}
+
+.grammar-explain {
+  font-size: 24rpx;
+  color: #92400E;
+  line-height: 1.5;
+}
+
+/* 改写建议 */
+.rewrite-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.rewrite-item {
+  display: flex;
+  gap: 12rpx;
+  padding: 16rpx;
+  background: #F8FAFC;
+  border-radius: 8rpx;
+}
+
+.rewrite-bullet {
+  font-size: 28rpx;
+  color: #4F7FE8;
+  line-height: 1.5;
+}
+
+.rewrite-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* 注意事项 */
+.warnings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.warning-item {
+  padding: 16rpx 20rpx;
+  background: #FEF2F2;
+  border-radius: 8rpx;
+  border-left: 4rpx solid #EF4444;
+}
+
+.warning-text {
+  font-size: 26rpx;
+  color: #991B1B;
+  line-height: 1.5;
+}
+
+/* 底部操作 */
+.modal-footer {
+  display: flex;
+  gap: 16rpx;
+  padding: 24rpx 32rpx 32rpx;
+  background: #FFFFFF;
+  position: sticky;
+  bottom: 0;
+  border-top: 1rpx solid #E2E8F0;
+  border-radius: 0 0 24rpx 24rpx;
+}
+
+.footer-btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 16rpx;
+  border: none;
+  font-size: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  transition: all 0.2s;
+}
+
+.footer-btn::after {
+  border: none;
+}
+
+.footer-btn.secondary {
+  background: #F1F5F9;
+  color: #475569;
+}
+
+.footer-btn.secondary:active {
+  background: #E2E8F0;
+  transform: scale(0.95);
+}
+
+.footer-btn.primary {
+  background: linear-gradient(135deg, #4F7FE8 0%, #3B66D4 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4rpx 16rpx rgba(79, 127, 232, 0.3);
+}
+
+.footer-btn.primary:active {
+  transform: scale(0.95);
+  box-shadow: 0 2rpx 8rpx rgba(79, 127, 232, 0.2);
+}
+
+.btn-icon {
+  font-size: 32rpx;
+}
+
+.btn-text {
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+/* 暗黑模式 */
+@media (prefers-color-scheme: dark) {
+  .modal-content,
+  .modal-header,
+  .modal-footer {
+    background: #1E293B;
+  }
+  
+  .modal-header,
+  .modal-footer {
+    border-color: #334155;
+  }
+  
+  .header-title,
+  .title-text,
+  .english-text,
+  .variant-english,
+  .example-english {
+    color: #F1F5F9;
+  }
+  
+  .section {
+    border-color: #334155;
+  }
+  
+  .original-content {
+    background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);
+  }
+  
+  .variant-card,
+  .placeholder-item,
+  .rewrite-item {
+    background: #334155;
+    border-color: #475569;
+  }
+  
+  .close-btn,
+  .footer-btn.secondary {
+    background: #334155;
+  }
+  
+  .close-btn:active,
+  .footer-btn.secondary:active {
+    background: #475569;
+  }
+}
+
+

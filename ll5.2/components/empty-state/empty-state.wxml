@@ -1,0 +1,38 @@
+<!-- components/empty-state/empty-state.wxml -->
+<view class="empty-state {{themeClass}}">
+  <view class="empty-state__content">
+    <!-- 图标 -->
+    <view class="empty-state__icon">
+      <text class="empty-state__icon-text">{{icon || '📭'}}</text>
+    </view>
+
+    <!-- 标题 -->
+    <view class="empty-state__title">{{title || '暂无内容'}}</view>
+
+    <!-- 描述 -->
+    <view class="empty-state__desc" wx:if="{{description}}">{{description}}</view>
+
+    <!-- 操作按钮 -->
+    <view class="empty-state__action" wx:if="{{buttonText}}">
+      <button
+        class="empty-state__button"
+        bindtap="onButtonTap"
+        hover-class="empty-state__button--hover"
+      >
+        {{buttonText}}
+      </button>
+    </view>
+
+    <!-- 副操作按钮（可选） -->
+    <view class="empty-state__secondary-action" wx:if="{{secondaryButtonText}}">
+      <button
+        class="empty-state__secondary-button"
+        bindtap="onSecondaryButtonTap"
+        hover-class="empty-state__secondary-button--hover"
+      >
+        {{secondaryButtonText}}
+      </button>
+    </view>
+  </view>
+</view>
+

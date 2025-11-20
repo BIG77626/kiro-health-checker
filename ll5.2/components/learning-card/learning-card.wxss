@@ -1,0 +1,105 @@
+/* components/learning-card/learning-card.wxss */
+
+.learning-card {
+  position: relative;
+  background: white;
+  border-radius: 20rpx;
+  padding: 24rpx 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.learning-card:active {
+  transform: scale(0.96);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 图标容器 */
+.card-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
+}
+
+.card-icon image {
+  width: 44rpx;
+  height: 44rpx;
+}
+
+/* 图标主题色 */
+.card-icon.bg-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.card-icon.bg-green {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.card-icon.bg-orange {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.card-icon.bg-red {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.card-icon.bg-purple {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+/* 标题 */
+.card-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4rpx;
+}
+
+/* 副标题 */
+.card-subtitle {
+  font-size: 24rpx;
+  color: #6b7280;
+  margin-bottom: 8rpx;
+}
+
+/* 计数 */
+.card-count {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #2563eb;
+}
+
+/* 徽章 */
+.card-badge {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 9999rpx;
+  font-size: 20rpx;
+  font-weight: 500;
+}
+
+.card-badge.badge-new {
+  background: #2563eb;
+  color: white;
+}
+
+.card-badge.badge-warning {
+  background: #f59e0b;
+  color: white;
+}
+
+.card-badge.badge-danger {
+  background: #ef4444;
+  color: white;
+}
+

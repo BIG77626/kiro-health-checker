@@ -1,0 +1,78 @@
+/* components/stat-card/stat-card.wxss */
+
+.stat-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.stat-card:active {
+  transform: scale(0.98);
+}
+
+/* 顶部彩色条 */
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+}
+
+.stat-card.stat-blue::before { background: #2563eb; }
+.stat-card.stat-green::before { background: #10b981; }
+.stat-card.stat-purple::before { background: #8b5cf6; }
+.stat-card.stat-orange::before { background: #f59e0b; }
+
+/* 图标 */
+.stat-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-bottom: 12rpx;
+  opacity: 0.8;
+}
+
+/* 数值 */
+.stat-value {
+  display: block;
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4rpx;
+  line-height: 1.2;
+}
+
+/* 标签 */
+.stat-label {
+  display: block;
+  font-size: 26rpx;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* 变化指示 */
+.stat-change {
+  display: inline-block;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.stat-change.positive {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.stat-change.negative {
+  background: #fef2f2;
+  color: #dc2626;
+}
+

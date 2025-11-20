@@ -1,0 +1,17 @@
+{
+  "navigationBarTitleText": "答题练习",
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#f5f7fa",
+  "enablePullDownRefresh": false,
+  "onReachBottomDistance": 50,
+  "usingComponents": {
+    "first-time-setup": "/components/theme/first-time-setup",
+    "reading-question": "./components/reading-question/reading-question",
+    "cloze-question": "./components/cloze-question/cloze-question",
+    "translation-question": "./components/translation-question/translation-question",
+    "writing-question": "./components/writing-question/writing-question",
+    "hint-float-card": "/components/hint-float-card/hint-float-card",
+    "skeleton": "/components/skeleton/skeleton"
+  }
+}

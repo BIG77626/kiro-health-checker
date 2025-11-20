@@ -1,0 +1,372 @@
+/* components/reading-question/reading-question.wxss - 参考写作练习风格优化 */
+
+/* 引入阅读AI提示样式 */
+@import "./reading-ai-hint.wxss";
+
+.reading-question {
+  min-height: 100vh;
+  background: #F5F7FA;
+  padding-bottom: 160rpx;
+}
+
+/* ==================== 文章标题区域 ==================== */
+
+.passage-header {
+  background: #FFFFFF;
+  padding: 24rpx 32rpx;
+  margin: 0 0 16rpx 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.passage-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #0F172A;
+  line-height: 1.4;
+}
+
+.passage-meta {
+  font-size: 22rpx;
+  color: #64748B;
+}
+
+/* ==================== 文章内容区域 ==================== */
+
+.passage-content {
+  max-height: 500rpx;
+  background: #FFFFFF;
+  padding: 24rpx 32rpx;
+  margin: 0 0 16rpx 0;
+}
+
+.paragraph {
+  margin-bottom: 24rpx;
+  padding: 20rpx;
+  background: #F8FAFC;
+  border-radius: 12rpx;
+  border-left: 4rpx solid transparent;
+  transition: all 0.3s ease;
+}
+
+.paragraph.para-highlighted {
+  background: #FFF4ED;
+  border-left-color: #F59E0B;
+}
+
+.para-number {
+  display: inline-block;
+  font-size: 20rpx;
+  color: #64748B;
+  background: #F1F5F9;
+  padding: 4rpx 8rpx;
+  border-radius: 6rpx;
+  margin-right: 8rpx;
+  vertical-align: top;
+}
+
+.para-text {
+  font-size: 28rpx;
+  line-height: 2;
+  color: #334155;
+  text-align: justify;
+  word-break: break-word;
+  white-space: normal;
+  display: inline;
+}
+
+/* ==================== 题目区域 ==================== */
+
+.questions-section {
+  padding: 0;
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #0F172A;
+  padding: 24rpx 32rpx 16rpx 32rpx;
+  background: #FFFFFF;
+  margin: 0 0 16rpx 0;
+}
+
+.question-item {
+  background: #FFFFFF;
+  padding: 24rpx 32rpx;
+  margin-bottom: 16rpx;
+}
+
+.question-item.question-active {
+  border-left: 4rpx solid #4F7FE8;
+}
+
+.question-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 24rpx;
+  gap: 8rpx;
+}
+
+.question-num {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #0F172A;
+  flex-shrink: 0;
+}
+
+.question-text {
+  flex: 1;
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #0F172A;
+  line-height: 1.8;
+  word-break: break-word;
+  white-space: normal;
+}
+
+/* ==================== 选项样式 ==================== */
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  background: #F8FAFC;
+  border: 2rpx solid #E5E7EB;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.option:active {
+  transform: scale(0.98);
+}
+
+.option-selected {
+  border-color: #4F7FE8;
+  background: linear-gradient(135deg, #F8FAFC 0%, #EBF4FF 100%);
+}
+
+.option-correct {
+  border-color: #10B981;
+  background: #F0FDF4;
+}
+
+.option-wrong {
+  border-color: #DC2626;
+  background: #FEF2F2;
+}
+
+.option-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44rpx;
+  height: 44rpx;
+  border: 2rpx solid #CBD5E1;
+  border-radius: 50%;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #64748B;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+  background: #FFFFFF;
+}
+
+.option-selected .option-label {
+  border-color: #4F7FE8;
+  background: #4F7FE8;
+  color: #FFFFFF;
+}
+
+.option-correct .option-label {
+  border-color: #10B981;
+  background: #10B981;
+  color: #FFFFFF;
+}
+
+.option-wrong .option-label {
+  border-color: #DC2626;
+  background: #DC2626;
+  color: #FFFFFF;
+}
+
+.option-icon {
+  position: absolute;
+  right: 24rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.option-correct .option-icon {
+  color: #10B981;
+}
+
+.option-wrong .option-icon {
+  color: #DC2626;
+}
+
+/* ==================== 答案解析区域 ==================== */
+
+.explanation {
+  margin-top: 24rpx;
+  padding: 20rpx;
+  background: #F8FAFC;
+  border-radius: 12rpx;
+  border-left: 4rpx solid #4F7FE8;
+}
+
+.explanation-header {
+  margin-bottom: 12rpx;
+}
+
+.explanation-title {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #0F172A;
+}
+
+.explanation-text {
+  font-size: 26rpx;
+  line-height: 1.8;
+  color: #334155;
+  margin-bottom: 16rpx;
+}
+
+/* 关键词区域 */
+.keywords {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #E5E7EB;
+}
+
+.keywords-label {
+  font-size: 22rpx;
+  color: #64748B;
+  margin-right: 8rpx;
+}
+
+.keyword-tag {
+  display: inline-block;
+  padding: 6rpx 12rpx;
+  background: #EBF4FF;
+  color: #4F7FE8;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.keyword-tag:active {
+  opacity: 0.7;
+}
+
+/* ==================== 底部操作栏 ==================== */
+
+.reading-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  padding: 16rpx 32rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: 16rpx;
+  z-index: 100;
+}
+
+.btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  background: #F8FAFC;
+  color: #0F172A;
+  border: 2rpx solid #E5E7EB;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4F7FE8 0%, #7AA0FF 100%);
+  color: #FFFFFF;
+}
+
+/* ==================== 深色模式 ==================== */
+
+.theme-dark .reading-question {
+  background: #0F172A;
+}
+
+.theme-dark .passage-header,
+.theme-dark .section-title,
+.theme-dark .question-item {
+  background: #1E293B;
+}
+
+.theme-dark .passage-title,
+.theme-dark .question-num,
+.theme-dark .question-text {
+  color: #F9FAFB;
+}
+
+.theme-dark .passage-meta,
+.theme-dark .para-number {
+  color: #9CA3AF;
+  background: #374151;
+}
+
+.theme-dark .paragraph {
+  background: #111827;
+}
+
+.theme-dark .para-text {
+  color: #E5E7EB;
+}
+
+.theme-dark .option {
+  background: #111827;
+  border-color: #374151;
+}
+
+.theme-dark .option-selected {
+  background: linear-gradient(135deg, #1E293B 0%, #2D3E57 100%);
+  border-color: #4F7FE8;
+}
+
+.theme-dark .explanation {
+  background: #111827;
+}
+
+.theme-dark .explanation-text {
+  color: #E5E7EB;
+}
+
+.theme-dark .reading-actions {
+  background: #1E293B;
+}
+
+.theme-dark .btn-secondary {
+  background: #111827;
+  color: #F9FAFB;
+  border-color: #374151;
+}

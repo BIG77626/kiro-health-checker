@@ -1,0 +1,10 @@
+<view class="chart-container">
+  <ec-canvas 
+    id="radar-chart" 
+    canvas-id="radar-chart-canvas"
+    ec="{{ ec }}"
+    class="radar-canvas"
+  />
+</view>
+
+

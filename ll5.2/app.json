@@ -1,0 +1,127 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/wrong-questions/wrong-questions",
+    "pages/ai-assistant/ai-assistant",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "考研英语长文攻克",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f8fafc"
+  },
+  "tabBar": {
+    "color": "#6b7280",
+    "selectedColor": "#2563eb",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页",
+        "iconPath": "images/home.png",
+        "selectedIconPath": "images/home-active.png"
+      },
+      {
+        "pagePath": "pages/wrong-questions/wrong-questions",
+        "text": "训练&分析",
+        "iconPath": "images/study.png",
+        "selectedIconPath": "images/study-active.png"
+      },
+      {
+        "pagePath": "pages/ai-assistant/ai-assistant",
+        "text": "AI助手",
+        "iconPath": "images/ai.png",
+        "selectedIconPath": "images/ai-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/profile.png",
+        "selectedIconPath": "images/profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "usingComponents": {
+    "feedback-button": "/components/feedback-button/feedback-button",
+    "skeleton": "/components/skeleton/skeleton"
+  },
+  "subPackages": [
+    {
+      "root": "packageReport/",
+      "name": "report",
+      "pages": [
+        "pages/report/report"
+      ]
+    },
+    {
+      "root": "pages/practice/",
+      "name": "practice",
+      "pages": [
+        "practice"
+      ]
+    },
+    {
+      "root": "pages/vocabulary/",
+      "name": "vocabulary",
+      "pages": [
+        "vocabulary"
+      ]
+    },
+    {
+      "root": "pages/reading/",
+      "name": "reading",
+      "pages": [
+        "pages/paperdetail/paperdetail",
+        "pages/reader/reader",
+        "pages/reading-article/reading-article"
+      ]
+    },
+    {
+      "root": "pages/morpheme/",
+      "name": "morpheme",
+      "pages": [
+        "pages/morpheme-learning/morpheme-learning",
+        "pages/morpheme-study/morpheme-study"
+      ]
+    },
+    {
+      "root": "pages/test/",
+      "name": "test",
+      "pages": [
+        "pages/vocab-test/vocab-test",
+        "pages/test-result/test-result",
+        "pages/quiz-bank/quiz-bank"
+      ]
+    },
+    {
+      "root": "pages/analysis/",
+      "name": "analysis",
+      "pages": [
+        "pages/wrong-questions-list/wrong-questions-list",
+        "pages/weak-points-detail/weak-points-detail"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/home/home": {
+      "network": "all",
+      "packages": ["practice", "vocabulary"]
+    },
+    "pages/wrong-questions/wrong-questions": {
+      "network": "all",
+      "packages": ["analysis"]
+    }
+  },
+  "plugins": {},
+  "permission": {},
+  "requiredBackgroundModes": [],
+  "networkTimeout": {
+    "request": 60000,
+    "downloadFile": 60000
+  }
+}

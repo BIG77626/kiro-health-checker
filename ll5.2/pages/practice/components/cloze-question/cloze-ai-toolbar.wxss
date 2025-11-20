@@ -1,0 +1,245 @@
+/* 完型填空AI工具栏 - 底部工具栏样式 */
+.cloze-ai-toolbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+
+.toolbar-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.toolbar-container {
+  position: relative;
+  z-index: 999;
+  background: #FFFFFF;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 32rpx 24rpx;
+  box-shadow: 0 -4rpx 24rpx rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease-out;
+}
+
+/* 提示级别指示器 */
+.hint-level-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx solid #E5E7EB;
+}
+
+.level-label {
+  font-size: 24rpx;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.level-dots {
+  display: flex;
+  gap: 12rpx;
+}
+
+.level-dot {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.level-dot.dot-active {
+  background: linear-gradient(135deg, #4F7FE8 0%, #7AA0FF 100%);
+  box-shadow: 0 4rpx 12rpx rgba(79, 127, 232, 0.3);
+}
+
+.dot-number {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #9CA3AF;
+}
+
+.level-dot.dot-active .dot-number {
+  color: #FFFFFF;
+}
+
+/* 工具栏内容 */
+.toolbar-content {
+  margin-bottom: 24rpx;
+}
+
+.toolbar-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.toolbar-icon {
+  font-size: 32rpx;
+  margin-right: 8rpx;
+}
+
+.toolbar-title {
+  flex: 1;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.hint-close {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9CA3AF;
+  font-size: 32rpx;
+  cursor: pointer;
+}
+
+.hint-close:active {
+  opacity: 0.6;
+}
+
+.toolbar-message {
+  font-size: 28rpx;
+  color: #374151;
+  line-height: 1.6;
+  margin-bottom: 16rpx;
+  font-weight: 500;
+}
+
+.toolbar-detail {
+  font-size: 26rpx;
+  color: #6B7280;
+  line-height: 1.6;
+  background: #F9FAFB;
+  padding: 16rpx;
+  border-radius: 12rpx;
+  border-left: 4rpx solid #4F7FE8;
+}
+
+/* 操作按钮 */
+.toolbar-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.toolbar-btn {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  border: none;
+  text-align: center;
+}
+
+.toolbar-btn::after {
+  border: none;
+}
+
+.btn-secondary {
+  background: #F3F4F6;
+  color: #374151;
+}
+
+.btn-secondary:active {
+  background: #E5E7EB;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4F7FE8 0%, #7AA0FF 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4rpx 12rpx rgba(79, 127, 232, 0.3);
+}
+
+.btn-primary:active {
+  opacity: 0.85;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .toolbar-container {
+    background: #1F2937;
+    box-shadow: 0 -4rpx 24rpx rgba(0, 0, 0, 0.4);
+  }
+  
+  .hint-level-indicator {
+    border-bottom-color: #374151;
+  }
+  
+  .level-dot {
+    background: #374151;
+  }
+  
+  .level-dot.dot-active {
+    background: linear-gradient(135deg, #5A8FFF 0%, #8AB0FF 100%);
+  }
+  
+  .dot-number {
+    color: #6B7280;
+  }
+  
+  .toolbar-title {
+    color: #F9FAFB;
+  }
+  
+  .hint-close {
+    color: #9CA3AF;
+  }
+  
+  .toolbar-message {
+    color: #E5E7EB;
+  }
+  
+  .toolbar-detail {
+    color: #D1D5DB;
+    background: #111827;
+    border-left-color: #5A8FFF;
+  }
+  
+  .btn-secondary {
+    background: #374151;
+    color: #E5E7EB;
+  }
+  
+  .btn-secondary:active {
+    background: #4B5563;
+  }
+}
+

@@ -1,0 +1,16 @@
+<!--components/achievement-badge/achievement-badge.wxml-->
+<view class="achievement-badge {{unlocked ? 'unlocked' : 'locked'}} badge-{{theme}}" bindtap="onTap">
+  <view class="badge-icon-wrapper">
+    <image src="{{icon}}" class="badge-icon" mode="aspectFit"></image>
+    
+    <!-- 锁定遮罩 -->
+    <view wx:if="{{!unlocked}}" class="badge-lock">
+      <image src="/images/lock.png" class="lock-icon" mode="aspectFit"></image>
+    </view>
+  </view>
+  
+  <text class="badge-title">{{title}}</text>
+  <text class="badge-value">{{value}}</text>
+  <text class="badge-desc">{{description}}</text>
+</view>
+

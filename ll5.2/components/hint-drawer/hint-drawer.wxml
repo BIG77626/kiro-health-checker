@@ -1,0 +1,101 @@
+<!-- 短链思考 - 抽屉式详细提示 -->
+<block wx:if="{{visible}}">
+  <view class="hint-drawer-mask" bindtap="onMaskTap" catchtouchmove="preventMove"></view>
+  <view class="hint-drawer {{state}}" catchtap="stopPropagation" catchtouchmove="preventMove"
+    
+    <!-- 顶部拖动条 -->
+    <view class="drag-bar">
+      <view class="drag-handle"></view>
+    </view>
+    
+    <!-- 标题栏 -->
+    <view class="drawer-header">
+      <text class="header-title">💡 短链思考提示</text>
+      <text class="header-close" bindtap="onClose">✕</text>
+    </view>
+    
+    <!-- Step1: 一行聚焦（始终显示） -->
+    <view class="drawer-step step1" wx:if="{{step >= 1}}">
+      <view class="step-header">
+        <text class="step-tag">Step 1</text>
+        <text class="step-label">聚焦关键</text>
+      </view>
+      <view class="step-content">
+        <text class="focus-text">{{step1Text}}</text>
+      </view>
+    </view>
+    
+    <!-- Step2: 思维支架（需解锁） -->
+    <view class="drawer-step step2" wx:if="{{step >= 2}}">
+      <view class="step-header">
+        <text class="step-tag">Step 2</text>
+        <text class="step-label">思维支架</text>
+        <text class="step-unlock-badge" wx:if="{{!step2Unlocked}}">🔒 已锁定</text>
+      </view>
+      
+      <view class="step-content" wx:if="{{step2Unlocked}}">
+        <view class="scaffold-list">
+          <view class="scaffold-item" wx:for="{{scaffoldSteps}}" wx:key="index">
+            <text class="scaffold-index">{{index + 1}}.</text>
+            <text class="scaffold-text">{{item}}</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 解锁按钮 -->
+      <view class="unlock-gate" wx:if="{{!step2Unlocked}}">
+        <text class="gate-hint">{{gateHintStep2}}</text>
+        <button 
+          class="unlock-btn {{gateReadyStep2 ? 'ready' : 'disabled'}}" 
+          bindtap="onUnlockStep2"
+          disabled="{{!gateReadyStep2}}">
+          {{gateReadyStep2 ? '立即查看' : '解锁中...'}}
+        </button>
+      </view>
+    </view>
+    
+    <!-- Step3: 自检清单（需解锁） -->
+    <view class="drawer-step step3" wx:if="{{step >= 3}}">
+      <view class="step-header">
+        <text class="step-tag">Step 3</text>
+        <text class="step-label">自检清单</text>
+        <text class="step-unlock-badge" wx:if="{{!step3Unlocked}}">🔒 已锁定</text>
+      </view>
+      
+      <view class="step-content" wx:if="{{step3Unlocked}}">
+        <view class="checklist">
+          <view class="checklist-item" wx:for="{{checklistItems}}" wx:key="index">
+            <text class="checkbox">☑</text>
+            <text class="checklist-text">{{item}}</text>
+          </view>
+        </view>
+        
+        <!-- 微高亮材料 -->
+        <view class="highlight-material" wx:if="{{highlightedText}}">
+          <view class="material-label">关键句高亮：</view>
+          <rich-text class="material-text" nodes="{{highlightedText}}"></rich-text>
+        </view>
+      </view>
+      
+      <!-- 解锁按钮 -->
+      <view class="unlock-gate" wx:if="{{!step3Unlocked}}">
+        <text class="gate-hint">{{gateHintStep3}}</text>
+        <button 
+          class="unlock-btn {{gateReadyStep3 ? 'ready' : 'disabled'}}" 
+          bindtap="onUnlockStep3"
+          disabled="{{!gateReadyStep3}}">
+          {{gateReadyStep3 ? '立即查看' : '解锁中...'}}
+        </button>
+      </view>
+    </view>
+    
+    <!-- 底部确认按钮 -->
+    <view class="drawer-footer" wx:if="{{step3Unlocked}}">
+      <button class="confirm-btn" bindtap="onConfirm">
+        我明白了，继续答题
+      </button>
+    </view>
+    
+  </view>
+</block>
+

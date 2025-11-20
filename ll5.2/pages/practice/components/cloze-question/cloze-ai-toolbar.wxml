@@ -1,0 +1,50 @@
+<!-- 完型填空AI工具栏 - 底部工具栏样式 -->
+<view wx:if="{{showClozeAIHint && clozeAIHintData}}" class="cloze-ai-toolbar">
+  <view class="toolbar-container" catchtap="stopPropagation">
+    <!-- 提示级别指示器 -->
+    <view class="hint-level-indicator">
+      <text class="level-label">提示级别</text>
+      <view class="level-dots">
+        <view wx:for="{{[1,2,3,4]}}" wx:key="item" 
+              class="level-dot {{clozeAIHintData.level >= item ? 'dot-active' : ''}}">
+          <text class="dot-number">{{item}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 提示内容 -->
+    <view class="toolbar-content">
+      <view class="toolbar-header">
+        <text class="toolbar-icon">{{clozeAIHintData.icon}}</text>
+        <text class="toolbar-title">{{clozeAIHintData.title}}</text>
+        <view class="hint-close" catchtap="closeClozeAIHint">
+          <text>✕</text>
+        </view>
+      </view>
+      
+      <view class="toolbar-message">
+        <text>{{clozeAIHintData.message}}</text>
+      </view>
+      
+      <view class="toolbar-detail">
+        <text>{{clozeAIHintData.detail}}</text>
+      </view>
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="toolbar-actions">
+      <button class="toolbar-btn btn-secondary" catchtap="closeClozeAIHint">
+        知道了
+      </button>
+      <button wx:if="{{clozeAIHintData.level < 4}}" 
+              class="toolbar-btn btn-primary" 
+              catchtap="requestNextHint">
+        下一级提示 ({{clozeAIHintData.level + 1}}/4)
+      </button>
+    </view>
+  </view>
+  
+  <!-- 遮罩层 -->
+  <view class="toolbar-mask" catchtap="closeClozeAIHint"></view>
+</view>
+

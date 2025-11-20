@@ -1,0 +1,17 @@
+<!--components/stat-card/stat-card.wxml-->
+<view class="stat-card stat-{{theme}}" bindtap="onTap">
+  <!-- 图标（可选） -->
+  <image wx:if="{{icon}}" src="{{icon}}" class="stat-icon" mode="aspectFit"></image>
+  
+  <!-- 数值 -->
+  <text class="stat-value">{{value}}</text>
+  
+  <!-- 标签 -->
+  <text class="stat-label">{{label}}</text>
+  
+  <!-- 变化（可选） -->
+  <view wx:if="{{change}}" class="stat-change {{changeType}}">
+    <text>{{change}}</text>
+  </view>
+</view>
+

@@ -1,0 +1,47 @@
+<!-- 翻译练习AI侧边栏 - 轻量版实时辅助 -->
+<view wx:if="{{showTranslationAIHint && translationAIHintData}}" class="translation-ai-sidebar">
+  <view class="sidebar-container" catchtap="stopPropagation">
+    <!-- 关闭按钮 -->
+    <view class="sidebar-close" catchtap="closeTranslationAIHint">
+      <text>✕</text>
+    </view>
+    
+    <!-- 提示级别指示器（简化版） -->
+    <view class="sidebar-level">
+      <view wx:for="{{[1,2,3]}}" wx:key="item" 
+            class="level-dot {{translationAIHintData.level >= item ? 'dot-active' : ''}}">
+      </view>
+    </view>
+    
+    <!-- 提示内容 -->
+    <view class="sidebar-content">
+      <view class="sidebar-icon">{{translationAIHintData.icon}}</view>
+      <view class="sidebar-title">{{translationAIHintData.title}}</view>
+      
+      <view class="sidebar-message">
+        <text>{{translationAIHintData.message}}</text>
+      </view>
+      
+      <view class="sidebar-detail">
+        <text>{{translationAIHintData.detail}}</text>
+      </view>
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="sidebar-actions">
+      <button class="sidebar-btn btn-dismiss" size="mini" catchtap="closeTranslationAIHint">
+        知道了
+      </button>
+      <button wx:if="{{translationAIHintData.level < 3}}" 
+              class="sidebar-btn btn-next" 
+              size="mini"
+              catchtap="requestNextTranslationHint">
+        下一级
+      </button>
+    </view>
+  </view>
+  
+  <!-- 遮罩层（半透明） -->
+  <view class="sidebar-mask" catchtap="closeTranslationAIHint"></view>
+</view>
+

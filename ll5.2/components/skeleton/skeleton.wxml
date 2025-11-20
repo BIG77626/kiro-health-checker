@@ -1,0 +1,82 @@
+<!--
+  骨架屏组件 - 通用占位UI
+  
+  应用Skills:
+  - development-discipline v5.0 (可复用组件)
+  - wechat-miniprogram-limits (性能优化)
+  
+  用途: 页面加载时显示，提升用户体验
+  性能: 首屏立即渲染 <50ms
+-->
+
+<view class="skeleton {{type}}" wx:if="{{show}}">
+  <!-- 页面类型：practice -->
+  <block wx:if="{{type === 'practice'}}">
+    <!-- 顶部导航栏 -->
+    <view class="skeleton-header">
+      <view class="skeleton-bar skeleton-animate"></view>
+    </view>
+    
+    <!-- 题目区域 -->
+    <view class="skeleton-content">
+      <view class="skeleton-title skeleton-animate"></view>
+      <view class="skeleton-paragraph">
+        <view class="skeleton-line skeleton-animate"></view>
+        <view class="skeleton-line skeleton-animate"></view>
+        <view class="skeleton-line skeleton-animate" style="width: 80%;"></view>
+      </view>
+      
+      <!-- 选项区域 -->
+      <view class="skeleton-options">
+        <view class="skeleton-option skeleton-animate"></view>
+        <view class="skeleton-option skeleton-animate"></view>
+        <view class="skeleton-option skeleton-animate"></view>
+        <view class="skeleton-option skeleton-animate"></view>
+      </view>
+    </view>
+    
+    <!-- 底部操作栏 -->
+    <view class="skeleton-footer">
+      <view class="skeleton-button skeleton-animate"></view>
+      <view class="skeleton-button skeleton-animate"></view>
+    </view>
+  </block>
+  
+  <!-- 页面类型：vocabulary -->
+  <block wx:if="{{type === 'vocabulary'}}">
+    <view class="skeleton-header">
+      <view class="skeleton-bar skeleton-animate"></view>
+    </view>
+    
+    <view class="skeleton-list">
+      <view class="skeleton-item" wx:for="{{[1,2,3,4,5]}}" wx:key="index">
+        <view class="skeleton-avatar skeleton-animate"></view>
+        <view class="skeleton-item-content">
+          <view class="skeleton-line skeleton-animate"></view>
+          <view class="skeleton-line skeleton-animate" style="width: 60%;"></view>
+        </view>
+      </view>
+    </view>
+  </block>
+  
+  <!-- 页面类型：profile -->
+  <block wx:if="{{type === 'profile'}}">
+    <view class="skeleton-profile-header">
+      <view class="skeleton-avatar-large skeleton-animate"></view>
+      <view class="skeleton-line skeleton-animate" style="width: 120px; margin-top: 12px;"></view>
+    </view>
+    
+    <view class="skeleton-stats">
+      <view class="skeleton-stat-item" wx:for="{{[1,2,3]}}" wx:key="index">
+        <view class="skeleton-circle skeleton-animate"></view>
+        <view class="skeleton-line skeleton-animate" style="width: 60px; margin-top: 8px;"></view>
+      </view>
+    </view>
+    
+    <view class="skeleton-list">
+      <view class="skeleton-item" wx:for="{{[1,2,3]}}" wx:key="index">
+        <view class="skeleton-line skeleton-animate"></view>
+      </view>
+    </view>
+  </block>
+</view>

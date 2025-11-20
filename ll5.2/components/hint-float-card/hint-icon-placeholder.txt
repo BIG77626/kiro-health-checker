@@ -1,0 +1,33 @@
+# 提示图标占位说明
+
+由于我无法直接创建图片文件，请使用以下方案：
+
+## 方案1：使用emoji（当前已配置）
+在hint-float-card.wxml中已使用：
+```xml
+<image class="icon-img" src="/images/hint-icon.png" mode="aspectFit"></image>
+```
+
+临时替代方案，修改为：
+```xml
+<text class="icon-emoji">💡</text>
+```
+
+对应WXSS：
+```css
+.icon-emoji {
+  font-size: 48rpx;
+}
+```
+
+## 方案2：使用在线图标
+将hint-icon.png替换为在线链接：
+```xml
+<image src="https://your-cdn.com/hint-icon.png"></image>
+```
+
+## 方案3：创建本地图标
+1. 准备一个96x96的PNG图标
+2. 放到 ll5.2/images/hint-icon.png
+3. 建议使用💡灯泡、📖书本、或🎯靶心图标
+

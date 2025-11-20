@@ -1,0 +1,203 @@
+<!--pages/practice/practice.wxml - P0修复：移除Tailwind，使用WXSS-->
+<view class="practice-page">
+  <!-- AI 提示浮动卡片 (写作练习不显示) -->
+  <hint-float-card
+    wx:if="{{practiceType !== 'writing'}}"
+    visible="{{showHint}}"
+    message="{{hintMessage}}"
+    scaffoldPoints="{{hintPoints}}"
+    keywords="{{hintKeywords}}"
+    autoExpand="{{hintAutoExpand}}"
+    bind:expand="onHintExpand"
+    bind:collapse="onHintCollapse"
+  />
+
+  <!-- 骨架屏（数据加载期间显示） -->
+  <skeleton 
+    show="{{isLoading}}" 
+    type="practice"
+  />
+
+  <!-- 加载状态（备用，骨架屏优先） -->
+  <view wx:if="{{isLoading && !showSkeleton}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 答题界面 -->
+  <view wx:elif="{{!showResult}}" class="practice-content">
+    
+    <!-- 阅读理解组件 -->
+    <reading-question 
+      wx:if="{{practiceType === 'reading' && currentPassage}}"
+      passage="{{currentPassage}}"
+      questions="{{questions}}"
+      passage-index="{{currentPassageIndex}}"
+      total-passages="{{passages.length || 1}}"
+      bind:answer="onAnswer"
+      bind:next="nextPassage"
+    />
+    
+    <!-- 完形填空组件 -->
+    <cloze-question 
+      wx:elif="{{practiceType === 'cloze' && clozeData}}"
+      cloze-data="{{clozeData}}"
+      bind:answer="onAnswer"
+    />
+    
+    <!-- 翻译练习组件 -->
+    <translation-question 
+      wx:elif="{{practiceType === 'translation' && translationData}}"
+      translation-data="{{translationData}}"
+      bind:answer="onAnswer"
+    />
+    
+    <!-- 写作练习组件 -->
+    <writing-question 
+      wx:elif="{{practiceType === 'writing' && questions.length > 0}}"
+      writing-data="{{questions[currentQuestionIndex || 0]}}"
+      current-question-index="{{currentQuestionIndex || 0}}"
+      grading-result="{{writingGradingResult}}"
+      bind:answer="onAnswer"
+      bind:next="nextWritingQuestion"
+      bind:submit="handleWritingSubmit"
+    />
+    
+    <!-- 旧版题目容器（兼容） -->
+    <view class="question-container" wx:if="{{!practiceType && currentQuestion}}">
+      <view class="question-header">
+        <text class="question-type">{{currentQuestion.type}}</text>
+        <text class="question-number">第{{currentIndex + 1}}题</text>
+      </view>
+      
+      <view class="question-content">
+        <text class="question-text">{{currentQuestion.content}}</text>
+        
+        <!-- 题目图片 -->
+        <image 
+          wx:if="{{currentQuestion.image}}" 
+          src="{{currentQuestion.image}}" 
+          class="question-image" 
+          mode="widthFix" 
+          bindtap="previewImage"
+        ></image>
+        
+        <!-- 题目音频 -->
+        <view wx:if="{{currentQuestion.audio}}" class="audio-container">
+          <button class="audio-btn" bindtap="playAudio">
+            <image src="/images/audio-play.png" class="audio-icon" mode="aspectFit"></image>
+            <text class="audio-text">播放音频</text>
+          </button>
+        </view>
+      </view>
+
+      <!-- 选项区域 - 优化设计 -->
+      <view class="options-container">
+        <view 
+          wx:for="{{currentQuestion.options}}" 
+          wx:for-item="option" 
+          wx:key="option" 
+          class="option-card {{currentQuestion.userAnswer === option ? 'option-selected' : ''}}" 
+          bindtap="selectOption" 
+          data-option="{{option}}"
+        >
+          <view class="option-indicator">
+            <text class="option-letter">{{index === 0 ? 'A' : index === 1 ? 'B' : index === 2 ? 'C' : 'D'}}</text>
+          </view>
+          <text class="option-text">{{option}}</text>
+          <!-- 选中图标 -->
+          <image 
+            wx:if="{{currentQuestion.userAnswer === option}}"
+            src="/images/check-circle.png" 
+            class="option-check" 
+            mode="aspectFit"
+          />
+        </view>
+      </view>
+
+      <!-- 解析区域 -->
+      <view class="explanation-card" wx:if="{{showExplanation && currentQuestion.explanation}}">
+        <view class="explanation-header">
+          <view class="explanation-icon-bg">
+            <image src="/images/lightbulb.png" class="explanation-icon" mode="aspectFit"/>
+          </view>
+          <text class="explanation-title">答案解析</text>
+        </view>
+        <text class="explanation-text">{{currentQuestion.explanation}}</text>
+      </view>
+    </view>
+
+    <!-- 底部操作栏 (写作练习由组件自己管理) -->
+    <view class="bottom-actions" wx:if="{{practiceType !== 'writing'}}">
+      <button 
+        class="btn-action btn-secondary" 
+        bindtap="showExplanation" 
+        wx:if="{{!showExplanation}}"
+      >
+        查看解析
+      </button>
+      <button 
+        class="btn-action btn-primary" 
+        bindtap="nextQuestion" 
+        wx:if="{{currentIndex < totalQuestions - 1}}"
+      >
+        下一题
+      </button>
+      <button 
+        class="btn-action btn-primary" 
+        bindtap="submitPractice" 
+        wx:elif="{{currentIndex === totalQuestions - 1}}"
+      >
+        提交练习
+      </button>
+    </view>
+  </view>
+
+  <!-- 结果页面 -->
+  <view wx:elif="{{showResult}}" class="result-container">
+    <view class="result-header">
+      <view class="result-icon-bg">
+        <image src="/images/trophy.png" class="result-icon" mode="aspectFit"></image>
+      </view>
+      <text class="result-title">练习完成</text>
+      <text class="result-score">{{score}}分</text>
+    </view>
+    
+    <view class="result-stats">
+      <view class="stat-item">
+        <text class="stat-label">正确率</text>
+        <text class="stat-value">{{accuracy}}%</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-label">用时</text>
+        <text class="stat-value">{{formattedTime}}</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-label">题目数</text>
+        <text class="stat-value">{{totalQuestions}}</text>
+      </view>
+    </view>
+
+    <view class="result-actions" wx:if="{{practiceType !== 'writing'}}">
+      <button class="btn-action btn-secondary" bindtap="reviewAnswers">查看解析</button>
+      <button class="btn-action btn-primary" bindtap="restartPractice">重新练习</button>
+      <button class="btn-action btn-success" bindtap="backToHome">返回首页</button>
+    </view>
+  </view>
+
+  <!-- 错误状态 -->
+  <view wx:else class="error-container">
+    <view class="error-icon-placeholder">⚠️</view>
+    <text class="error-title">加载失败</text>
+    <text class="error-message">{{errorMessage}}</text>
+    <button class="btn-action btn-primary" bindtap="retryLoad">重新加载</button>
+  </view>
+</view>
+
+<!-- 首次主题设置弹窗 -->
+<first-time-setup 
+  visible="{{showThemeSetup}}"
+  system-theme="{{systemTheme}}"
+  bind:confirm="onThemeSetupConfirm"
+  bind:close="onThemeSetupClose"
+/>

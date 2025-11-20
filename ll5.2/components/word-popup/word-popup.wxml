@@ -1,0 +1,79 @@
+<!-- 单词弹窗组件（含同义词刷新功能） -->
+<view class="word-popup-overlay" wx:if="{{show}}" bindtap="onClose">
+  <view class="word-popup-card" catchtap="">
+    
+    <!-- 头部：单词 + 音标 + 发音 -->
+    <view class="word-header">
+      <text class="word-main">{{wordData.word}}</text>
+      <text class="word-phonetic">{{wordData.phonetic}}</text>
+      <image src="/images/speaker.png" class="speak-icon" bindtap="onSpeak" mode="aspectFit"/>
+    </view>
+    
+    <!-- 基础释义 -->
+    <view class="word-definition">
+      <text class="def-label">释义</text>
+      <text class="def-text">{{wordData.definition}}</text>
+    </view>
+    
+    <!-- 词素拆解 -->
+    <view class="word-morpheme" wx:if="{{wordData.morphemes}}">
+      <text class="morph-label">词素</text>
+      <text class="morph-text">{{wordData.morphemes}}</text>
+    </view>
+    
+    <!-- 同义词区域（可刷新） -->
+    <view class="word-synonyms-section" wx:if="{{synonymGroups.length > 0}}">
+      <view class="section-header">
+        <text class="section-label">同义替换</text>
+        <button class="refresh-btn-small" bindtap="onRefreshSynonyms">
+          <image src="/images/refresh.png" mode="aspectFit"/>
+          <text>换一组</text>
+        </button>
+      </view>
+      
+      <view class="synonyms-grid">
+        <view class="syn-item" wx:for="{{currentSynonyms}}" wx:key="word">
+          <text class="syn-word">{{item.word}}</text>
+          <view class="syn-level syn-{{item.level}}">
+            {{item.level === 'formal' ? '正式' : item.level === 'informal' ? '口语' : '中性'}}
+          </view>
+          <text class="syn-note">{{item.usage}}</text>
+        </view>
+      </view>
+      
+      <!-- 切换指示器 -->
+      <view class="synonym-dots">
+        <view class="dot {{synonymGroupIndex === index ? 'active' : ''}}" 
+              wx:for="{{synonymGroups}}" 
+              wx:key="index">
+        </view>
+      </view>
+    </view>
+    
+    <!-- 例句 -->
+    <view class="word-examples" wx:if="{{wordData.examples && wordData.examples.length > 0}}">
+      <text class="examples-label">例句</text>
+      <view class="example-item" wx:for="{{wordData.examples}}" wx:key="index">
+        <text class="example-num">{{index + 1}}.</text>
+        <text class="example-text">{{item}}</text>
+      </view>
+    </view>
+    
+    <!-- 薄弱点提示 -->
+    <view class="weakness-badge" wx:if="{{isWeakWord}}">
+      <text class="badge-icon">⚠️</text>
+      <text class="badge-text">已查看{{viewCount}}次，建议加强记忆</text>
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="word-actions">
+      <button class="btn-outline" bindtap="onAddToVocab">加入生词本</button>
+      <button class="btn-primary" bindtap="onAddToWeakness">加入练习库</button>
+    </view>
+    
+    <!-- 关闭按钮 -->
+    <view class="close-icon" bindtap="onClose">×</view>
+    
+  </view>
+</view>
+

@@ -1,0 +1,33 @@
+<!-- 阅读AI提示 - 侧边栏气泡样式 -->
+<view wx:if="{{showReadingAIHint && readingAIHintData}}" 
+      class="reading-ai-hint {{readingAIHintData.position === 'side' ? 'hint-side' : 'hint-top'}}">
+  <view class="hint-container" catchtap="stopPropagation">
+    <!-- 头部 -->
+    <view class="hint-header">
+      <text class="hint-icon">{{readingAIHintData.icon}}</text>
+      <text class="hint-title">{{readingAIHintData.title}}</text>
+      <view class="hint-close" catchtap="closeReadingAIHint">
+        <text>✕</text>
+      </view>
+    </view>
+    
+    <!-- 主要提示 -->
+    <view class="hint-message">
+      <text>{{readingAIHintData.message}}</text>
+    </view>
+    
+    <!-- 详细步骤 -->
+    <view class="hint-details">
+      <view wx:for="{{readingAIHintData.details}}" wx:key="index" class="hint-step">
+        <text class="step-bullet">•</text>
+        <text class="step-text">{{item}}</text>
+      </view>
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="hint-actions">
+      <button class="hint-btn" catchtap="closeReadingAIHint">知道了</button>
+    </view>
+  </view>
+</view>
+

@@ -1,0 +1,416 @@
+/* 单词弹窗组件样式 */
+
+/* 遮罩层 */
+.word-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64rpx;
+}
+
+/* 卡片主体 */
+.word-popup-card {
+  width: 100%;
+  max-height: 80vh;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  position: relative;
+  overflow-y: auto;
+  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.2);
+}
+
+/* 头部 */
+.word-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx solid #E5E7EB;
+}
+
+.word-main {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #0F172A;
+  flex: 1;
+}
+
+.word-phonetic {
+  font-size: 28rpx;
+  color: #6B7280;
+  font-style: italic;
+}
+
+.speak-icon {
+  width: 48rpx;
+  height: 48rpx;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.speak-icon:active {
+  opacity: 1;
+}
+
+/* 释义 */
+.word-definition {
+  margin-bottom: 24rpx;
+}
+
+.def-label {
+  font-size: 24rpx;
+  color: #6B7280;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.def-text {
+  font-size: 28rpx;
+  color: #0F172A;
+  line-height: 1.6;
+  display: block;
+}
+
+/* 词素拆解 */
+.word-morpheme {
+  margin-bottom: 24rpx;
+  padding: 16rpx;
+  background: #F0FDF4;
+  border-radius: 12rpx;
+  border: 1rpx solid #86EFAC;
+}
+
+.morph-label {
+  font-size: 24rpx;
+  color: #065F46;
+  display: block;
+  margin-bottom: 8rpx;
+  font-weight: 600;
+}
+
+.morph-text {
+  font-size: 26rpx;
+  color: #047857;
+  line-height: 1.5;
+  display: block;
+}
+
+/* 同义词区域 */
+.word-synonyms-section {
+  margin-bottom: 24rpx;
+  padding: 20rpx;
+  background: #F8F9FB;
+  border-radius: 16rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.section-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #0F172A;
+}
+
+.refresh-btn-small {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 8rpx 16rpx;
+  background: #FFFFFF;
+  border: 1rpx solid #E5E7EB;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  color: #4F7FE8;
+  line-height: 1;
+}
+
+.refresh-btn-small image {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.refresh-btn-small:active {
+  background: #F0F9FF;
+  border-color: #4F7FE8;
+}
+
+/* 同义词网格 */
+.synonyms-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.syn-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 16rpx;
+  background: #FFFFFF;
+  border-radius: 12rpx;
+  border: 1rpx solid #E5E7EB;
+  transition: all 0.2s;
+}
+
+.syn-item:active {
+  background: #F0F9FF;
+  border-color: #4F7FE8;
+}
+
+.syn-word {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #0F172A;
+  flex-shrink: 0;
+  min-width: 160rpx;
+}
+
+.syn-level {
+  padding: 4rpx 12rpx;
+  font-size: 20rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.syn-level.syn-formal {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.syn-level.syn-neutral {
+  background: #E0E7FF;
+  color: #4338CA;
+}
+
+.syn-level.syn-informal {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.syn-note {
+  font-size: 22rpx;
+  color: #6B7280;
+  flex: 1;
+}
+
+/* 切换指示器 */
+.synonym-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8rpx;
+  margin-top: 16rpx;
+}
+
+.dot {
+  width: 12rpx;
+  height: 12rpx;
+  background: #D1D5DB;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.dot.active {
+  width: 32rpx;
+  background: #4F7FE8;
+  border-radius: 6rpx;
+}
+
+/* 例句 */
+.word-examples {
+  margin-bottom: 24rpx;
+}
+
+.examples-label {
+  font-size: 24rpx;
+  color: #6B7280;
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.example-item {
+  display: flex;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+  padding: 12rpx;
+  background: #F8F9FB;
+  border-radius: 8rpx;
+}
+
+.example-num {
+  font-size: 24rpx;
+  color: #6B7280;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.example-text {
+  font-size: 24rpx;
+  color: #374151;
+  line-height: 1.5;
+}
+
+/* 薄弱点提示 */
+.weakness-badge {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 16rpx;
+  background: #FEF2F2;
+  border: 1rpx solid #FCA5A5;
+  border-radius: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.badge-icon {
+  font-size: 28rpx;
+}
+
+.badge-text {
+  font-size: 24rpx;
+  color: #991B1B;
+  font-weight: 500;
+}
+
+/* 操作按钮 */
+.word-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.btn-outline {
+  flex: 1;
+  padding: 16rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #4F7FE8;
+  color: #4F7FE8;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 16rpx;
+  text-align: center;
+  line-height: 1;
+}
+
+.btn-outline:active {
+  background: #F0F9FF;
+}
+
+.btn-primary {
+  flex: 1;
+  padding: 16rpx;
+  background: #4F7FE8;
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 16rpx;
+  text-align: center;
+  border: none;
+  line-height: 1;
+}
+
+.btn-primary:active {
+  background: #3D5FC8;
+}
+
+/* 关闭按钮 */
+.close-icon {
+  position: absolute;
+  top: 24rpx;
+  right: 24rpx;
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  color: #9CA3AF;
+  line-height: 1;
+  z-index: 10;
+}
+
+.close-icon:active {
+  color: #4B5563;
+}
+
+/* 暗色模式 */
+.theme-dark .word-popup-card {
+  background: #111827;
+}
+
+.theme-dark .word-header {
+  border-bottom-color: #334155;
+}
+
+.theme-dark .word-main,
+.theme-dark .def-text {
+  color: #F8FAFC;
+}
+
+.theme-dark .word-phonetic,
+.theme-dark .def-label,
+.theme-dark .examples-label {
+  color: #94A3B8;
+}
+
+.theme-dark .word-morpheme {
+  background: #0F3730;
+  border-color: #047857;
+}
+
+.theme-dark .morph-label,
+.theme-dark .morph-text {
+  color: #6EE7B7;
+}
+
+.theme-dark .word-synonyms-section,
+.theme-dark .example-item {
+  background: #1F2937;
+}
+
+.theme-dark .syn-item {
+  background: #111827;
+  border-color: #334155;
+}
+
+.theme-dark .syn-word {
+  color: #F8FAFC;
+}
+
+.theme-dark .syn-note,
+.theme-dark .example-text {
+  color: #CBD5E1;
+}
+
+.theme-dark .btn-outline {
+  background: transparent;
+  border-color: #7AA0FF;
+  color: #7AA0FF;
+}
+
+.theme-dark .btn-outline:active {
+  background: #1E3A8A;
+}
+
+.theme-dark .btn-primary {
+  background: #7AA0FF;
+  color: #0B1220;
+}
+
+.theme-dark .btn-primary:active {
+  background: #6B8EE8;
+}
+

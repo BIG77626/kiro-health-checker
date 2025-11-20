@@ -1,0 +1,90 @@
+<!--components/cloze-question/cloze-question.wxml-->
+<view class="cloze-question">
+
+  <!-- 文章区域 -->
+  <view class="cloze-passage">
+    <view class="passage-header">
+      <text class="passage-title">完形填空</text>
+      <text class="passage-progress">{{answeredCount}}/{{totalBlanks}} 已填</text>
+    </view>
+
+    <scroll-view scroll-y class="passage-content">
+      <view class="passage-text">
+        <text 
+          wx:for="{{contentParts}}" 
+          wx:key="index"
+          class="{{item.type === 'text' ? 'text-part' : 'blank-part ' + (item.id === currentBlankId ? 'blank-active' : '') + (userAnswers[item.id] ? ' blank-filled' : '')}}"
+          bindtap="{{item.type === 'blank' ? 'selectBlank' : ''}}"
+          data-id="{{item.id}}"
+        >
+          {{item.type === 'text' ? item.content : (userAnswers[item.id] || '___' + item.id + '___')}}
+        </text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 当前题目 -->
+  <view wx:if="{{currentBlank}}" class="current-question">
+    <view class="question-header">
+      <text class="blank-num">第 {{currentBlank.id}} 空</text>
+      <text class="context-hint" bindtap="showContext">查看上下文 →</text>
+    </view>
+
+    <!-- 上下文提示 -->
+    <view wx:if="{{showContextHint}}" class="context-box">
+      <text class="context-text">{{currentBlank.context}}</text>
+    </view>
+
+    <!-- 选项 -->
+    <view class="options-grid">
+      <view 
+        wx:for="{{currentBlank.options}}" 
+        wx:for-item="option"
+        wx:key="option"
+        class="option-card {{userAnswers[currentBlank.id] === option ? 'option-selected' : ''}} {{showAnswer && currentBlank.answer === option ? 'option-correct' : ''}} {{showAnswer && userAnswers[currentBlank.id] === option && currentBlank.answer !== option ? 'option-wrong' : ''}}"
+        bindtap="selectOption"
+        data-option="{{option}}"
+      >
+        <text class="option-text">{{option}}</text>
+        <view wx:if="{{showAnswer && currentBlank.answer === option}}" class="check-icon">✓</view>
+      </view>
+    </view>
+
+    <!-- 词义辨析 -->
+    <view wx:if="{{showAnswer && currentBlank.analysis}}" class="analysis-box">
+      <text class="analysis-title">📝 词义辨析</text>
+      <text class="analysis-text">{{currentBlank.analysis}}</text>
+    </view>
+  </view>
+
+  <!-- 底部导航 -->
+  <view class="cloze-actions">
+    <button 
+      class="btn btn-prev" 
+      bindtap="prevBlank"
+      disabled="{{currentBlankIndex === 0}}"
+    >
+      ← 上一空
+    </button>
+    
+    <button 
+      class="btn btn-answer" 
+      bindtap="toggleAnswer"
+    >
+      {{showAnswer ? '隐藏答案' : '查看答案'}}
+    </button>
+    
+    <button 
+      class="btn btn-next" 
+      bindtap="nextBlank"
+      disabled="{{currentBlankIndex === totalBlanks - 1}}"
+    >
+      下一空 →
+    </button>
+  </view>
+
+  <!-- 完型填空AI工具栏（新增） -->
+  <include src="./cloze-ai-toolbar.wxml" />
+
+</view>
+

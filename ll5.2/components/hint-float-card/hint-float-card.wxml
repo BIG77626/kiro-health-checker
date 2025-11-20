@@ -1,0 +1,84 @@
+<!-- 短链思考 - 浮窗卡片 -->
+<view class="hint-float-wrapper {{expanded ? 'expanded' : ''}}">
+  
+  <!-- 卡片（展开时显示，在图标左侧） -->
+  <view 
+    wx:if="{{expanded && currentStep >= 1}}" 
+    class="hint-card hint-card-step{{currentStep}}"
+    catchtouchmove="preventMove"
+    catchtap="stopPropagation">
+    
+    <!-- Step1: 一行聚焦（始终显示） -->
+    <view class="card-step step1">
+      <view class="step-header">
+        <text class="step-tag">💡</text>
+        <text class="step-title">聚焦提示</text>
+        <text class="step-close" bindtap="onCollapse">✕</text>
+      </view>
+      <view class="step-content">
+        <rich-text nodes="{{highlightedMessage}}" class="step-text"></rich-text>
+      </view>
+      <view class="step-footer" wx:if="{{currentStep === 1}}">
+        <text class="more-btn" bindtap="onExpandMore">查看详细提示 ▼</text>
+      </view>
+    </view>
+    
+    <!-- Step2: 思维支架（currentStep >= 2时才显示，只显示前2条） -->
+    <view class="card-step step2" wx:if="{{currentStep >= 2}}">
+      <view class="step-divider"></view>
+      <view class="step-header">
+        <text class="step-tag">📝</text>
+        <text class="step-title">思维支架</text>
+      </view>
+      <view class="step-content">
+        <view class="scaffold-list">
+          <view class="scaffold-item" wx:for="{{points}}" wx:key="index" wx:if="{{index < 2}}">
+            <text class="scaffold-dot">{{index + 1}}.</text>
+            <text class="scaffold-text">{{item}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="step-footer" wx:if="{{currentStep === 2}}">
+        <text class="more-btn" bindtap="onExpandMore">查看完整提示 ▼</text>
+      </view>
+    </view>
+    
+    <!-- Step3额外部分: 第3条思维支架（currentStep === 3时才显示） -->
+    <view class="card-step step2-extra" wx:if="{{currentStep === 3}}">
+      <view class="step-content">
+        <view class="scaffold-list">
+          <view class="scaffold-item" wx:for="{{points}}" wx:key="index" wx:if="{{index >= 2}}">
+            <text class="scaffold-dot">{{index + 1}}.</text>
+            <text class="scaffold-text">{{item}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- Step3: 完整提示（currentStep === 3时才显示） -->
+    <view class="card-step step3" wx:if="{{currentStep === 3}}">
+      <view class="step-divider"></view>
+      <view class="step-header">
+        <text class="step-tag">✅</text>
+        <text class="step-title">完整提示</text>
+      </view>
+      <view class="step-content">
+        <view class="complete-tips">
+          <text class="tips-text">已展示全部内容</text>
+        </view>
+      </view>
+    </view>
+    
+  </view>
+  
+  <!-- 图标（始终显示） -->
+  <view 
+    class="hint-icon {{autoShow ? 'hint-icon-pulse' : ''}}"
+    bindtap="onToggle"
+    catchtouchmove="preventMove">
+    <text class="icon-emoji">💡</text>
+    <view class="icon-badge" wx:if="{{showBadge}}">!</view>
+  </view>
+  
+</view>
+

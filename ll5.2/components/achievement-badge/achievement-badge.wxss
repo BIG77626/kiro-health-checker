@@ -1,0 +1,88 @@
+/* components/achievement-badge/achievement-badge.wxss */
+
+.achievement-badge {
+  background: white;
+  border-radius: 20rpx;
+  padding: 24rpx 16rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.achievement-badge.unlocked {
+  border-color: #2563eb;
+}
+
+.achievement-badge.unlocked:active {
+  transform: scale(0.96);
+}
+
+.achievement-badge.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 图标容器 */
+.badge-icon-wrapper {
+  position: relative;
+  width: 80rpx;
+  height: 80rpx;
+  margin: 0 auto 12rpx;
+}
+
+.badge-icon {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.badge-lock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lock-icon {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+/* 标题 */
+.badge-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4rpx;
+}
+
+/* 数值 */
+.badge-value {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 700;
+  margin-bottom: 4rpx;
+}
+
+/* 描述 */
+.badge-desc {
+  display: block;
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+/* 主题色 */
+.badge-gold .badge-value { color: #f59e0b; }
+.badge-fire .badge-value { color: #ef4444; }
+.badge-blue .badge-value { color: #2563eb; }
+.badge-green .badge-value { color: #10b981; }
+.badge-purple .badge-value { color: #8b5cf6; }
+.badge-red .badge-value { color: #dc2626; }
+

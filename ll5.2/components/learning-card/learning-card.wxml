@@ -1,0 +1,22 @@
+<!--components/learning-card/learning-card.wxml-->
+<view class="learning-card" bindtap="onCardTap">
+  <!-- 图标 -->
+  <view class="card-icon bg-{{bgColorClass}}">
+    <image src="{{icon}}" mode="aspectFit"></image>
+  </view>
+  
+  <!-- 标题 -->
+  <text class="card-title">{{title}}</text>
+  
+  <!-- 副标题 -->
+  <text class="card-subtitle">{{subtitle}}</text>
+  
+  <!-- 计数 -->
+  <text class="card-count">{{count}}</text>
+  
+  <!-- 徽章（可选） -->
+  <view wx:if="{{badge}}" class="card-badge badge-{{badgeType}}">
+    <text>{{badge}}</text>
+  </view>
+</view>
+

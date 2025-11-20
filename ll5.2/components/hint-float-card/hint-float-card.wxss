@@ -1,0 +1,311 @@
+/* 短链思考 - 浮窗卡片样式 */
+
+.hint-float-wrapper {
+  position: fixed;
+  right: 24rpx;
+  bottom: 120rpx;
+  z-index: 8888;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 16rpx;
+  pointer-events: none;
+}
+
+/* 图标状态 */
+.hint-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 96rpx;
+  height: 96rpx;
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(245, 158, 11, 0.4);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.hint-icon:active {
+  transform: scale(0.95);
+  box-shadow: 0 4rpx 12rpx rgba(245, 158, 11, 0.3);
+}
+
+.icon-emoji {
+  font-size: 52rpx;
+  line-height: 1;
+}
+
+/* 脉冲动画（自动展开时） */
+.hint-icon-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 8rpx 24rpx rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 12rpx 32rpx rgba(245, 158, 11, 0.6);
+  }
+}
+
+/* 图标徽章 */
+.icon-badge {
+  position: absolute;
+  top: -4rpx;
+  right: -4rpx;
+  width: 32rpx;
+  height: 32rpx;
+  background: #EF4444;
+  color: #FFFFFF;
+  font-size: 20rpx;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3rpx solid #FFFFFF;
+}
+
+/* 卡片状态 */
+.hint-card {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  box-shadow: 0 12rpx 48rpx rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  pointer-events: auto;
+  transform: scale(0);
+  opacity: 0;
+  transform-origin: bottom right;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Step1: 小卡片（一行内容） */
+.hint-card-step1 {
+  width: 420rpx;
+  min-height: 180rpx;
+  max-height: 280rpx;
+  overflow: visible; /* 确保内容不被裁剪 */
+}
+
+/* Step2: 中卡片（列表） */
+.hint-card-step2 {
+  width: 480rpx;
+  max-height: 350rpx;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Step3: 大卡片（完整内容） */
+.hint-card-step3 {
+  width: 520rpx;
+  max-height: 500rpx;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 展开状态 */
+.hint-float-wrapper.expanded .hint-card {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* 滚动条样式 */
+.hint-card::-webkit-scrollbar {
+  width: 6rpx;
+}
+
+.hint-card::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 6rpx;
+}
+
+.hint-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Step样式 */
+.card-step {
+  padding: 20rpx 20rpx 24rpx 20rpx;
+}
+
+.step2-extra {
+  padding: 0 20rpx 0 20rpx;
+}
+
+.step-divider {
+  height: 2rpx;
+  background: #E5E7EB;
+  margin: 0 20rpx;
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.step-tag {
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+.step-title {
+  flex: 1;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1F2937;
+}
+
+.step-close {
+  font-size: 36rpx;
+  color: #9CA3AF;
+  padding: 4rpx;
+  line-height: 1;
+}
+
+.step-close:active {
+  color: #6B7280;
+}
+
+.step-content {
+  padding: 0 8rpx;
+  margin-bottom: 8rpx;
+}
+
+.step-text {
+  font-size: 28rpx;
+  line-height: 1.7;
+  color: #374151;
+}
+
+/* 高亮关键词 */
+.hl-token {
+  background: #FEF3C7;
+  color: #B45309;
+  padding: 2rpx 6rpx;
+  border-radius: 4rpx;
+  font-weight: 600;
+}
+
+.step-footer {
+  margin-top: 20rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #F3F4F6;
+  text-align: center;
+}
+
+.more-btn {
+  font-size: 26rpx;
+  color: #F59E0B;
+  padding: 12rpx 24rpx;
+  display: inline-block;
+  font-weight: 500;
+}
+
+.more-btn:active {
+  color: #D97706;
+}
+
+/* Step2: 思维支架 */
+.scaffold-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.scaffold-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
+}
+
+.scaffold-dot {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #F59E0B;
+  line-height: 1.6;
+}
+
+.scaffold-text {
+  flex: 1;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* Step3: 完整提示 */
+.complete-tips {
+  padding: 16rpx;
+  background: #F0FDF4;
+  border-radius: 8rpx;
+  text-align: center;
+}
+
+.tips-text {
+  font-size: 24rpx;
+  color: #059669;
+}
+
+/* 暗黑模式 */
+@media (prefers-color-scheme: dark) {
+  .hint-card {
+    background: #1F2937;
+    box-shadow: 0 12rpx 48rpx rgba(0, 0, 0, 0.5);
+  }
+  
+  .card-header {
+    background: linear-gradient(135deg, #374151, #4B5563);
+    border-bottom-color: #4B5563;
+  }
+  
+  .header-title {
+    color: #FDE68A;
+  }
+  
+  .header-right {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .collapse-btn {
+    color: #FDE68A;
+  }
+  
+  .card-body {
+    background: #1F2937;
+  }
+  
+  .message-text {
+    color: #F9FAFB;
+  }
+  
+  .hint-points {
+    background: #374151;
+  }
+  
+  .point-text {
+    color: #E5E7EB;
+  }
+  
+  .card-footer {
+    background: #111827;
+    border-top-color: #374151;
+  }
+  
+  .tip-text {
+    color: #6B7280;
+  }
+}
+
+/* 安全区域适配 */
+.hint-float-container {
+  bottom: calc(200rpx + env(safe-area-inset-bottom));
+}
+

@@ -1,0 +1,73 @@
+<!-- 首次主题设置弹窗组件 -->
+<view class="modal-mask" wx:if="{{visible}}" bindtap="onMaskTap" catchtouchmove="true">
+  <view class="modal-container" catchtap="true">
+    
+    <!-- 标题 -->
+    <view class="modal-header">
+      <text class="modal-title">选择您的主题偏好</text>
+      <text class="modal-subtitle">我们将根据您的选择优化阅读体验</text>
+    </view>
+
+    <!-- 选项区域 -->
+
+    <!-- 选项区域 -->
+    <view class="options-area">
+      <text class="options-title">选择主题模式</text>
+      
+      <!-- 跟随系统 -->
+      <view class="option-item {{selectedOption === 'system' ? 'active' : ''}}" 
+            bindtap="selectOption" 
+            data-option="system">
+        <view class="option-icon">
+          <image src="{{brightnessIcon}}" mode="aspectFit" />
+        </view>
+        <view class="option-content">
+          <text class="option-title">跟随系统</text>
+          <text class="option-desc">自动适配您的系统设置</text>
+        </view>
+        <view class="option-radio">
+          <view class="radio-dot {{selectedOption === 'system' ? 'active' : ''}}"></view>
+        </view>
+      </view>
+
+      <!-- 浅色模式 -->
+      <view class="option-item {{selectedOption === 'light' ? 'active' : ''}}" 
+            bindtap="selectOption" 
+            data-option="light">
+        <view class="option-icon">
+          <image src="{{sunIcon}}" mode="aspectFit" />
+        </view>
+        <view class="option-content">
+          <text class="option-title">浅色模式</text>
+          <text class="option-desc">经典明亮的阅读体验</text>
+        </view>
+        <view class="option-radio">
+          <view class="radio-dot {{selectedOption === 'light' ? 'active' : ''}}"></view>
+        </view>
+      </view>
+
+      <!-- 深色模式 -->
+      <view class="option-item {{selectedOption === 'dark' ? 'active' : ''}}" 
+            bindtap="selectOption" 
+            data-option="dark">
+        <view class="option-icon">
+          <image src="{{moonIcon}}" mode="aspectFit" />
+        </view>
+        <view class="option-content">
+          <text class="option-title">深色模式</text>
+          <text class="option-desc">护眼的夜间阅读模式</text>
+        </view>
+        <view class="option-radio">
+          <view class="radio-dot {{selectedOption === 'dark' ? 'active' : ''}}"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 按钮区域 -->
+    <view class="button-area">
+      <button class="btn-skip" bindtap="skipSetup">跳过</button>
+      <button class="btn-confirm" bindtap="confirmSelection">确定</button>
+    </view>
+
+  </view>
+</view>

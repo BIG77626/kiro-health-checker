@@ -1,0 +1,82 @@
+<!-- 生词本提示弹窗组件 -->
+
+<!-- 遮罩层 -->
+<view
+  wx:if="{{showModal}}"
+  class="vocab-book-prompt-mask"
+  bindtap="onModalClose"
+>
+  <!-- 弹窗容器 -->
+  <view
+    class="vocab-book-prompt-container"
+    animation="{{animationData}}"
+    catchtap=""
+  >
+    <!-- 头部图标 -->
+    <view class="prompt-header">
+      <text class="prompt-icon">📖</text>
+    </view>
+
+    <!-- 标题 -->
+    <view class="prompt-title">
+      <text>发现难词</text>
+    </view>
+
+    <!-- 单词信息 -->
+    <view class="word-info">
+      <view class="word-main">
+        <text class="word-text">{{word}}</text>
+        <text wx:if="{{phonetic}}" class="word-phonetic">{{phonetic}}</text>
+        <view wx:if="{{phonetic}}" class="play-btn" bindtap="onPlayPronunciation">
+          <text class="play-icon">🔊</text>
+        </view>
+      </view>
+      <view wx:if="{{meaning}}" class="word-meaning">
+        <text>{{meaning}}</text>
+      </view>
+    </view>
+
+    <!-- 提示消息 -->
+    <view class="prompt-message">
+      <text>{{message}}</text>
+      <text wx:if="{{hardCount > 0}}" class="hard-count">
+        (标记"不认识"{{hardCount}}次)
+      </text>
+    </view>
+
+    <!-- 建议说明 -->
+    <view class="prompt-suggestion">
+      <text>要加入生词本重点复习吗？</text>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="prompt-actions">
+      <button
+        class="action-btn primary-btn"
+        bindtap="onAddToVocabBook"
+      >
+        加入生词本
+      </button>
+      <button
+        class="action-btn secondary-btn"
+        bindtap="onSkipVocabBook"
+      >
+        暂不加入
+      </button>
+    </view>
+
+    <!-- 不再提示选项 -->
+    <view class="dont-show-option">
+      <checkbox
+        value="{{dontShowAgain}}"
+        bindchange="onDontShowAgainChange"
+      />
+      <text class="option-text">不再提示这个单词</text>
+    </view>
+
+    <!-- 关闭提示 -->
+    <view class="close-tip">
+      <text>💡 关闭弹窗不会影响正常学习</text>
+    </view>
+  </view>
+</view>

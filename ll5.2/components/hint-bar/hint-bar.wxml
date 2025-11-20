@@ -1,0 +1,31 @@
+<!-- 短链思考 - 一行聚焦提示条 -->
+<block wx:if="{{hintState !== 'HIDDEN' && !hidden}}">
+  
+  <!-- 骨架占位 -->
+  <view class="hint-skeleton" wx:if="{{hintState === 'LOADING'}}">
+    <view class="sk-bar"></view>
+    <view class="sk-more"></view>
+  </view>
+  
+  <!-- Step1/2/3: 一行聚焦 -->
+  <view class="hint-bar" wx:elif="{{hintState === 'STEP1' || hintState === 'STEP2' || hintState === 'STEP3'}}">
+    <view class="hint-focus">
+      <text class="focus-icon">💡</text>
+      <text class="focus-text">{{focus}}</text>
+    </view>
+    
+    <view class="hint-more-tag" bindtap="onExpand" wx:if="{{canExpand}}">
+      <text class="more-text">{{expanded ? '收起' : '更多提示'}}</text>
+      <text class="more-arrow">{{expanded ? '▲' : '▼'}}</text>
+      <view class="more-badge" wx:if="{{remainSteps > 0}}">{{remainSteps}}</view>
+    </view>
+  </view>
+  
+  <!-- 错误状态 -->
+  <view class="hint-error" wx:elif="{{hintState === 'ERROR'}}">
+    <text class="error-text">提示加载失败</text>
+    <button class="retry-btn" bindtap="onRetry">重试</button>
+  </view>
+  
+</block>
+

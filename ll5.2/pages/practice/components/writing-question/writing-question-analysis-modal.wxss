@@ -1,0 +1,184 @@
+/* 解析浮窗样式 */
+
+.analysis-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 80vh;
+  background: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx;
+  border-bottom: 2rpx solid #F5F7FA;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #0F172A;
+}
+
+.modal-close {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #F5F7FA;
+  color: #6B7280;
+  font-size: 32rpx;
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32rpx;
+}
+
+.analysis-section {
+  margin-bottom: 32rpx;
+}
+
+.analysis-section:last-child {
+  margin-bottom: 0;
+}
+
+.analysis-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #0F172A;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.analysis-text {
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: #374151;
+  display: block;
+  white-space: pre-wrap;
+}
+
+/* 评分标准 */
+.rubric-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.rubric-item {
+  background: #F9FAFB;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.rubric-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1F2937;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.rubric-criteria {
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: #6B7280;
+  display: block;
+}
+
+/* 写作技巧 */
+.tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.tip-item {
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: #374151;
+  display: block;
+  padding-left: 8rpx;
+}
+
+/* 深色模式 */
+.theme-dark .modal-content {
+  background: #1F2937;
+}
+
+.theme-dark .modal-header {
+  border-bottom-color: #374151;
+}
+
+.theme-dark .modal-title {
+  color: #F9FAFB;
+}
+
+.theme-dark .modal-close {
+  background: #374151;
+  color: #9CA3AF;
+}
+
+.theme-dark .analysis-title {
+  color: #F9FAFB;
+}
+
+.theme-dark .analysis-text {
+  color: #D1D5DB;
+}
+
+.theme-dark .rubric-item {
+  background: #374151;
+}
+
+.theme-dark .rubric-label {
+  color: #F3F4F6;
+}
+
+.theme-dark .rubric-criteria {
+  color: #9CA3AF;
+}
+
+.theme-dark .tip-item {
+  color: #D1D5DB;
+}
+
+

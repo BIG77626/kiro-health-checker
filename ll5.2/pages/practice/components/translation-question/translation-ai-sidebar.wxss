@@ -1,0 +1,221 @@
+/* 翻译练习AI侧边栏 - 轻量版实时辅助 */
+.translation-ai-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 999;
+}
+
+.sidebar-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 998;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.sidebar-container {
+  position: absolute;
+  top: 50%;
+  right: 24rpx;
+  transform: translateY(-50%);
+  width: 280rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* 关闭按钮 */
+.sidebar-close {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9CA3AF;
+  font-size: 28rpx;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.sidebar-close:active {
+  opacity: 0.6;
+}
+
+/* 提示级别指示器（简化版） */
+.sidebar-level {
+  display: flex;
+  gap: 8rpx;
+  justify-content: center;
+  margin-bottom: 16rpx;
+}
+
+.level-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: #E5E7EB;
+  transition: all 0.3s ease;
+}
+
+.level-dot.dot-active {
+  background: #4F7FE8;
+  box-shadow: 0 2rpx 8rpx rgba(79, 127, 232, 0.4);
+}
+
+/* 侧边栏内容 */
+.sidebar-content {
+  margin-bottom: 16rpx;
+}
+
+.sidebar-icon {
+  font-size: 48rpx;
+  text-align: center;
+  margin-bottom: 8rpx;
+}
+
+.sidebar-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1A1A1A;
+  text-align: center;
+  margin-bottom: 12rpx;
+}
+
+.sidebar-message {
+  font-size: 24rpx;
+  color: #374151;
+  line-height: 1.5;
+  text-align: center;
+  margin-bottom: 12rpx;
+}
+
+.sidebar-detail {
+  font-size: 22rpx;
+  color: #6B7280;
+  line-height: 1.6;
+  background: #F9FAFB;
+  padding: 12rpx;
+  border-radius: 8rpx;
+  border-left: 3rpx solid #4F7FE8;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* 操作按钮 */
+.sidebar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.sidebar-btn {
+  width: 100%;
+  height: 72rpx !important;
+  line-height: 72rpx !important;
+  border-radius: 36rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-btn::after {
+  border: none;
+}
+
+.btn-dismiss {
+  background: #F3F4F6;
+  color: #374151;
+}
+
+.btn-dismiss:active {
+  background: #E5E7EB;
+}
+
+.btn-next {
+  background: linear-gradient(135deg, #4F7FE8 0%, #7AA0FF 100%);
+  color: #FFFFFF;
+  box-shadow: 0 2rpx 8rpx rgba(79, 127, 232, 0.3);
+}
+
+.btn-next:active {
+  opacity: 0.85;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(40rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .sidebar-container {
+    background: #1F2937;
+    box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.4);
+  }
+  
+  .sidebar-close {
+    color: #9CA3AF;
+  }
+  
+  .level-dot {
+    background: #374151;
+  }
+  
+  .level-dot.dot-active {
+    background: #5A8FFF;
+  }
+  
+  .sidebar-title {
+    color: #F9FAFB;
+  }
+  
+  .sidebar-message {
+    color: #E5E7EB;
+  }
+  
+  .sidebar-detail {
+    color: #D1D5DB;
+    background: #111827;
+    border-left-color: #5A8FFF;
+  }
+  
+  .btn-dismiss {
+    background: #374151;
+    color: #E5E7EB;
+  }
+  
+  .btn-dismiss:active {
+    background: #4B5563;
+  }
+}
+

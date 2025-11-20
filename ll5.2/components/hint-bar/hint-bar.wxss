@@ -1,0 +1,168 @@
+/* hint-bar组件样式 */
+
+.hint-bar-wrapper {
+  margin: 16rpx 32rpx;
+}
+
+/* ========== 骨架占位 ========== */
+.hint-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 20rpx 24rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+}
+
+.sk-bar {
+  flex: 1;
+  height: 28rpx;
+  background: linear-gradient(90deg, #F3F4F6, #E5E7EB, #F3F4F6);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6rpx;
+}
+
+.sk-more {
+  width: 220rpx;
+  height: 24rpx;
+  background: #E5E7EB;
+  border-radius: 6rpx;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ========== 一行聚焦提示条 ========== */
+.hint-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 20rpx 24rpx;
+  background: #FFFBEB;
+  border-left: 6rpx solid #F59E0B;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(245, 158, 11, 0.1);
+}
+
+.hint-focus {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.focus-icon {
+  font-size: 32rpx;
+  flex-shrink: 0;
+}
+
+.focus-text {
+  font-size: 28rpx;
+  color: #78350F;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.hint-more-tag {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 16rpx;
+  background: #FEF3C7;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.hint-more-tag:active {
+  background: #FDE68A;
+  transform: scale(0.95);
+}
+
+.more-text {
+  font-size: 24rpx;
+  color: #92400E;
+  font-weight: 600;
+}
+
+.more-arrow {
+  font-size: 20rpx;
+  color: #92400E;
+}
+
+.more-badge {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+  background: #F59E0B;
+  color: #FFFFFF;
+  font-size: 20rpx;
+  font-weight: 700;
+  padding: 2rpx 8rpx;
+  border-radius: 10rpx;
+  min-width: 32rpx;
+  text-align: center;
+}
+
+/* ========== 错误状态 ========== */
+.hint-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 24rpx;
+  background: #FEF2F2;
+  border-radius: 16rpx;
+  border: 1rpx solid #FCA5A5;
+}
+
+.error-text {
+  font-size: 26rpx;
+  color: #991B1B;
+}
+
+.retry-btn {
+  padding: 8rpx 16rpx;
+  background: #EF4444;
+  color: #FFFFFF;
+  font-size: 24rpx;
+  border-radius: 12rpx;
+  border: none;
+}
+
+.retry-btn:active {
+  background: #DC2626;
+}
+
+/* ========== 暗色模式 ========== */
+.theme-dark .hint-bar {
+  background: #422006;
+  border-left-color: #D97706;
+}
+
+.theme-dark .focus-text {
+  color: #FDE68A;
+}
+
+.theme-dark .hint-more-tag {
+  background: #78350F;
+}
+
+.theme-dark .more-text,
+.theme-dark .more-arrow {
+  color: #FEF3C7;
+}
+
+.theme-dark .hint-error {
+  background: #3F1F1F;
+  border-color: #991B1B;
+}
+
+.theme-dark .error-text {
+  color: #FCA5A5;
+}
+
