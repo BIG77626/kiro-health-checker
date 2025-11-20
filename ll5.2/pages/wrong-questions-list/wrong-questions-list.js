@@ -232,13 +232,16 @@ Page({
           showLoading('处理中...')
 
           try {
-            // TODO: 调用 API 标记为已复习
-            // await wrongQuestionCollector.markAsReviewed(_id)
-
-            showSuccess('已标记为复习')
-
-            // 重新加载数据
-            this.loadData()
+            // Issue #6: 调用 API 标记为已复习
+            const success = wrongQuestionCollector.markAsReviewed(_id)
+            
+            if (success) {
+              showSuccess('已标记为复习')
+              // 重新加载数据
+              this.loadData()
+            } else {
+              showError('操作失败，请重试')
+            }
           } catch (error) {
             console.error('标记失败:', error)
             showError('操作失败，请重试')
