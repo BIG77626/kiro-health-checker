@@ -92,12 +92,86 @@ Component({
     },
 
     /**
-     * 获取单词信息（模拟词典查询）
+     * 获取单词信息（Issue #4: 调用词典API或查询本地数据库）
+     * 
+     * 失败场景（5个）:
+     * 1. storage不可用 → Silent fail，使用mock数据
+     * 2. 单词不存在 → 返回默认结构
+     * 3. 数据格式错误 → 数据验证+降级
+     * 4. 网络API失败 → 降级到storage/mock（预留）
+     * 5. 重复查询 → 直接返回缓存
+     * 
+     * 数据来源优先级：
+     * 1. storage缓存
+     * 2. mock词典（并缓存）
+     * 3. 将来扩展：真实API（ECDICT/有道/金山等）
+     * 
+     * Skills: development-discipline v5.2 (Iron Law 5: 失败场景优先)
      */
     async _getWordInfo(word) {
-      // TODO: 实际应该调用词典API或查询本地ECDICT数据库
-      // 这里使用模拟数据
+      try {
+        // 场景2: 防御性检查 - word必须存在
+        if (!word || typeof word !== 'string') {
+          console.warn('[WordPopup] 单词无效')
+          return this._getDefaultWordInfo(word || '')
+        }
 
+        const normalizedWord = word.toLowerCase().trim()
+        console.log('[WordPopup] 查询单词:', normalizedWord)
+
+        // 场景5: 先从storage缓存读取（Silent fail）
+        const storageKey = `word_dict_${normalizedWord}`
+        let wordInfo = null
+
+        try {
+          const cachedData = wx.getStorageSync(storageKey)
+          if (cachedData && typeof cachedData === 'object') {
+            // 场景3: 数据验证
+            if (this._validateWordData(cachedData)) {
+              console.log('[WordPopup] 从缓存加载单词')
+              return cachedData
+            } else {
+              console.warn('[WordPopup] 缓存数据格式错误')
+            }
+          }
+        } catch (error) {
+          // 场景1: Silent fail - storage读取失败
+          console.warn('[WordPopup] storage读取失败', error)
+        }
+
+        // 场景4（预留）: 将来可在此处调用真实API
+        // try {
+        //   wordInfo = await this._fetchFromAPI(normalizedWord)
+        //   if (wordInfo) {
+        //     this._cacheWordData(storageKey, wordInfo)
+        //     return wordInfo
+        //   }
+        // } catch (error) {
+        //   console.warn('[WordPopup] API查询失败，降级到mock', error)
+        // }
+
+        // 从mock词典获取
+        wordInfo = this._getMockWordData(normalizedWord)
+        
+        // 缓存mock数据以便下次使用
+        if (wordInfo && wordInfo.definition !== '释义查询中...') {
+          this._cacheWordData(storageKey, wordInfo)
+        }
+
+        return wordInfo
+
+      } catch (error) {
+        // Silent fail: 不阻塞组件显示
+        console.error('[WordPopup] 获取单词信息异常（Silent Fail）', error)
+        return this._getDefaultWordInfo(word)
+      }
+    },
+
+    /**
+     * 获取mock词典数据（私有方法）
+     * @private
+     */
+    _getMockWordData(word) {
       const mockDictionary = {
         'however': {
           word: 'however',
@@ -137,11 +211,45 @@ Component({
         }
       }
 
-      return mockDictionary[word] || {
+      return mockDictionary[word] || this._getDefaultWordInfo(word)
+    },
+
+    /**
+     * 获取默认单词信息（私有方法）
+     * @private
+     */
+    _getDefaultWordInfo(word) {
+      return {
         word: word,
         phonetic: `/${word}/`,
         definition: '释义查询中...',
         examples: []
+      }
+    },
+
+    /**
+     * 验证单词数据格式（私有方法）
+     * @private
+     */
+    _validateWordData(data) {
+      return data &&
+             typeof data.word === 'string' &&
+             typeof data.phonetic === 'string' &&
+             typeof data.definition === 'string' &&
+             Array.isArray(data.examples)
+    },
+
+    /**
+     * 缓存单词数据到storage（私有方法）
+     * @private
+     */
+    _cacheWordData(key, data) {
+      try {
+        wx.setStorageSync(key, data)
+        console.log('[WordPopup] 单词数据已缓存:', data.word)
+      } catch (error) {
+        // Silent fail: 缓存失败不影响使用
+        console.warn('[WordPopup] 缓存数据失败', error)
       }
     },
 
