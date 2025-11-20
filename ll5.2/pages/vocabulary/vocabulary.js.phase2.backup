@@ -1,0 +1,453 @@
+// pages/vocabulary/vocabulary.js - 智能学习流程
+import learningDataManager from '../../utils/learning-data-manager.js'
+import smartLearningPlanner from '../../utils/smart-learning-planner.js'
+
+Page({
+  __loadStartTime: Date.now(),
+  data: {
+    // 页面状态：loading, learning, completed, already_completed
+    pageState: 'loading',
+    themeClass: '',
+
+    // 快速设置
+    showQuickSetup: false,
+
+    // 学习数据
+    dailyGoal: 50,
+    learnedCount: 0,
+    progress: 0,
+    currentWord: null,
+    wordsToLearn: [],
+    currentIndex: 0,
+
+    // 完成页面数据
+    sessionStats: {
+      learnedCount: 0,
+      timeSpent: 0,
+      accuracy: 0
+    },
+    showTestSuggestion: false,
+    testSuggestionMessage: '',
+
+    // 已完成页面数据
+    streak: 0,
+    todayLearned: 0,
+    totalLearned: 0,
+    accuracy: 0,
+
+    // AI提示
+    showAIHint: false,
+    aiHintMessage: '',
+    aiHintAction: '',
+
+    // 行为监控
+    hesitationTimer: null,
+    errorCount: 0
+  },
+
+  onLoad() {
+    console.log('📖 [词汇学习] 页面加载')
+    this.initializePage()
+  },
+
+  onReady() {
+    // 性能跟踪
+    const app = getApp()
+    if (app.globalData && app.globalData.perfTest) {
+      const loadTime = Date.now() - this.__loadStartTime
+      app.globalData.perfTest.recordPagePerformance('vocabulary', { loadTime })
+    }
+  },
+
+  onUnload() {
+    // 清理定时器
+    if (this.data.hesitationTimer) {
+      clearTimeout(this.data.hesitationTimer)
+    }
+  },
+
+  /**
+   * 初始化页面
+   */
+  async initializePage() {
+    try {
+      // 获取主题
+      const theme = wx.getStorageSync('theme') || 'light'
+      this.setData({
+        themeClass: theme === 'dark' ? 'theme-dark' : ''
+      })
+
+      // 使用智能规划器判断状态
+      const state = smartLearningPlanner.decideLearningState()
+      console.log('🔍 [词汇学习] 学习状态:', state)
+
+      // 根据状态执行相应操作
+      switch (state.action) {
+        case 'show_setup':
+          // 首次使用，显示快速设置
+          this.setData({
+            pageState: 'loading',
+            showQuickSetup: true
+          })
+          break
+
+        case 'resume_learning':
+          // 恢复学习
+          this.resumeLearning(state.session)
+          break
+
+        case 'show_achievement':
+          // 显示成就页面
+          this.showAchievement(state.stats)
+          break
+
+        case 'show_test_suggestion':
+          // 显示测试建议
+          this.showTestSuggestionPage(state)
+          break
+
+        case 'start_learning':
+          // 开始新学习
+          this.startNewLearning(state)
+          break
+
+        default:
+          console.error('❌ [词汇学习] 未知状态:', state.action)
+          this.setData({ pageState: 'loading' })
+      }
+
+    } catch (error) {
+      console.error('❌ [词汇学习] 初始化失败:', error)
+      wx.showToast({
+        title: '加载失败',
+        icon: 'none'
+      })
+    }
+  },
+
+  /**
+   * 快速设置确认
+   */
+  onSetupConfirm(e) {
+    const { dailyGoal, difficultyLevel } = e.detail
+    
+    // 保存设置
+    learningDataManager.saveUserSettings({
+      dailyGoal,
+      difficultyLevel,
+      isFirstTime: false
+    })
+
+    console.log('✅ [词汇学习] 设置已保存:', { dailyGoal, difficultyLevel })
+
+    // 关闭设置弹窗
+    this.setData({
+      showQuickSetup: false
+    })
+
+    // 开始学习
+    this.startNewLearning({
+      state: 'new_day',
+      message: '开始学习！'
+    })
+  },
+
+  /**
+   * 跳过设置
+   */
+  onSetupSkip(e) {
+    const { dailyGoal, difficultyLevel } = e.detail
+    
+    // 保存默认设置
+    learningDataManager.saveUserSettings({
+      dailyGoal,
+      difficultyLevel,
+      isFirstTime: false
+    })
+
+    this.setData({
+      showQuickSetup: false
+    })
+
+    this.startNewLearning({
+      state: 'new_day',
+      message: '开始学习！'
+    })
+  },
+
+  /**
+   * 开始新学习
+   */
+  async startNewLearning(state) {
+    try {
+      const settings = learningDataManager.getUserSettings()
+      const { dailyGoal } = settings
+
+      // 获取要学习的单词
+      const words = smartLearningPlanner.getNextWords(dailyGoal)
+
+      if (words.length === 0) {
+        wx.showToast({
+          title: '暂无可学习的单词',
+          icon: 'none'
+        })
+        return
+      }
+
+      // 开始学习会话
+      learningDataManager.startNewSession(dailyGoal)
+
+      // 设置数据
+      this.setData({
+        pageState: 'learning',
+        dailyGoal,
+        learnedCount: 0,
+        progress: 0,
+        wordsToLearn: words,
+        currentIndex: 0,
+        currentWord: words[0]
+      })
+
+      // 开始AI监控
+      this.startHesitationMonitoring()
+
+      console.log(`✅ [词汇学习] 开始学习，共${words.length}个单词`)
+
+    } catch (error) {
+      console.error('❌ [词汇学习] 开始学习失败:', error)
+      wx.showToast({
+        title: '开始学习失败',
+        icon: 'none'
+      })
+    }
+  },
+
+  /**
+   * 恢复学习
+   */
+  resumeLearning(session) {
+    const { dailyGoal, learnedWords, currentIndex } = session
+    const settings = learningDataManager.getUserSettings()
+
+    // 获取剩余单词
+    const words = smartLearningPlanner.getNextWords(dailyGoal - learnedWords.length)
+
+    this.setData({
+      pageState: 'learning',
+      dailyGoal,
+      learnedCount: learnedWords.length,
+      progress: Math.round((learnedWords.length / dailyGoal) * 100),
+      wordsToLearn: words,
+      currentIndex: 0,
+      currentWord: words[0]
+    })
+
+    console.log(`✅ [词汇学习] 恢复学习，已学${learnedWords.length}个`)
+  },
+
+  /**
+   * 标记单词
+   */
+  markWord(e) {
+    const { mastery } = e.currentTarget.dataset
+    const { currentWord, currentIndex, wordsToLearn, dailyGoal } = this.data
+
+    // 停止AI监控
+    this.stopHesitationMonitoring()
+
+    // 记录单词
+    learningDataManager.addLearnedWord({
+      id: currentWord.id,
+      word: currentWord.word,
+      mastery
+    })
+
+    const newLearnedCount = this.data.learnedCount + 1
+    const newProgress = Math.round((newLearnedCount / dailyGoal) * 100)
+
+    // 检查是否完成
+    if (newLearnedCount >= dailyGoal) {
+      this.completeLearning()
+      return
+    }
+
+    // 下一个单词
+    const nextIndex = currentIndex + 1
+    if (nextIndex < wordsToLearn.length) {
+      this.setData({
+        learnedCount: newLearnedCount,
+        progress: newProgress,
+        currentIndex: nextIndex,
+        currentWord: wordsToLearn[nextIndex],
+        errorCount: 0
+      })
+
+      // 重新开始AI监控
+      this.startHesitationMonitoring()
+    } else {
+      this.completeLearning()
+    }
+  },
+
+  /**
+   * 完成学习
+   */
+  completeLearning() {
+    console.log('🎉 [词汇学习] 完成学习')
+
+    // 停止AI监控
+    this.stopHesitationMonitoring()
+
+    // 完成会话
+    const completedSession = learningDataManager.completeSession()
+
+    // 计算统计数据
+    const easyCount = completedSession.learnedWords.filter(w => w.mastery === 'easy').length
+    const accuracy = Math.round((easyCount / completedSession.learnedWords.length) * 100)
+
+    // 检查是否需要测试
+    const testStatus = learningDataManager.shouldTriggerTest()
+
+    this.setData({
+      pageState: 'completed',
+      sessionStats: {
+        learnedCount: completedSession.learnedWords.length,
+        timeSpent: completedSession.duration,
+        accuracy
+      },
+      showTestSuggestion: testStatus.trigger,
+      testSuggestionMessage: testStatus.message || '根据你的学习情况，现在测试效果最好'
+    })
+  },
+
+  /**
+   * 暂停学习
+   */
+  pauseLearning() {
+    learningDataManager.pauseSession()
+    
+    wx.showModal({
+      title: '确定暂停学习？',
+      content: '学习进度将会保存，下次可以继续',
+      confirmText: '确定暂停',
+      cancelText: '继续学习',
+      success: (res) => {
+        if (res.confirm) {
+          wx.navigateBack()
+        }
+      }
+    })
+  },
+
+  /**
+   * 显示成就页面
+   */
+  showAchievement(stats) {
+    const testStatus = learningDataManager.shouldTriggerTest()
+
+    this.setData({
+      pageState: 'already_completed',
+      streak: stats.streak || 0,
+      todayLearned: stats.todayLearned || 0,
+      totalLearned: stats.totalLearned || 0,
+      accuracy: Math.round(stats.accuracy || 0),
+      showTestSuggestion: testStatus.trigger,
+      testSuggestionMessage: testStatus.message
+    })
+  },
+
+  /**
+   * 显示测试建议页面
+   */
+  showTestSuggestionPage(state) {
+    const record = learningDataManager.getLearningRecord()
+
+    this.setData({
+      pageState: 'already_completed',
+      streak: record.streak || 0,
+      todayLearned: record.todayLearned || 0,
+      totalLearned: record.totalLearned || 0,
+      accuracy: Math.round(record.accuracy || 0),
+      showTestSuggestion: true,
+      testSuggestionMessage: state.message
+    })
+  },
+
+  /**
+   * 开始测试
+   */
+  startTest() {
+    console.log('📝 [词汇学习] 开始测试')
+    
+    wx.navigateTo({
+      url: '/pages/vocab-test/vocab-test?source=recent&count=20&duration=300'
+    })
+  },
+
+  /**
+   * 返回首页
+   */
+  backToHome() {
+    wx.navigateBack()
+  },
+
+  // ==================== AI监控功能 ====================
+
+  /**
+   * 开始犹豫监控
+   */
+  startHesitationMonitoring() {
+    this.stopHesitationMonitoring()
+
+    const timer = setTimeout(() => {
+      this.showAIMessage(
+        '遇到困难了吗？如果不确定，可以先标记为"不认识"，之后会有更多机会复习',
+        '查看提示',
+        null
+      )
+    }, 15000) // 15秒
+
+    this.setData({ hesitationTimer: timer })
+  },
+
+  /**
+   * 停止犹豫监控
+   */
+  stopHesitationMonitoring() {
+    if (this.data.hesitationTimer) {
+      clearTimeout(this.data.hesitationTimer)
+      this.setData({ hesitationTimer: null })
+    }
+  },
+
+  /**
+   * 显示AI提示
+   */
+  showAIMessage(message, action, secondaryAction) {
+    this.setData({
+      showAIHint: true,
+      aiHintMessage: message,
+      aiHintAction: action || '',
+      aiHintSecondaryAction: secondaryAction || ''
+    })
+  },
+
+  /**
+   * 关闭AI提示
+   */
+  onDismissHint() {
+    this.setData({
+      showAIHint: false
+    })
+  },
+
+  /**
+   * 接受AI提示
+   */
+  onAcceptHint() {
+    this.setData({
+      showAIHint: false
+    })
+    // 可以添加具体的提示逻辑
+  }
+})

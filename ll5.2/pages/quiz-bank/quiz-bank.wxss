@@ -1,0 +1,982 @@
+/* pages/quiz-bank/quiz-bank.wxss - 使用Study样式 + Quiz-Bank功能 */
+
+/* ==================== 页面容器 ==================== */
+.quiz-page {
+  background: #F5F5F5;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ==================== ① 顶部背景图片（独立放置，无容器） ==================== */
+.top-bg-image {
+  position: absolute;
+  top: -75rpx; /* ⭐ 再次向上移动 15rpx（从 -50rpx 改为 -65rpx） */
+  left: 0;
+  width: 100%;
+  z-index: 999; /* ⭐ 调整到最上层，确保海报在最顶部显示 */
+  pointer-events: none; /* ⭐ 紧急修复：图片不响应点击事件！ */
+  display: block;
+  transform: scale(1.2); /* ⭐ 放大为 1.2 倍 */
+  transform-origin: top center; /* ⭐ 从顶部中心缩放 */
+}
+
+/* ==================== 每日学习进度卡片 ==================== */
+.daily-progress-section {
+  margin-bottom: 64rpx;
+  padding: 0 32rpx; /* ⭐ UI优化：统一区块左右边距 */
+}
+
+.daily-progress-card {
+  background: #FFFFFF;
+  border-radius: 32rpx;
+  padding: 32rpx; /* ⭐ UI优化：减小内边距 40→32rpx */
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  animation: slideUp 0.5s ease-out;
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.progress-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.progress-label {
+  font-size: 22rpx; /* ✅ 更小的标签字体 */
+  font-weight: 400;
+  color: #6B7280;
+  line-height: 1.4;
+}
+
+.progress-time {
+  font-size: 48rpx; /* ✅ 降低字体跳跃，更协调 */
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.2;
+}
+
+.progress-icon-bg {
+  width: 128rpx;
+  height: 128rpx;
+  background: #D1FAE5; /* 翡翠绿浅色 */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.progress-icon {
+  width: 64rpx;
+  height: 64rpx;
+  /* 翡翠绿图标 - 使用filter调色 */
+  filter: invert(46%) sepia(98%) saturate(2618%) hue-rotate(125deg) brightness(95%) contrast(101%);
+}
+
+/* 进度条 */
+.progress-bar-container {
+  margin-bottom: 16rpx;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 16rpx;
+  background: #E5E7EB;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10B981 0%, #059669 100%);
+  border-radius: 8rpx;
+  transition: width 0.5s ease;
+}
+
+.progress-hint {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #9CA3AF;
+  line-height: 1.4;
+  display: block;
+}
+
+/* ⭐ 学习模块进度列表 */
+.module-progress-list {
+  margin-top: 0; /* ⭐ UI优化：移除额外margin，使用header的margin-bottom */
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.module-progress-item {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 20rpx; /* ⭐ UI优化：减小内边距 24→20rpx */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.module-progress-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.module-info {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex: 1;
+}
+
+.module-icon {
+  width: 40rpx;
+  height: 40rpx;
+  flex-shrink: 0;
+}
+
+.module-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.module-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #0F172A;
+  line-height: 1.4;
+}
+
+.module-target {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #9CA3AF;
+  line-height: 1.4;
+}
+
+.module-progress-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8rpx;
+  min-width: 120rpx;
+}
+
+.module-percent {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #4F7FE8;
+  line-height: 1.2;
+}
+
+.module-progress-bar {
+  width: 100%;
+  height: 6rpx;
+  background: #E5E7EB;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.module-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4F7FE8 0%, #7AA0FF 100%);
+  border-radius: 8rpx;
+  transition: width 0.3s ease;
+}
+
+/* 卡片滑入动画 */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================== ② 主内容卡片（白色，向上覆盖） ==================== */
+.main-content-card {
+  background: #FFFFFF;
+  border-radius: 64rpx 64rpx 0 0;
+  margin-top: 650rpx;
+  padding: 48rpx 0 120rpx; /* ⭐ UI优化：只保留上下padding，左右由各区块控制 */
+  box-shadow: 0 -8rpx 40rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 10;
+  min-height: calc(100vh - 650rpx); 
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* ==================== 区块标题样式 ==================== */
+.section-header {
+  margin-bottom: 24rpx; /* ⭐ UI优化：统一使用24rpx */
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  align-items: flex-start;
+}
+
+.section-title {
+  font-size: 44rpx; /* 粗壮字体 */
+  font-weight: 800;
+  color: #000000;
+  letter-spacing: -0.03em;
+  line-height: 1.2; /* ✅ 调整行高，避免过紧 */
+}
+
+.section-subtitle {
+  font-size: 22rpx;
+  font-weight: 400;
+  color: #BDBDBD;
+  line-height: 1.4;
+}
+
+.section-count {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #9E9E9E;
+  line-height: 1.2;
+}
+
+/* ==================== ③ 题库横向滚动卡片 ==================== */
+.subjects-section {
+  margin-bottom: 64rpx;
+  padding: 0 32rpx; /* ⭐ UI优化：统一区块左右边距 */
+}
+
+/* 横向滚动容器 */
+.subjects-scroll-wrapper {
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: pan-x;
+  margin: 0 -32rpx; /* ⭐ UI优化：抵消父容器padding，让滚动区域全屏 */
+}
+
+.subjects-scroll-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.subjects-list {
+  display: inline-flex;
+  gap: 24rpx;
+  padding: 0 16rpx 16rpx 32rpx; /* ⭐ UI优化：左32右16，营造滚动暗示 */
+  justify-content: flex-start;
+}
+
+/* 题库卡片基础样式 */
+.subject-card {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between; /* 图标上，文字下 ⭐ */
+  align-items: flex-start;
+  width: 280rpx; /* ⭐ 优化：增大宽度 260→280rpx */
+  height: 240rpx; /* ⭐ 优化：按比例增大高度 220→240rpx */
+  padding: 24rpx;
+  border-radius: 32rpx;
+  position: relative;
+  overflow: hidden; /* 隐藏溢出 ⭐ */
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  flex-shrink: 0; /* ⭐ 防止卡片被压缩 */
+  cursor: pointer; /* ⭐ 鼠标悬停时显示手型 */
+  pointer-events: auto; /* ⭐ 明确声明接收点击事件 */
+  /* ⭐ 移除 touch-action，让父容器控制滑动行为 */
+}
+
+.subject-card:active {
+  transform: scale(0.97);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.12);
+}
+
+/* 右上角角标（带两个点） */
+.card-decoration {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 96rpx;
+  height: 80rpx;
+  border-radius: 0 32rpx 0 80rpx; /* 不规则圆角 ⭐ */
+  display: flex;
+  flex-direction: column; /* 竖直排列 ⭐ */
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 16rpx;
+  gap: 8rpx; /* ✅ 符合8的倍数规范 */
+  z-index: 0; /* ⭐ 修复：降低z-index，避免遮挡点击事件 */
+  pointer-events: none; /* ⭐ 修复：装饰元素不响应点击事件 */
+}
+
+/* 两个点的样式 */
+.card-decoration::before,
+.card-decoration::after {
+  content: '';
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* ==================== 卡片颜色方案（深浅交替） ==================== */
+/* 第1张：深橙色底 */
+.card-reading {
+  background: #FF9068;
+}
+.card-reading .card-decoration {
+  background: #FFD6A5; /* 浅黄角标 */
+}
+
+/* 第2张：浅蓝色底 */
+.card-cloze {
+  background: #B8C7FF;
+}
+.card-cloze .card-decoration {
+  background: #6577EA; /* 深蓝角标 */
+}
+
+/* 第3张：深绿色底 */
+.card-translation {
+  background: #10B981;
+}
+.card-translation .card-decoration {
+  background: #A7F3D0; /* 浅绿角标 */
+}
+
+/* 第4张：浅紫色底 */
+.card-writing {
+  background: #D4C5F9;
+}
+.card-writing .card-decoration {
+  background: #8B5CF6; /* 深紫角标 */
+}
+
+/* 新题型 */
+.card-newtype {
+  background: #8B5CF6;
+}
+
+/* 词汇学习 */
+.card-vocab {
+  background: #FF7AA8;
+}
+.card-vocab .card-decoration {
+  background: #FFB3D9; /* 浅粉角标 */
+}
+
+/* 词根词素 */
+.card-morpheme {
+  background: #A78BFA;
+}
+.card-morpheme .card-decoration {
+  background: #DDD6FE; /* 浅紫角标 */
+}
+
+/* 卡片图标（左上角） */
+.subject-icon {
+  width: 48rpx;
+  height: 48rpx;
+  filter: brightness(0) invert(1); /* 白色图标 */
+}
+
+/* ⭐ UI优化：浅色背景卡片使用深色图标 */
+.card-cloze .subject-icon,
+.card-writing .subject-icon,
+.card-morpheme .subject-icon {
+  filter: brightness(0) saturate(100%) invert(10%) sepia(30%) saturate(5000%); /* 深色图标 */
+}
+
+/* 卡片标题（靠近底部边缘） */
+.subject-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.35); /* ⭐ UI优化：增强文字阴影，提升可读性 */
+}
+
+/* ⭐ UI优化：浅色背景卡片使用深色文字，提升对比度 */
+.card-cloze .subject-title {
+  color: #1E3A8A; /* 深蓝色，对比度达到AA标准 */
+  text-shadow: 0 1rpx 4rpx rgba(255, 255, 255, 0.6); /* 白色阴影 */
+}
+
+.card-writing .subject-title {
+  color: #581C87; /* 深紫色，对比度达到AAA标准 */
+  text-shadow: 0 1rpx 4rpx rgba(255, 255, 255, 0.6);
+}
+
+.card-morpheme .subject-title {
+  color: #4C1D95; /* 深紫色，对比度达到AA标准 */
+  text-shadow: 0 1rpx 4rpx rgba(255, 255, 255, 0.6);
+}
+
+/* ==================== ④ 继续学习卡片 ==================== */
+.schedule-section {
+  margin-bottom: 64rpx;
+}
+
+.continue-card {
+  width: 100%;
+  padding: 32rpx;
+  border-radius: 32rpx;
+  background: linear-gradient(135deg, #4ECDC4 0%, #44A395 100%);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8rpx 24rpx rgba(78, 205, 196, 0.3);
+  transition: all 0.2s ease;
+}
+
+.continue-card:active {
+  transform: scale(0.98);
+}
+
+.continue-content {
+  display: flex;
+  align-items: center;
+  gap: 24rpx; /* ✅ 符合8的倍数规范 */
+  margin-bottom: 24rpx; /* ✅ 符合8的倍数规范 */
+  position: relative;
+  z-index: 2;
+}
+
+.continue-icon {
+  font-size: 48rpx;
+  line-height: 1;
+}
+
+.continue-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.continue-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.continue-subtitle {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.3;
+}
+
+.continue-arrow {
+  font-size: 48rpx;
+  color: #FFFFFF;
+  opacity: 0.6;
+  line-height: 1;
+}
+
+.continue-progress-bar {
+  width: 100%;
+  height: 8rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4rpx;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #FFFFFF;
+  border-radius: 4rpx;
+  transition: width 0.3s ease;
+}
+
+/* ==================== ⑤ 今日任务列表 ==================== */
+.tasks-section {
+  margin-bottom: 64rpx;
+  padding: 0 32rpx; /* ⭐ UI优化：统一区块左右边距 */
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 32rpx; /* ✅ 符合8的倍数规范 */
+  background: #F8F9FA;
+  border-radius: 24rpx;
+  gap: 24rpx; /* ✅ 符合8的倍数规范 */
+  transition: all 0.2s ease;
+}
+
+.task-item:active {
+  background: #E9ECEF;
+  transform: scale(0.98);
+}
+
+.task-indicator {
+  width: 8rpx;
+  height: 48rpx;
+  border-radius: 4rpx;
+  flex-shrink: 0;
+}
+
+.bg-orange {
+  background: #FF7A5C;
+}
+
+.bg-violet {
+  background: #6577EA;
+}
+
+.bg-pink {
+  background: #FF7AA8;
+}
+
+.bg-green {
+  background: #4ECDC4;
+}
+
+.task-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #000000;
+  line-height: 1.2;
+  flex: 1;
+}
+
+.task-status {
+  font-size: 24rpx;
+  font-weight: 400;
+  line-height: 1.2;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  margin-right: 16rpx;
+}
+
+.task-status.completed {
+  background: #D4EDDA;
+  color: #155724;
+}
+
+.task-status.ongoing {
+  background: #FFF3CD;
+  color: #856404;
+}
+
+.task-status.pending {
+  background: #E2E3E5;
+  color: #6C757D;
+}
+
+.task-time {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #9E9E9E;
+  line-height: 1.2;
+  min-width: 80rpx;
+  text-align: right;
+}
+
+/* ==================== ⑥ 快捷工具 ==================== */
+/* 快捷工具区块 */
+.quick-tools-section {
+  margin-bottom: 64rpx;
+  padding: 0 32rpx; /* ⭐ UI优化：统一区块左右边距 */
+}
+
+.quick-tools {
+  display: flex;
+  gap: 24rpx; /* ⭐ UI优化：间距符合8倍数规范 */
+}
+
+.tool-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: row; /* 横向排列 */
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx; /* ✅ 符合8的倍数规范 */
+  padding: 24rpx 32rpx; /* ✅ 符合8的倍数规范 */
+  background: #10B981; /* ⭐ 改为深绿色，与白色文字搭配 */
+  border-radius: 24rpx; /* ✅ 符合8的倍数规范 */
+  box-shadow: 0 2rpx 8rpx rgba(16, 185, 129, 0.3); /* ⭐ 增强阴影 */
+  transition: all 0.2s ease;
+}
+
+.tool-btn:active {
+  transform: scale(0.95);
+  background: #059669; /* ⭐ 按下时更深的绿色 */
+}
+
+.tool-icon {
+  font-size: 32rpx; /* 缩小图标 ⭐ */
+  line-height: 1;
+}
+
+.tool-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #FFFFFF; /* ⭐ 改为白色文字 */
+  line-height: 1.4; /* ✅ 提升可读性 */
+}
+
+/* ==================== 动画效果 ==================== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 卡片依次出现 */
+.subject-card {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.subject-card:nth-child(1) { animation-delay: 0s; }
+.subject-card:nth-child(2) { animation-delay: 0.05s; }
+.subject-card:nth-child(3) { animation-delay: 0.1s; }
+.subject-card:nth-child(4) { animation-delay: 0.15s; }
+.subject-card:nth-child(5) { animation-delay: 0.2s; }
+.subject-card:nth-child(6) { animation-delay: 0.25s; }
+
+/* ==================== 响应式适配 ==================== */
+@media (max-width: 375px) {
+  .subject-card {
+    width: 240rpx; /* ⭐ 优化：小屏幕适配 */
+    height: 200rpx; /* ⭐ 优化：按比例调整 */
+    padding: 20rpx;
+  }
+  
+  .subjects-list {
+    gap: 20rpx; /* ⭐ 优化：小屏幕减小间距 */
+    padding: 0 16rpx 16rpx 24rpx; /* ⭐ 优化：小屏幕调整边距 */
+  }
+  
+  .section-title {
+    font-size: 36rpx;
+  }
+  
+  .main-content-card {
+    padding: 40rpx 32rpx 100rpx;
+  }
+}
+
+@media (min-width: 414px) {
+  .subject-card {
+    width: 280rpx; /* ⭐ 优化：大屏幕使用新尺寸 */
+    height: 240rpx; /* ⭐ 优化：按比例调整 */
+  }
+  
+  .subjects-list {
+    gap: 24rpx; /* ⭐ 优化：大屏幕保持标准间距 */
+  }
+  
+  .main-content-card {
+    padding: 48rpx 48rpx 120rpx;
+  }
+}
+
+/* ==================== 暗色模式 ==================== */
+.theme-dark .quiz-page {
+  background: #0B1220;
+}
+
+/* 暗色模式下的顶部图片（可选：添加滤镜） */
+.theme-dark .top-bg-image {
+  opacity: 0.9; /* 略微降低亮度 */
+}
+
+.theme-dark .daily-progress-card {
+  background: rgba(31, 41, 55, 0.95); /* 暗色卡片 */
+}
+
+.theme-dark .progress-label {
+  color: #9CA3AF;
+}
+
+.theme-dark .progress-time {
+  color: #F9FAFB;
+}
+
+.theme-dark .progress-icon-bg {
+  background: #064E3B; /* 深翡翠绿 */
+}
+
+.theme-dark .progress-bar-bg {
+  background: #374151;
+}
+
+.theme-dark .progress-hint {
+  color: #6B7280;
+}
+
+/* ⭐ 暗色模式 - 学习模块进度 */
+.theme-dark .module-progress-item {
+  background: #1F2937;
+}
+
+.theme-dark .module-name {
+  color: #F8FAFC;
+}
+
+.theme-dark .module-target {
+  color: #9CA3AF;
+}
+
+.theme-dark .module-percent {
+  color: #7AA0FF;
+}
+
+.theme-dark .module-progress-bar {
+  background: #374151;
+}
+
+.theme-dark .module-progress-fill {
+  background: linear-gradient(90deg, #7AA0FF 0%, #A8C5FF 100%);
+}
+
+.theme-dark .bg-deco-icon {
+  opacity: 0.08; /* 暗色模式下更透明 */
+}
+
+.theme-dark .main-content-card {
+  background: #111827;
+  box-shadow: 0 -8rpx 40rpx rgba(0, 0, 0, 0.50);
+}
+
+.theme-dark .section-title {
+  color: #F8FAFC;
+}
+
+.theme-dark .section-subtitle,
+.theme-dark .section-count {
+  color: #94A3B8;
+}
+
+/* 卡片暗色模式调整（稍微调暗） */
+.theme-dark .card-reading {
+  background: #DC2626;
+}
+
+.theme-dark .card-cloze {
+  background: #4338CA;
+}
+
+.theme-dark .card-translation {
+  background: #0D9488;
+}
+
+.theme-dark .card-writing {
+  background: #D97706;
+}
+
+.theme-dark .card-newtype {
+  background: #6D28D9;
+}
+
+.theme-dark .card-vocab {
+  background: #DB2777;
+}
+
+.theme-dark .subject-card {
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.45);
+}
+
+.theme-dark .continue-card {
+  background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%);
+}
+
+.theme-dark .task-item {
+  background: #1F2937;
+}
+
+.theme-dark .task-item:active {
+  background: #374151;
+}
+
+.theme-dark .task-name {
+  color: #F8FAFC;
+}
+
+.theme-dark .tool-btn {
+  background: #064E3B; /* 暗绿色 */
+}
+
+.theme-dark .tool-btn:active {
+  background: #065F46; /* 按下时的暗绿色 */
+}
+
+.theme-dark .tool-text {
+  color: #6EE7B7; /* 亮绿色文字 */
+}
+
+/* ==================== 今日任务模块样式 ==================== */
+
+.daily-tasks-section {
+  margin-bottom: 64rpx;
+}
+
+.daily-tasks-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+/* 任务模块卡片 */
+.task-module-card {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 32rpx; /* ✅ 统一内边距 */
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  display: flex; /* ✅ 使用 Flexbox 布局 */
+  align-items: center;
+  gap: 24rpx; /* ✅ 图标和内容间距 */
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.task-module-card:active {
+  transform: scale(0.98);
+}
+
+/* 左侧图标容器 */
+.task-icon-container {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* ✅ 防止图标被压缩 */
+}
+
+.card-orange .task-icon-container {
+  background: #FED7AA;
+}
+
+.card-purple .task-icon-container {
+  background: #E9D5FF;
+}
+
+.card-blue .task-icon-container {
+  background: #DBEAFE;
+}
+
+.task-icon {
+  width: 56rpx;
+  height: 56rpx;
+}
+
+/* 右侧文字内容区 */
+.task-module-content {
+  flex: 1; /* ✅ 占据剩余空间 */
+  display: flex;
+  flex-direction: column;
+}
+
+.task-module-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #000000;
+  display: block;
+  line-height: 1.2;
+  margin-bottom: 8rpx;
+}
+
+.task-module-subtitle {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #9E9E9E;
+  display: block;
+  line-height: 1.4;
+  margin-bottom: 20rpx;
+}
+
+/* 进度容器 */
+.task-progress-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.task-progress-text {
+  font-size: 22rpx;
+  font-weight: 400;
+  color: #6B7280;
+  line-height: 1.2;
+}
+
+.task-progress-percent {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.2;
+}
+
+/* 进度条 */
+.task-progress-bar {
+  width: 100%;
+  height: 8rpx;
+  background: #E5E7EB;
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.task-progress-fill {
+  height: 100%;
+  border-radius: 4rpx;
+  background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%); /* 统一蓝色渐变 ⭐ */
+  transition: width 0.3s ease;
+}
+
+/* 暗色模式适配 */
+.theme-dark .task-module-card {
+  background: #1F2937;
+}
+
+.theme-dark .task-module-title {
+  color: #F8FAFC;
+}
+
+.theme-dark .task-module-subtitle {
+  color: #94A3B8;
+}
+
+.theme-dark .task-progress-text {
+  color: #9CA3AF;
+}
+
+.theme-dark .task-progress-percent {
+  color: #F8FAFC;
+}
+
+.theme-dark .task-progress-bar {
+  background: #374151;
+}

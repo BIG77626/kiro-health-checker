@@ -1,0 +1,99 @@
+<!-- pages/vocab-test/vocab-test.wxml -->
+<view class="test-container {{themeClass}}">
+
+  <!-- 顶部信息栏 -->
+  <view class="test-header">
+    <view class="test-info">
+      <text class="test-progress">第 {{currentQuestionIndex + 1}}/{{totalQuestions}} 题</text>
+      <view class="test-timer">
+        <text class="timer-icon">⏱</text>
+        <text class="timer-text">{{timeLeft}}</text>
+      </view>
+    </view>
+    <view class="test-score">
+      <text class="score-label">正确</text>
+      <text class="score-value">{{correctCount}}/{{answeredCount}}</text>
+    </view>
+  </view>
+
+  <!-- 题目卡片 -->
+  <view class="question-card">
+    <!-- 单词 -->
+    <view class="word-section">
+      <text class="word-text">{{currentQuestion.word}}</text>
+      <text class="word-phonetic">{{currentQuestion.phonetic}}</text>
+    </view>
+
+    <!-- 提示 -->
+    <text class="question-prompt">选择正确的释义</text>
+
+    <!-- 选项列表 -->
+    <view class="options-list">
+      <view 
+        wx:for="{{currentQuestion.options}}" 
+        wx:key="index"
+        class="option-item {{selectedOption === index ? 'selected' : ''}} {{showResult && index === currentQuestion.correctIndex ? 'correct' : ''}} {{showResult && selectedOption === index && index !== currentQuestion.correctIndex ? 'wrong' : ''}}"
+        bindtap="selectOption"
+        data-index="{{index}}"
+      >
+        <view class="option-label">{{item.label}}</view>
+        <text class="option-text">{{item.text}}</text>
+        <view wx:if="{{showResult && index === currentQuestion.correctIndex}}" class="option-icon correct-icon">✓</view>
+        <view wx:if="{{showResult && selectedOption === index && index !== currentQuestion.correctIndex}}" class="option-icon wrong-icon">✗</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="test-footer">
+    <button 
+      wx:if="{{!showResult}}" 
+      class="btn-secondary" 
+      bindtap="skipQuestion"
+    >
+      跳过
+    </button>
+    <button 
+      wx:if="{{showResult}}" 
+      class="btn-primary" 
+      bindtap="nextQuestion"
+    >
+      {{currentQuestionIndex < totalQuestions - 1 ? '下一题' : '查看成绩'}}
+    </button>
+    <button 
+      class="btn-text" 
+      bindtap="quitTest"
+    >
+      退出测试
+    </button>
+  </view>
+
+  <!-- AI助手提示（全局浮窗） -->
+  <view wx:if="{{showAIHint}}" class="ai-hint-modal">
+    <view class="ai-hint-overlay" catchtap="onDismissHint"></view>
+    <view class="ai-hint-content">
+      <view class="ai-hint-header">
+        <text class="ai-hint-title">AI助手</text>
+        <text class="ai-hint-close" catchtap="onDismissHint">✕</text>
+      </view>
+      <text class="ai-hint-message">{{aiHintMessage}}</text>
+      <view class="ai-hint-actions">
+        <button 
+          wx:if="{{aiHintAction}}" 
+          class="ai-hint-btn primary" 
+          catchtap="onAcceptHint"
+        >
+          {{aiHintAction}}
+        </button>
+        <button 
+          class="ai-hint-btn secondary" 
+          catchtap="onDismissHint"
+        >
+          我再想想
+        </button>
+      </view>
+    </view>
+  </view>
+
+</view>
+

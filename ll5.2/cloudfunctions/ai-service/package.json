@@ -1,0 +1,11 @@
+{
+  "name": "ai-service",
+  "version": "1.0.0",
+  "description": "统一的AI服务云函数 - 安全代理层",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3",
+    "axios": "^1.6.0"
+  }
+}
+

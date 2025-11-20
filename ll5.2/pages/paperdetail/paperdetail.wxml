@@ -1,0 +1,113 @@
+<!--pages/paperdetail/paperdetail.wxml - P0修复：移除Tailwind，使用WXSS-->
+<view class="paper-detail-page">
+  <!-- 加载状态 -->
+  <view wx:if="{{isLoading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载试卷信息...</text>
+  </view>
+
+  <!-- 试卷详情 -->
+  <view wx:elif="{{paper}}" class="paper-content">
+    <!-- 头部信息 -->
+    <view class="paper-header">
+      <view class="header-info">
+        <view class="header-icon-bg">
+          <image src="/images/book-open.png" class="header-icon" mode="aspectFit"></image>
+        </view>
+        <view class="header-text">
+          <text class="paper-title">{{paper.title}}</text>
+          <text class="paper-subtitle">{{paper.year}}年 · {{paper.type === 'english1' ? '英语一' : '英语二'}}</text>
+        </view>
+      </view>
+
+      <!-- 试卷信息卡片 -->
+      <view class="paper-info-card">
+        <view class="info-stats">
+          <view class="stat-item">
+            <text class="stat-value stat-blue">{{paper.estimated_time || 180}}</text>
+            <text class="stat-label">分钟</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-value stat-green">{{paper.content.questions.length || 0}}</text>
+            <text class="stat-label">题目</text>
+          </view>
+        </view>
+        
+        <!-- 题型标签 -->
+        <view class="tags-container">
+          <view wx:for="{{paper.sections}}" wx:key="*this" class="tag tag-blue">
+            {{item === 'reading_a' ? '阅读A' : item === 'reading_b' ? '阅读B' : item === 'translation' ? '翻译' : item === 'cloze' ? '完形填空' : '写作'}}
+          </view>
+          <view wx:if="{{paper.difficulty}}" class="tag tag-{{paper.difficulty === 'easy' ? 'green' : paper.difficulty === 'medium' ? 'yellow' : 'red'}}">
+            {{paper.difficulty === 'easy' ? '简单' : paper.difficulty === 'medium' ? '中等' : '困难'}}
+          </view>
+        </view>
+      </view>
+
+      <!-- 开始练习按钮 -->
+      <view class="start-btn" bindtap="startPractice">
+        <text class="start-btn-text">开始练习</text>
+        <image src="/images/arrow-right.png" class="start-btn-arrow" mode="aspectFit"></image>
+      </view>
+    </view>
+
+    <!-- 文章列表 -->
+    <view wx:if="{{paper.content.passages.length > 0}}" class="passages-section">
+      <view class="section-header">
+        <text class="section-title">阅读文章</text>
+        <text class="section-count">({{paper.content.passages.length}}篇)</text>
+      </view>
+      
+      <view class="passages-list">
+        <view 
+          wx:for="{{paper.content.passages}}" 
+          wx:key="id" 
+          class="passage-item" 
+          bindtap="goToReader" 
+          data-passage-id="{{item.id}}" 
+          data-passage-index="{{index}}"
+        >
+          <view class="passage-content">
+            <text class="passage-title">{{item.title}}</text>
+            <text class="passage-preview">{{item.paragraphs[0].text}}</text>
+            <view class="passage-meta">
+              <view class="meta-item">
+                <image src="/images/book-open.png" class="meta-icon" mode="aspectFit"></image>
+                <text class="meta-text">{{item.paragraphs.length}}段落</text>
+              </view>
+              <text class="meta-divider">·</text>
+              <view class="meta-item">
+                <image src="/images/clock.png" class="meta-icon" mode="aspectFit"></image>
+                <text class="meta-text">约{{item.readTime || 5}}分钟</text>
+              </view>
+            </view>
+          </view>
+          <view class="passage-arrow">
+            <view class="arrow-bg">
+              <image src="/images/chevron-right.png" class="arrow-icon" mode="aspectFit"></image>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错误状态 -->
+  <view wx:else class="error-container">
+    <view class="error-icon-placeholder">⚠️</view>
+    <text class="error-title">试卷加载失败</text>
+    <text class="error-message">网络连接异常或试卷不存在</text>
+    <view class="error-actions">
+      <button class="btn-action btn-secondary" bindtap="goBack">返回</button>
+      <button class="btn-action btn-primary" bindtap="reloadPaper">重试</button>
+    </view>
+  </view>
+</view>
+
+<!-- 首次主题设置弹窗 -->
+<first-time-setup 
+  visible="{{showThemeSetup}}"
+  system-theme="{{systemTheme}}"
+  bind:confirm="onThemeSetupConfirm"
+  bind:close="onThemeSetupClose"
+/>

@@ -1,0 +1,197 @@
+<!--pages/wrong-questions/wrong-questions.wxml - 错题智能分析页面-->
+<view class="page-container">
+  
+  <!-- ① 顶部标题区（居中） -->
+  <view class="page-header-simple">
+    <text class="header-title-center">错题智能分析</text>
+  </view>
+
+  <!-- ② Tab切换栏 -->
+  <view class="tab-section">
+    <view class="tab-bar">
+      <view 
+        class="tab-item {{activeTab === 'all' ? 'tab-active' : ''}}"
+        bindtap="switchTab"
+        data-tab="all"
+      >
+        <text class="tab-text">全部</text>
+        <text class="tab-count">({{stats.total}})</text>
+      </view>
+      <view 
+        class="tab-item {{activeTab === 'unreviewed' ? 'tab-active' : ''}}"
+        bindtap="switchTab"
+        data-tab="unreviewed"
+      >
+        <text class="tab-text">待复习</text>
+        <text class="tab-count">({{stats.unreviewed}})</text>
+      </view>
+      <view 
+        class="tab-item {{activeTab === 'reviewed' ? 'tab-active' : ''}}"
+        bindtap="switchTab"
+        data-tab="reviewed"
+      >
+        <text class="tab-text">已复习</text>
+        <text class="tab-count">({{stats.reviewed}})</text>
+      </view>
+      <view 
+        class="tab-item {{activeTab === 'weak' ? 'tab-active' : ''}}"
+        bindtap="switchTab"
+        data-tab="weak"
+      >
+        <text class="tab-text">薄弱点</text>
+        <text class="tab-count">({{weakPoints.length}})</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ③ 主内容区 - 根据Tab显示不同内容 -->
+  <view class="content-area">
+    
+    <!-- ⭐ 薄弱点Tab内容 - 优化后 -->
+    <view wx:if="{{activeTab === 'weak' && weakPoints.length > 0}}" class="weak-points-card">
+      <view class="weak-card-header">
+        <text class="weak-card-title">薄弱点诊断</text>
+        <text class="weak-card-desc">基于错题数据分析，系统为你识别出 {{weakPoints.length}} 个主要薄弱环节</text>
+      </view>
+      <view class="weak-badges-grid">
+        <view wx:for="{{weakPoints}}" wx:key="type" class="weak-badge-item">
+          <view class="weak-badge-rank">#{{index + 1}}</view>
+          <view class="weak-badge-info">
+            <text class="weak-badge-name">{{item.typeName}}</text>
+            <view class="weak-badge-stats">
+              <text class="weak-badge-count">{{item.count}}题</text>
+              <text class="weak-badge-percent">{{item.percentage}}%</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ⭐ 错题列表（全部/待复习/已复习Tab） -->
+    <view wx:if="{{activeTab !== 'weak'}}" class="questions-list-section">
+      <view class="section-header-simple">
+        <text class="section-title-simple">错题列表</text>
+        <text class="section-count-simple">{{filteredQuestions.length}}题</text>
+      </view>
+
+      <!-- 错题卡片列表 -->
+      <view class="questions-list">
+        <view wx:for="{{filteredQuestions}}" wx:key="id" class="question-card-item" bindtap="goToQuestionDetail" data-id="{{item.id}}">
+          <view class="question-header-row">
+            <view class="question-type-tag">{{item.typeName}}</view>
+            <text class="question-date">{{item.date}}</text>
+          </view>
+          <text class="question-content-preview">{{item.content}}</text>
+          <view class="question-footer-row">
+            <view class="question-status">
+              <image wx:if="{{item.reviewed}}" src="/images/check.png" class="status-icon" mode="aspectFit"/>
+              <text class="status-text">{{item.reviewed ? '已复习' : '待复习'}}</text>
+            </view>
+            <image src="/images/chevron-right.png" class="question-arrow" mode="aspectFit"/>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 - 使用empty-state组件 -->
+      <empty-state
+        wx:if="{{filteredQuestions.length === 0}}"
+        icon="😊"
+        title="暂无错题"
+        description="继续努力，保持良好的学习状态！"
+        buttonText="去练习"
+        bind:buttontap="goToQuizBank"
+      />
+    </view>
+
+    <!-- 个性化训练计划（仅薄弱点Tab显示） - 优化后 -->
+    <view wx:if="{{activeTab === 'weak'}}" class="training-section">
+      <view class="training-header">
+        <text class="training-title">个性化训练计划</text>
+        <text class="training-count">{{trainingPlans.length}}个计划</text>
+      </view>
+
+      <!-- 无计划状态 - 使用empty-state组件 -->
+      <empty-state
+        wx:if="{{trainingPlans.length === 0}}"
+        icon="📝"
+        title="暂无训练计划"
+        description="完成一些练习后，系统将为你生成个性化训练方案"
+        buttonText="开始练习"
+        bind:buttontap="goToQuizBank"
+      />
+
+      <!-- 训练计划列表 - 优化布局 -->
+      <view wx:else class="training-plans-grid">
+        <view 
+          wx:for="{{trainingPlans}}" 
+          wx:key="type"
+          class="training-plan-card"
+          bindtap="startTraining"
+          data-type="{{item.type}}"
+        >
+          <!-- 顶部装饰条 -->
+          <view class="plan-accent plan-accent-{{item.type}}"></view>
+          
+          <!-- 卡片内容 -->
+          <view class="plan-body">
+            <!-- 头部：类型 + 序号 -->
+            <view class="plan-top">
+              <view class="plan-type-badge badge-{{item.type}}">
+                <text class="plan-type-text">{{item.typeName}}</text>
+                <text wx:if="{{item.difficulty === '重点'}}" class="plan-priority">重点</text>
+              </view>
+              <view class="plan-index">{{index + 1}}</view>
+            </view>
+
+            <!-- 标题和描述 -->
+            <view class="plan-main">
+              <text class="plan-name">{{item.title}}</text>
+              <text class="plan-desc">{{item.description}}</text>
+            </view>
+
+            <!-- 统计信息 -->
+            <view class="plan-metrics">
+              <view class="plan-metric">
+                <text class="metric-label">练习</text>
+                <text class="metric-value">{{item.exercises}}题</text>
+              </view>
+              <view class="plan-metric-divider"></view>
+              <view class="plan-metric">
+                <text class="metric-label">用时</text>
+                <text class="metric-value">{{item.duration}}</text>
+              </view>
+            </view>
+
+            <!-- 开始按钮 -->
+            <view class="plan-start-btn">
+              <text class="start-btn-text">开始训练</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- AI 智能建议（仅薄弱点Tab显示） - 优化后 -->
+    <view wx:if="{{activeTab === 'weak' && trainingPlans.length > 0}}" class="ai-tips-card">
+      <view class="ai-tips-header">
+        <text class="ai-tips-title">AI 智能建议</text>
+      </view>
+      <view class="ai-tips-list">
+        <view class="ai-tip-item">
+          <text class="ai-tip-text">建议每天完成 1-2 个训练计划，循序渐进</text>
+        </view>
+        <view class="ai-tip-item">
+          <text class="ai-tip-text">优先攻克"{{trainingPlans[0].typeName}}"模块，这是你目前最薄弱的环节</text>
+        </view>
+        <view class="ai-tip-item">
+          <text class="ai-tip-text">复习已掌握的错题，巩固记忆效果更佳</text>
+        </view>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- 底部安全区 -->
+  <view class="bottom-spacer"></view>
+
+</view>

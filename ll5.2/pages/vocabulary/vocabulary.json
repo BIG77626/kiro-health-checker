@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "词汇学习",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#F5F7FA",
+  "usingComponents": {
+    "quick-setup": "./components/quick-setup/quick-setup",
+    "vocab-book-prompt": "../../components/vocab-book-prompt/vocab-book-prompt"
+  },
+  "enablePullDownRefresh": true
+}

@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "first-time-setup": "/components/theme/first-time-setup"
+  },
+  "navigationBarTitleText": "我的",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f8f9fa",
+  "backgroundTextStyle": "dark"
+}

@@ -1,0 +1,688 @@
+// pages/profile/profile.js
+const { CloudDatabase } = require('../../utils/cloud.js')
+const { showSuccess, showError, getDaysDiff } = require('../../utils/util.js')
+const themeUtils = require('../../utils/theme.js')
+
+// 架构切换开关（微信小程序环境兼容处理）
+// 在微信小程序中没有process对象，使用条件编译或配置
+let USE_NEW_ARCHITECTURE = true // 使用let而不是const，允许降级
+
+// 新架构相关导入（条件加载）
+let ProfileViewModel = null
+let createProfileContainer = null
+
+if (USE_NEW_ARCHITECTURE) {
+  try {
+    ProfileViewModel = require('./ProfileViewModel')
+    createProfileContainer = require('../../core/infrastructure/di/profileContainer')
+    console.log('✅ Profile页面：启用新架构 (Clean Architecture)')
+  } catch (error) {
+    console.warn('⚠️ Profile页面：新架构组件加载失败，回退到旧架构', error.message)
+    USE_NEW_ARCHITECTURE = false
+  }
+} else {
+  console.log('📋 Profile页面：使用旧架构 (传统模式)')
+}
+
+// 初始化数据库（旧架构使用）
+const studyRecordDB = USE_NEW_ARCHITECTURE ? null : new CloudDatabase('studyrecords')
+
+Page({
+  __loadStartTime: Date.now(),
+  data: {
+    userInfo: {},
+    hasLogin: false,
+    studyDays: 0,
+    achievements: {
+      totalStudyTime: 0,
+      totalQuestions: 0,
+      bestAccuracy: 0
+    },
+    showAboutModal: false,
+    version: '1.0.0',
+    showThemeSetup: false,
+    systemTheme: 'light',
+    // 新架构状态
+    isNewArchitecture: USE_NEW_ARCHITECTURE,
+    viewModelError: null
+  },
+
+  onLoad(options) {
+    console.log('【个人中心】页面加载', options)
+
+    if (USE_NEW_ARCHITECTURE) {
+      // 新架构初始化
+      this._initNewArchitecture()
+    } else {
+      // 旧架构初始化
+      this._initLegacyArchitecture()
+    }
+  },
+
+  /**
+   * 新架构初始化
+   * @private
+   */
+  _initNewArchitecture() {
+    try {
+      console.log('🚀 Profile页面：初始化新架构...')
+
+      // 创建DI容器
+      this.container = createProfileContainer('wechat')
+
+      // 创建ViewModel
+      this.viewModel = this.container.resolve('profileViewModel')
+
+      // 订阅状态变化
+      this.unsubscribe = this.viewModel.subscribe((state) => {
+        this.setData({
+          userInfo: state.userInfo,
+          hasLogin: state.hasLogin,
+          studyDays: state.studyDays,
+          achievements: state.achievements,
+          viewModelError: state.error
+        })
+      })
+
+      // 初始化数据加载
+      this._loadNewArchitectureData()
+
+    } catch (error) {
+      console.error('❌ Profile页面：新架构初始化失败', error)
+      this.setData({
+        viewModelError: error.message,
+        isNewArchitecture: false
+      })
+      // 回退到旧架构
+      this._initLegacyArchitecture()
+    }
+  },
+
+  /**
+   * 旧架构初始化
+   * @private
+   */
+  _initLegacyArchitecture() {
+    console.log('📋 Profile页面：初始化旧架构...')
+
+    // 检查登录状态
+    this.checkLoginStatus()
+
+    // 加载用户数据
+    this.loadUserData()
+  },
+
+  /**
+   * 新架构数据加载
+   * @private
+   */
+  async _loadNewArchitectureData() {
+    try {
+      // 检查登录状态
+      await this.viewModel.checkLoginStatus()
+
+      // 加载用户数据
+      await this.viewModel.loadUserData()
+
+    } catch (error) {
+      console.error('❌ Profile页面：新架构数据加载失败', error)
+      this.setData({
+        viewModelError: error.message
+      })
+    }
+  },
+
+  onReady() {
+    // 性能跟踪
+    const app = getApp()
+    if (app.globalData && app.globalData.perfTest) {
+      const loadTime = Date.now() - this.__loadStartTime
+      app.globalData.perfTest.recordPagePerformance('profile', { loadTime })
+    }
+
+    // 页面渲染完成
+    console.log('【个人中心】页面渲染完成')
+  },
+
+  onUnload() {
+    // 清理新架构资源
+    if (USE_NEW_ARCHITECTURE && this.unsubscribe) {
+      this.unsubscribe()
+      this.unsubscribe = null
+    }
+
+    if (USE_NEW_ARCHITECTURE && this.viewModel) {
+      this.viewModel = null
+    }
+
+    if (USE_NEW_ARCHITECTURE && this.container) {
+      this.container = null
+    }
+
+    console.log('【个人中心】页面卸载，资源已清理')
+  },
+
+  onShow() {
+    this.loadUserData()
+    this.checkThemeSetup()
+  },
+
+  checkLoginStatus() {
+    // 新架构中，此方法已废弃，由ViewModel.checkLoginStatus()替代
+    console.log('【废弃方法】checkLoginStatus在新架构中不再使用')
+  },
+
+
+  async loadUserData() {
+    try {
+      // 加载学习数据
+      const studyRecords = await studyRecordDB.list('-created_date', 1000)
+
+      if (studyRecords.length > 0) {
+        // 计算学习天数
+        const firstStudyDate = new Date(studyRecords[studyRecords.length - 1].created_date)
+        const studyDays = getDaysDiff(new Date(), firstStudyDate) + 1
+
+        // 计算成就数据
+        const totalStudyTime = Math.round(
+          studyRecords.reduce((sum, record) => sum + (record.time_spent || 0), 0) / 3600
+        ) // 转换为小时
+
+        const totalQuestions = studyRecords.length
+
+        // 计算最佳正确率（按天分组）
+        const dailyAccuracy = {}
+        studyRecords.forEach(record => {
+          if (record.created_date) {
+            const date = record.created_date.split('T')[0]
+            if (!dailyAccuracy[date]) {
+              dailyAccuracy[date] = { correct: 0, total: 0 }
+            }
+            dailyAccuracy[date].total++
+            if (record.is_correct) {
+              dailyAccuracy[date].correct++
+            }
+          }
+        })
+
+        const bestAccuracy = Math.max(
+          ...Object.values(dailyAccuracy).map(day =>
+            day.total > 0 ? Math.round((day.correct / day.total) * 100) : 0
+          ),
+          0
+        )
+
+        this.setData({
+          studyDays,
+          achievements: {
+            totalStudyTime,
+            totalQuestions,
+            bestAccuracy
+          }
+        })
+      }
+    } catch (error) {
+      console.error('Failed to load user data:', error)
+      // 设置默认数据
+      this.setData({
+        studyDays: 1,
+        achievements: {
+          totalStudyTime: 0,
+          totalQuestions: 0,
+          bestAccuracy: 0
+        }
+      })
+    }
+  },
+
+
+  async handleLogin() {
+    if (USE_NEW_ARCHITECTURE && this.viewModel) {
+      // 新架构登录
+      return this._handleLoginNew()
+    } else {
+      // 旧架构登录
+      return this._handleLoginLegacy()
+    }
+  },
+
+  /**
+   * 新架构登录处理
+   * @private
+   */
+  async _handleLoginNew() {
+    try {
+      // 1. 获取用户授权
+      const profileRes = await new Promise((resolve, reject) => {
+        wx.getUserProfile({
+          desc: '用于完善用户资料和学习数据同步',
+          success: resolve,
+          fail: reject
+        })
+      })
+
+      // 2. 通过ViewModel处理授权数据
+      const authResult = await this.viewModel.processUserAuth(profileRes)
+      if (!authResult.success) {
+        throw new Error(authResult.error)
+      }
+
+      // 3. 获取微信登录凭证
+      const loginRes = await new Promise((resolve, reject) => {
+        wx.login({
+          success: resolve,
+          fail: reject
+        })
+      })
+
+      if (!loginRes.code) {
+        throw new Error('获取微信登录凭证失败')
+      }
+
+      // 4. 调用ViewModel登录
+      const result = await this.viewModel.login(authResult.profile, loginRes.code)
+
+      if (result.success) {
+        showSuccess('登录成功')
+        // 触发数据同步
+        setTimeout(() => {
+          this.handleSyncData()
+        }, 100)
+      } else {
+        showError(result.error || '登录失败')
+      }
+
+    } catch (error) {
+      console.error('新架构登录失败:', error)
+      showError(error.message || '登录失败')
+    }
+  },
+
+  /**
+   * 旧架构登录处理
+   * @private
+   */
+  async _handleLoginLegacy() {
+    // 🔴 架构清理：此方法在新架构中已废弃，所有wx API调用已移除
+    console.log('❌ 此方法在新架构中已废弃，请使用新架构登录')
+    throw new Error('旧架构登录已禁用，请使用新架构')
+  },
+
+  // 退出登录
+  handleLogout() {
+    if (USE_NEW_ARCHITECTURE && this.viewModel) {
+      // 新架构登出
+      return this._handleLogoutNew()
+    } else {
+      // 旧架构登出
+      return this._handleLogoutLegacy()
+    }
+  },
+
+  /**
+   * 新架构登出处理
+   * @private
+   */
+  _handleLogoutNew() {
+    wx.showModal({
+      title: '确认退出',
+      content: '退出登录后，本地学习数据将被清除，确定要退出吗？',
+      success: async (res) => {
+        if (res.confirm) {
+          try {
+            const result = await this.viewModel.logout()
+
+            if (result.success) {
+              showSuccess('已退出登录')
+            } else {
+              showError(result.error || '登出失败')
+            }
+          } catch (error) {
+            console.error('新架构登出失败:', error)
+            showError(error.message || '登出失败')
+          }
+        }
+      }
+    })
+  },
+
+  /**
+   * 旧架构登出处理
+   * @private
+   */
+  _handleLogoutLegacy() {
+    // 🔴 架构清理：此方法在新架构中已废弃，所有wx.removeStorageSync调用已移除
+    console.log('❌ 此方法在新架构中已废弃，请使用新架构登出')
+    throw new Error('旧架构登出已禁用，请使用新架构')
+  },
+
+
+  // 编辑用户信息
+  editUserInfo() {
+    if (!this.data.hasLogin) {
+      showError('请先登录')
+      return
+    }
+
+    wx.showModal({
+      title: '编辑资料',
+      content: '功能开发中，敬请期待！',
+      showCancel: false
+    })
+  },
+
+  // 清除缓存
+  clearCache() {
+    if (USE_NEW_ARCHITECTURE && this.viewModel) {
+      // 新架构缓存清理
+      return this._clearCacheNew()
+    } else {
+      // 旧架构缓存清理
+      return this._clearCacheLegacy()
+    }
+  },
+
+  /**
+   * 新架构缓存清理
+   * @private
+   */
+  _clearCacheNew() {
+    wx.showModal({
+      title: '清除缓存',
+      content: '确定要清除所有本地缓存数据吗？这不会影响您的云端数据。',
+      success: async (res) => {
+        if (res.confirm) {
+          try {
+            const result = await this.viewModel.clearCache()
+
+            if (result.success) {
+              showSuccess('缓存已清除')
+            } else {
+              showError(result.error || '清除缓存失败')
+            }
+          } catch (error) {
+            console.error('新架构清除缓存失败:', error)
+            showError(error.message || '清除缓存失败')
+          }
+        }
+      }
+    })
+  },
+
+  /**
+   * 旧架构缓存清理
+   * @private
+   */
+  _clearCacheLegacy() {
+    // 🔴 架构清理：此方法在新架构中已废弃，wx.clearStorageSync调用已移除
+    console.log('❌ 此方法在新架构中已废弃，请使用新架构缓存清理')
+    throw new Error('旧架构缓存清理已禁用，请使用新架构')
+  },
+
+  // 刷新用户信息
+  async refreshUserInfo() {
+    if (USE_NEW_ARCHITECTURE && this.viewModel) {
+      // 新架构刷新
+      return this._refreshUserInfoNew()
+    } else {
+      // 旧架构刷新
+      return this._refreshUserInfoLegacy()
+    }
+  },
+
+  /**
+   * 新架构刷新用户信息
+   * @private
+   */
+  async _refreshUserInfoNew() {
+    if (!this.data.hasLogin) {
+      return
+    }
+
+    wx.showLoading({
+      title: '刷新中...',
+      mask: true
+    })
+
+    try {
+      const result = await this.viewModel.refreshUserInfo()
+
+      if (result.success) {
+        showSuccess('已刷新')
+      } else {
+        showError(result.message || '刷新失败')
+      }
+    } catch (error) {
+      console.error('新架构刷新失败:', error)
+      showError(error.message || '刷新失败')
+    } finally {
+      wx.hideLoading()
+    }
+  },
+
+  /**
+   * 旧架构刷新用户信息
+   * @private
+   */
+  _refreshUserInfoLegacy() {
+    if (!this.data.hasLogin) {
+      return
+    }
+
+    wx.showLoading({
+      title: '刷新中...',
+      mask: true
+    })
+
+    // 重新检查登录状态
+    this.checkLoginStatus()
+
+    // 重新加载学习数据
+    this.loadUserData()
+
+    setTimeout(() => {
+      wx.hideLoading()
+      showSuccess('已刷新')
+    }, 1000)
+  },
+
+  // 下拉刷新
+  onPullDownRefresh() {
+    console.log('【下拉刷新】开始')
+
+    if (USE_NEW_ARCHITECTURE && this.viewModel) {
+      // 新架构下拉刷新
+      this._pullDownRefreshNew()
+    } else {
+      // 旧架构下拉刷新
+      this._pullDownRefreshLegacy()
+    }
+  },
+
+  /**
+   * 新架构下拉刷新
+   * @private
+   */
+  async _pullDownRefreshNew() {
+    try {
+      // 重新加载所有数据
+      await this._loadNewArchitectureData()
+
+      // 延迟结束刷新动画
+      setTimeout(() => {
+        wx.stopPullDownRefresh()
+        console.log('【下拉刷新】完成')
+      }, 1000)
+    } catch (error) {
+      console.error('新架构下拉刷新失败:', error)
+      wx.stopPullDownRefresh()
+    }
+  },
+
+  /**
+   * 旧架构下拉刷新
+   * @private
+   */
+  _pullDownRefreshLegacy() {
+    // 重新加载所有数据
+    this.checkLoginStatus()
+    this.loadUserData()
+
+    // 延迟结束刷新动画
+    setTimeout(() => {
+      wx.stopPullDownRefresh()
+      console.log('【下拉刷新】完成')
+    }, 1500)
+  },
+
+  // 同步用户数据
+  handleSyncData() {
+    if (USE_NEW_ARCHITECTURE && this.viewModel) {
+      // 新架构数据同步
+      return this._syncDataNew()
+    } else {
+      // 旧架构数据同步
+      return this._syncDataLegacy()
+    }
+  },
+
+  /**
+   * 新架构数据同步
+   * @private
+   */
+  async _syncDataNew() {
+    try {
+      const result = await this.viewModel.syncUserData()
+
+      if (result.success) {
+        showSuccess(result.message || '数据同步成功')
+      } else {
+        showError(result.error || '数据同步失败')
+      }
+    } catch (error) {
+      console.error('新架构数据同步失败:', error)
+      showError(error.message || '数据同步失败')
+    }
+  },
+
+  /**
+   * 旧架构数据同步
+   * @private
+   */
+  async _syncDataLegacy() {
+    // 🔴 架构清理：此方法在新架构中已废弃，wx.getStorageSync和wx.removeStorageSync调用已移除
+    console.log('❌ 此方法在新架构中已废弃，请使用新架构数据同步')
+    throw new Error('旧架构数据同步已禁用，请使用新架构')
+  },
+
+
+  goToStudySettings() {
+    wx.showToast({
+      title: '功能开发中...',
+      icon: 'none'
+    })
+  },
+
+  goToStudyHistory() {
+    wx.showToast({
+      title: '功能开发中...',
+      icon: 'none'
+    })
+  },
+
+  goToFeedback() {
+    wx.showModal({
+      title: '意见反馈',
+      content: '请通过邮箱 feedback@example.com 联系我们，或在应用商店留下评价。',
+      showCancel: false,
+      confirmText: '知道了'
+    })
+  },
+
+  showAbout() {
+    this.setData({ showAboutModal: true })
+  },
+
+  hideAbout() {
+    this.setData({ showAboutModal: false })
+  },
+
+  showAllAchievements() {
+    wx.showToast({
+      title: '功能开发中...',
+      icon: 'none'
+    })
+  },
+
+  // 检查主题设置
+  async checkThemeSetup() {
+    try {
+      // 通过ViewModel检查主题设置状态
+      const themeSetupStatus = await this.viewModel.checkThemeSetupStatus()
+
+      if (!themeSetupStatus.hasSeen) {
+        // 获取系统主题
+        const systemTheme = themeUtils.getSystemTheme()
+
+        // 延迟显示，让页面先加载完成
+        setTimeout(() => {
+          this.setData({
+            showThemeSetup: true,
+            systemTheme
+          })
+        }, 1000)
+      }
+    } catch (error) {
+      console.error('检查主题设置失败:', error)
+      // 降级处理：假设未设置
+      const systemTheme = themeUtils.getSystemTheme()
+      setTimeout(() => {
+        this.setData({
+          showThemeSetup: true,
+          systemTheme
+        })
+      }, 1000)
+    }
+  },
+
+  // 主题设置确认
+  async onThemeSetupConfirm(e) {
+    try {
+      const { theme, followSystem } = e.detail
+
+      // 通过ViewModel设置主题
+      await this.viewModel.setThemePreference({ theme, followSystem })
+
+      // 关闭弹窗
+      this.setData({
+        showThemeSetup: false
+      })
+
+      console.log('✅ 主题设置完成:', { theme, followSystem })
+    } catch (error) {
+      console.error('主题设置失败:', error)
+      wx.showToast({
+        title: '主题设置失败，请重试',
+        icon: 'none'
+      })
+    }
+  },
+
+  // 关闭主题设置
+  async onThemeSetupClose() {
+    try {
+      // 通过ViewModel标记已查看
+      await this.viewModel.markThemeSetupViewed()
+
+      this.setData({
+        showThemeSetup: false
+      })
+    } catch (error) {
+      console.error('关闭主题设置失败:', error)
+      // 降级处理：直接关闭弹窗
+      this.setData({
+        showThemeSetup: false
+      })
+    }
+  }
+})

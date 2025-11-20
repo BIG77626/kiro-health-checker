@@ -1,0 +1,20 @@
+{
+  "name": "weekly-feedback-aggregation",
+  "version": "1.0.0",
+  "description": "每周反馈聚合云函数 - P1-004",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "keywords": [
+    "cloud-function",
+    "feedback",
+    "aggregation",
+    "p1-004"
+  ],
+  "author": "LLaMA-Factory Team",
+  "license": "MIT",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

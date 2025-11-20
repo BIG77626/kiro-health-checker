@@ -1,0 +1,136 @@
+<!--pages/reader/reader.wxml-->
+<view class="reader-container theme-{{readingSettings.theme}}">
+  <!-- 加载状态 -->
+  <view wx:if="{{isLoading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载文章中...</text>
+  </view>
+
+  <!-- 文章内容 -->
+  <view wx:elif="{{passage}}" class="article-content">
+    <!-- 工具栏 -->
+    <view class="toolbar">
+      <view class="toolbar-left">
+        <view class="btn-icon" bindtap="goBack">
+          <image src="/images/arrow-left.png" class="icon" mode="aspectFit"></image>
+        </view>
+      </view>
+      <view class="toolbar-center">
+        <text class="article-title">{{passage.title}}</text>
+      </view>
+      <view class="toolbar-right">
+        <view class="btn-icon" bindtap="toggleTranslation">
+          <image src="/images/translate.png" class="icon" mode="aspectFit"></image>
+        </view>
+        <view class="btn-icon" bindtap="toggleSettings">
+          <image src="/images/settings.png" class="icon" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+
+    <!-- 文章正文 -->
+    <scroll-view scroll-y class="article-scroll font-{{readingSettings.fontSize}} line-{{readingSettings.lineHeight}}">
+      <view class="article-header">
+        <text class="article-title-main">{{passage.title}}</text>
+        <view class="article-meta">
+          <text class="meta-text">{{paperTitle}}</text>
+          <text class="meta-divider">·</text>
+          <text class="meta-text">{{passage.paragraphs.length}}段落</text>
+        </view>
+      </view>
+
+      <view class="article-body">
+        <view wx:for="{{passage.paragraphs}}" wx:key="number" class="paragraph-container">
+          <view class="paragraph-number">{{item.number}}</view>
+          <view class="paragraph-content">
+            <text class="paragraph-text">{{item.text}}</text>
+            <view wx:if="{{showTranslation && item.translation}}" class="translation-text">
+              <text>{{item.translation}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 底部间距 -->
+      <view class="article-footer"></view>
+    </scroll-view>
+  </view>
+
+  <!-- 错误状态 -->
+  <view wx:else class="error-container">
+    <image src="/images/alert-circle.png" class="error-icon" mode="aspectFit"></image>
+    <text class="error-title">文章加载失败</text>
+    <text class="error-desc">网络连接异常或文章不存在</text>
+    <view class="btn btn-primary" bindtap="goBack">返回</view>
+  </view>
+</view>
+
+<!-- 阅读设置面板 -->
+<view wx:if="{{showSettings}}" class="settings-overlay" bindtap="toggleSettings">
+  <view class="settings-panel" catchtap="">
+    <view class="settings-header">
+      <text class="settings-title">阅读设置</text>
+      <view class="btn-close" bindtap="toggleSettings">
+        <image src="/images/close.png" class="icon" mode="aspectFit"></image>
+      </view>
+    </view>
+
+    <view class="settings-content">
+      <!-- 字体大小 -->
+      <view class="setting-group">
+        <text class="setting-label">字体大小</text>
+        <view class="setting-options">
+          <view class="setting-option {{readingSettings.fontSize === 'small' ? 'active' : ''}}" bindtap="setFontSize" data-size="small">
+            <text>小</text>
+          </view>
+          <view class="setting-option {{readingSettings.fontSize === 'medium' ? 'active' : ''}}" bindtap="setFontSize" data-size="medium">
+            <text>中</text>
+          </view>
+          <view class="setting-option {{readingSettings.fontSize === 'large' ? 'active' : ''}}" bindtap="setFontSize" data-size="large">
+            <text>大</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 行间距 -->
+      <view class="setting-group">
+        <text class="setting-label">行间距</text>
+        <view class="setting-options">
+          <view class="setting-option {{readingSettings.lineHeight === 'compact' ? 'active' : ''}}" bindtap="setLineHeight" data-height="compact">
+            <text>紧凑</text>
+          </view>
+          <view class="setting-option {{readingSettings.lineHeight === 'normal' ? 'active' : ''}}" bindtap="setLineHeight" data-height="normal">
+            <text>标准</text>
+          </view>
+          <view class="setting-option {{readingSettings.lineHeight === 'relaxed' ? 'active' : ''}}" bindtap="setLineHeight" data-height="relaxed">
+            <text>宽松</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 主题 -->
+      <view class="setting-group">
+        <text class="setting-label">阅读主题</text>
+        <view class="setting-options">
+          <view class="setting-option {{readingSettings.theme === 'light' ? 'active' : ''}}" bindtap="setTheme" data-theme="light">
+            <text>日间</text>
+          </view>
+          <view class="setting-option {{readingSettings.theme === 'sepia' ? 'active' : ''}}" bindtap="setTheme" data-theme="sepia">
+            <text>护眼</text>
+          </view>
+          <view class="setting-option {{readingSettings.theme === 'dark' ? 'active' : ''}}" bindtap="setTheme" data-theme="dark">
+            <text>夜间</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 首次主题设置弹窗 -->
+<first-time-setup 
+  visible="{{showThemeSetup}}"
+  system-theme="{{systemTheme}}"
+  bind:confirm="onThemeSetupConfirm"
+  bind:close="onThemeSetupClose"
+/>

@@ -1,0 +1,114 @@
+<!-- pages/morpheme-learning/morpheme-learning.wxml -->
+<!-- 词根词素学习页面 - 极简UI设计 -->
+
+<view class="page-container">
+  
+  <!-- 学习进度卡片（可折叠） -->
+  <view class="progress-card">
+    <view class="progress-header" bindtap="toggleProgressDetail">
+      <text class="progress-title">学习进度</text>
+      <text class="toggle-icon">{{showProgressDetail ? '▲' : '▼'}}</text>
+    </view>
+    
+    <view class="progress-summary">
+      <text class="summary-item">今日: {{todayProgress.completed}}/{{todayProgress.target}}词根</text>
+      <text class="divider">|</text>
+      <text class="summary-item">总: {{totalProgress.mastered}}/{{totalProgress.total}}词根</text>
+    </view>
+    
+    <!-- 展开的详细进度 -->
+    <view wx:if="{{showProgressDetail}}" class="progress-detail">
+      <view class="detail-section">
+        <text class="detail-label">今日任务 ({{todayProgress.completed}}/{{todayProgress.target}})</text>
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{todayProgressPercent}}%"></view>
+        </view>
+        
+        <view class="task-list">
+          <view 
+            wx:for="{{todayTasks}}" 
+            wx:key="id" 
+            class="task-item"
+          >
+            <text class="task-status">{{item.completed ? '■' : '□'}}</text>
+            <text class="task-name">{{item.name}} ({{item.meaning}})</text>
+            <text class="task-count">{{item.wordCount}}词</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="detail-section">
+        <text class="detail-label">总体掌握 ({{totalProgress.mastered}}/{{totalProgress.total}})</text>
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{totalProgressPercent}}%"></view>
+        </view>
+        
+        <view class="stats-grid">
+          <view class="stat-item">
+            <text class="stat-value">{{totalProgress.mastered}}</text>
+            <text class="stat-label">已掌握词根</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-value">{{totalProgress.words}}</text>
+            <text class="stat-label">衍生单词</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-value">{{totalProgress.days}}</text>
+            <text class="stat-label">学习天数</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-value">{{totalProgress.avgPerDay}}</text>
+            <text class="stat-label">日均词根</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 今日学习词根列表 -->
+  <view class="section">
+    <text class="section-title">今日学习词根</text>
+    
+    <view class="morpheme-list">
+      <view 
+        wx:for="{{todayMorphemes}}" 
+        wx:key="id" 
+        class="morpheme-card {{item.status}}"
+        bindtap="onMorphemeClick"
+        data-id="{{item.id}}"
+      >
+        <view class="card-header">
+          <view class="morpheme-info">
+            <text class="morpheme-name">{{item.name}}</text>
+            <text class="morpheme-meaning">{{item.meaning}}</text>
+          </view>
+          <text class="status-icon">{{item.statusIcon}}</text>
+        </view>
+        
+        <view class="card-body">
+          <text class="word-count">{{item.derivedWordCount}}个衍生词</text>
+          <text class="status-text">{{item.statusText}}</text>
+        </view>
+        
+        <view class="card-footer">
+          <button 
+            class="action-btn {{item.status === 'completed' ? 'secondary' : 'primary'}}"
+            catchtap="onStartLearning"
+            data-id="{{item.id}}"
+          >
+            {{item.status === 'completed' ? '复习' : '开始学习'}}
+          </button>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 查看全部词根库 -->
+  <view class="footer-action">
+    <button class="btn-outline" bindtap="onViewAllMorphemes">
+      查看全部词根库
+    </button>
+  </view>
+  
+</view>
+

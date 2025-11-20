@@ -1,0 +1,11 @@
+{
+  "navigationStyle": "custom",
+  "disableScroll": false,
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#ffffff",
+  "backgroundTextStyle": "dark",
+  "onReachBottomDistance": 50,
+  "usingComponents": {
+    "first-time-setup": "/components/theme/first-time-setup"
+  }
+}

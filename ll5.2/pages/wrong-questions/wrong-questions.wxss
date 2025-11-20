@@ -1,0 +1,751 @@
+/* pages/wrong-questions/wrong-questions.wxss - 错题智能分析页面 */
+
+/* ==================== 页面容器 ==================== */
+.page-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #F8FAFC 0%, #EBF4FF 50%, #EDE9FE 100%);
+  padding: 0 !important; /* 覆盖全局 padding，让 header 完全铺满 ⭐ */
+}
+
+/* ==================== ① 顶部标题区（居中设计） ==================== */
+.page-header-simple {
+  padding: 40rpx 32rpx 32rpx;
+  text-align: center;
+  background: #FFFFFF;
+}
+
+.header-title-center {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.2;
+  display: block;
+}
+
+/* ==================== ② Tab切换区域 ==================== */
+.tab-section {
+  padding: 0 32rpx 24rpx;
+  background: #FFFFFF;
+  border-bottom: 1rpx solid #F3F4F6;
+}
+
+.tab-bar {
+  display: flex;
+  align-items: center;
+  background: #F8F9FB;
+  border-radius: 16rpx;
+  padding: 8rpx;
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 8rpx;
+  border-radius: 12rpx;
+  transition: all 0.3s ease;
+}
+
+.tab-item.tab-active {
+  background: linear-gradient(135deg, #4F7FE8 0%, #7AA0FF 100%);
+  box-shadow: 0 4rpx 12rpx rgba(79, 127, 232, 0.3);
+}
+
+.tab-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #6B7280;
+  line-height: 1.4;
+  margin-bottom: 4rpx;
+}
+
+.tab-item.tab-active .tab-text {
+  color: #FFFFFF;
+}
+
+.tab-count {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #9CA3AF;
+  line-height: 1.2;
+}
+
+.tab-item.tab-active .tab-count {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 旧的quick-stats（已废弃） */
+.quick-stats {
+  display: none;
+}
+
+.stat-card {
+  background: #FFFFFF; /* ⭐ 统一纯白色背景 */
+  backdrop-filter: blur(10rpx);
+  border-radius: 24rpx;
+  padding: 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}
+
+.stat-card:active {
+  transform: scale(0.95);
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+}
+
+/* ⭐ 移除彩色背景，统一使用白色 */
+.stat-total,
+.stat-unreviewed,
+.stat-reviewed,
+.stat-weak {
+  background: #FFFFFF; /* 全部使用纯白色 */
+}
+
+.stat-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-bottom: 16rpx;
+}
+
+.stat-value {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.2;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 20rpx;
+  font-weight: 400;
+  color: #6B7280;
+  line-height: 1.4;
+  margin-bottom: 16rpx;
+}
+
+.stat-arrow {
+  width: 32rpx;
+  height: 32rpx;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stat-card:active .stat-arrow {
+  opacity: 1;
+}
+
+/* ==================== ③ 主内容区 ==================== */
+.content-area {
+  padding: 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+/* ==================== ⭐ 错题列表区域 ==================== */
+.questions-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.section-header-simple {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-title-simple {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.2;
+}
+
+.section-count-simple {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #9CA3AF;
+  line-height: 1.4;
+}
+
+.questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.question-card-item {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.question-card-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.question-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.question-type-tag {
+  background: #EEF2FF;
+  color: #6366F1;
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.question-date {
+  font-size: 22rpx;
+  font-weight: 400;
+  color: #9CA3AF;
+  line-height: 1.4;
+}
+
+.question-content-preview {
+  font-size: 28rpx;
+  font-weight: 400;
+  color: #0F172A;
+  line-height: 1.6;
+  margin-bottom: 16rpx;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.question-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.question-status {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.status-icon {
+  width: 28rpx;
+  height: 28rpx;
+}
+
+.status-text {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #6B7280;
+  line-height: 1.4;
+}
+
+.question-arrow {
+  width: 32rpx;
+  height: 32rpx;
+  opacity: 0.4;
+}
+
+/* 空状态 */
+.empty-questions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 48rpx;
+  text-align: center;
+}
+
+.empty-icon-large {
+  width: 128rpx;
+  height: 128rpx;
+  opacity: 0.6;
+  margin-bottom: 32rpx;
+}
+
+.empty-title-large {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.3;
+  margin-bottom: 16rpx;
+}
+
+.empty-text-large {
+  font-size: 26rpx;
+  font-weight: 400;
+  color: #9CA3AF;
+  line-height: 1.6;
+}
+
+/* ==================== 薄弱点诊断卡片 - 优化后 ==================== */
+.weak-points-card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.weak-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-bottom: 24rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 1rpx solid #F3F4F6;
+}
+
+.weak-card-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.3;
+}
+
+.weak-card-desc {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #6B7280;
+  line-height: 1.5;
+}
+
+/* 薄弱点徽章网格布局 */
+.weak-badges-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.weak-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx;
+  background: #F8F9FB;
+  border-radius: 16rpx;
+  transition: all 0.2s ease;
+}
+
+.weak-badge-item:active {
+  background: #F3F4F6;
+  transform: scale(0.98);
+}
+
+.weak-badge-rank {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 12rpx;
+  background: linear-gradient(135deg, #4F7FE8 0%, #7AA0FF 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.weak-badge-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.weak-badge-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #0F172A;
+  line-height: 1.3;
+}
+
+.weak-badge-stats {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.weak-badge-count {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #6B7280;
+  line-height: 1.4;
+}
+
+.weak-badge-percent {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #4F7FE8;
+  line-height: 1.4;
+}
+
+/* ==================== 个性化训练计划 - 优化后 ==================== */
+.training-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.training-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.training-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.3;
+}
+
+.training-count {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #9CA3AF;
+  line-height: 1.4;
+}
+
+/* 空状态 */
+.empty-training {
+  background: #FFFFFF;
+  border-radius: 32rpx;
+  padding: 96rpx 48rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+}
+
+.empty-icon-bg {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: #DBEAFE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32rpx;
+}
+
+.empty-icon {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.empty-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.3;
+  margin-bottom: 16rpx;
+}
+
+.empty-text {
+  font-size: 26rpx;
+  font-weight: 400;
+  color: #6B7280;
+  line-height: 1.5;
+}
+
+/* 训练计划网格 */
+.training-plans-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+/* 训练计划卡片 - 优化后 */
+.training-plan-card {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.training-plan-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+/* 顶部装饰条 */
+.plan-accent {
+  height: 8rpx;
+}
+
+.plan-accent-vocab,
+.plan-accent-cloze {
+  background: linear-gradient(90deg, #F97316 0%, #FB923C 100%);
+}
+
+.plan-accent-reading {
+  background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%);
+}
+
+.plan-accent-sentence {
+  background: linear-gradient(90deg, #8B5CF6 0%, #A78BFA 100%);
+}
+
+.plan-accent-translation {
+  background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+}
+
+.plan-accent-writing {
+  background: linear-gradient(90deg, #EC4899 0%, #F472B6 100%);
+}
+
+/* 卡片主体 */
+.plan-body {
+  padding: 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+/* 头部：类型 + 序号 */
+.plan-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.plan-type-badge {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.plan-type-badge.badge-vocab,
+.plan-type-badge.badge-cloze {
+  background: #FFF7ED;
+  color: #C2410C;
+}
+
+.plan-type-badge.badge-reading {
+  background: #EFF6FF;
+  color: #1E40AF;
+}
+
+.plan-type-badge.badge-sentence {
+  background: #F5F3FF;
+  color: #6D28D9;
+}
+
+.plan-type-badge.badge-translation {
+  background: #F0FDF4;
+  color: #065F46;
+}
+
+.plan-type-badge.badge-writing {
+  background: #FCE7F3;
+  color: #BE123C;
+}
+
+.plan-type-text {
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.plan-priority {
+  font-size: 20rpx;
+  font-weight: 600;
+  padding: 4rpx 8rpx;
+  border-radius: 8rpx;
+  background: #FEF2F2;
+  color: #991B1B;
+  line-height: 1.2;
+}
+
+.plan-index {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 12rpx;
+  background: #F8F9FB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #6B7280;
+  flex-shrink: 0;
+}
+
+/* 主体内容 */
+.plan-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.plan-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #0F172A;
+  line-height: 1.3;
+}
+
+.plan-desc {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #6B7280;
+  line-height: 1.5;
+}
+
+/* 统计信息 */
+.plan-metrics {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx;
+  background: #F8F9FB;
+  border-radius: 12rpx;
+}
+
+.plan-metric {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.metric-label {
+  font-size: 20rpx;
+  font-weight: 400;
+  color: #9CA3AF;
+  line-height: 1.3;
+}
+
+.metric-value {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.3;
+}
+
+.plan-metric-divider {
+  width: 1rpx;
+  height: 32rpx;
+  background: #E5E7EB;
+}
+
+/* 开始按钮 */
+.plan-start-btn {
+  padding: 16rpx;
+  background: #F8F9FB;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.plan-start-btn:active {
+  background: #F3F4F6;
+}
+
+.start-btn-text {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #0F172A;
+  line-height: 1.3;
+}
+
+/* ==================== AI 智能建议 - 优化后 ==================== */
+.ai-tips-card {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.ai-tips-header {
+  padding-bottom: 16rpx;
+  margin-bottom: 16rpx;
+  border-bottom: 1rpx solid #F3F4F6;
+}
+
+.ai-tips-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #0F172A;
+  line-height: 1.3;
+}
+
+.ai-tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.ai-tip-item {
+  padding: 12rpx 16rpx;
+  background: #F8F9FB;
+  border-radius: 12rpx;
+  border-left: 4rpx solid #4F7FE8;
+}
+
+.ai-tip-text {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #374151;
+  line-height: 1.6;
+}
+
+/* ==================== 底部安全区 ==================== */
+.bottom-spacer {
+  height: 120rpx;
+}
+
+/* ==================== 暗色模式 ==================== */
+.theme-dark .page-container {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #312E81 100%);
+}
+
+.theme-dark .page-header {
+  background: #1E293B;
+  border-bottom-color: #334155;
+}
+
+.theme-dark .header-title {
+  color: #F8FAFC;
+}
+
+.theme-dark .stat-value,
+.theme-dark .card-title,
+.theme-dark .section-title,
+.theme-dark .plan-title {
+  color: #F8FAFC;
+}
+
+.theme-dark .training-card,
+.theme-dark .empty-training,
+.theme-dark .weak-points-card,
+.theme-dark .ai-suggestion-card {
+  background: #1F2937;
+}

@@ -1,0 +1,194 @@
+<!--pages/wrong-questions-list/wrong-questions-list.wxml - 错题分析（Tab切换设计）-->
+<view class="page-container">
+  
+  <!-- ① 顶部标题卡片 -->
+  <view class="title-card-ref">
+    <view class="title-icon-bg-ref">
+      <image src="/images/brain.png" class="title-icon-ref" mode="aspectFit"/>
+    </view>
+    <view class="title-content-ref">
+      <text class="title-main-ref">错题分析</text>
+      <text class="title-desc-ref">找出薄弱环节，针对性提升</text>
+    </view>
+  </view>
+
+  <!-- ⭐ Tab切换栏 -->
+  <view class="tab-bar">
+    <view 
+      class="tab-item {{activeTab === 'all' ? 'tab-active' : ''}}"
+      bindtap="switchTab"
+      data-tab="all"
+    >
+      <text class="tab-text">全部</text>
+      <text class="tab-count">({{totalCount}})</text>
+    </view>
+    <view 
+      class="tab-item {{activeTab === 'unreviewed' ? 'tab-active' : ''}}"
+      bindtap="switchTab"
+      data-tab="unreviewed"
+    >
+      <text class="tab-text">待复习</text>
+      <text class="tab-count">({{unreviewedCount}})</text>
+    </view>
+    <view 
+      class="tab-item {{activeTab === 'reviewed' ? 'tab-active' : ''}}"
+      bindtap="switchTab"
+      data-tab="reviewed"
+    >
+      <text class="tab-text">已复习</text>
+      <text class="tab-count">({{reviewedCount}})</text>
+    </view>
+  </view>
+
+  <!-- ② 统计卡片（根据当前Tab显示） -->
+  <view class="stats-grid-ref">
+    <view class="stat-card-ref">
+      <view class="stat-icon-circle-ref">
+        <image src="/images/trending-down.png" class="stat-icon-img-ref" mode="aspectFit"/>
+      </view>
+      <text class="stat-number-ref">{{currentStats.total}}</text>
+      <text class="stat-name-ref">题目数量</text>
+    </view>
+
+    <view class="stat-card-ref">
+      <view class="stat-icon-circle-ref">
+        <image src="/images/target.png" class="stat-icon-img-ref" mode="aspectFit"/>
+      </view>
+      <text class="stat-number-ref">{{currentStats.accuracy}}%</text>
+      <text class="stat-name-ref">准确率</text>
+    </view>
+
+    <view class="stat-card-ref">
+      <view class="stat-icon-circle-ref">
+        <image src="/images/chart-bar.png" class="stat-icon-img-ref" mode="aspectFit"/>
+      </view>
+      <text class="stat-number-ref">{{currentStats.reviewRate}}%</text>
+      <text class="stat-name-ref">复习率</text>
+    </view>
+  </view>
+
+  <!-- ③ 主内容区 -->
+  <view class="main-content">
+    
+    <!-- 错题分布（参考图样式） -->
+    <view class="distribution-card-ref">
+      <view class="dist-header-ref">
+        <text class="dist-title-ref">错题分布</text>
+        <text class="dist-action-ref">按题型统计</text>
+      </view>
+      
+      <view class="dist-list-ref">
+        <view wx:for="{{typeStats}}" wx:key="type" class="dist-item-ref">
+          <view class="dist-left-ref">
+            <view class="dist-dot-ref dist-dot-{{item.type}}"></view>
+            <text class="dist-name-ref">{{item.name}}</text>
+          </view>
+          <text class="dist-count-ref">{{item.count}}题</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view wx:if="{{isLoading}}" class="loading-state">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:elif="{{questions.length === 0}}" class="empty-state">
+      <view class="empty-icon-bg">
+        <image src="/images/check.png" class="empty-icon" mode="aspectFit"/>
+      </view>
+      <text class="empty-title">太棒了！</text>
+      <text class="empty-text">目前还没有错题记录</text>
+    </view>
+
+    <!-- 错题列表 -->
+    <view wx:else class="questions-list">
+      <view 
+        wx:for="{{questions}}" 
+        wx:key="id"
+        class="question-card"
+      >
+        <view class="card-top-bar bar-{{item.module_type}}"></view>
+        
+        <view class="card-content">
+          <!-- 题目头部 -->
+          <view class="question-header">
+            <view class="header-badges">
+              <view class="type-badge badge-{{item.module_type}}">
+                <text>{{item.module_type}}</text>
+              </view>
+              <view wx:if="{{item.reviewed}}" class="reviewed-badge">
+                <image src="/images/check.png" class="badge-icon" mode="aspectFit"/>
+                <text>已复习</text>
+              </view>
+            </view>
+            <view class="question-date">
+              <image src="/images/calendar.png" class="date-icon" mode="aspectFit"/>
+              <text class="date-text">{{item.date}}</text>
+            </view>
+          </view>
+
+          <!-- 题目内容 -->
+          <view class="question-content">
+            <text class="content-text">{{item.question_content}}</text>
+          </view>
+
+          <!-- 答案对比 -->
+          <view class="answer-compare">
+            <view class="answer-box wrong-answer">
+              <view class="answer-label">
+                <image src="/images/x.png" class="label-icon" mode="aspectFit"/>
+                <text class="label-text">你的答案</text>
+              </view>
+              <text class="answer-text">{{item.user_answer}}</text>
+            </view>
+            <view class="answer-box correct-answer">
+              <view class="answer-label">
+                <image src="/images/check.png" class="label-icon" mode="aspectFit"/>
+                <text class="label-text">正确答案</text>
+              </view>
+              <text class="answer-text">{{item.correct_answer}}</text>
+            </view>
+          </view>
+
+          <!-- 解析区域（展开/收起） -->
+          <view wx:if="{{expandedIds[item.id]}}" class="explanation-box">
+            <view class="explanation-header">
+              <image src="/images/lightbulb.png" class="explanation-icon" mode="aspectFit"/>
+              <text class="explanation-title">详细解析</text>
+            </view>
+            <text class="explanation-text">{{item.explanation || '暂无解析'}}</text>
+          </view>
+
+          <!-- 操作按钮 -->
+          <view class="question-actions">
+            <view 
+              class="action-btn btn-outline"
+              bindtap="toggleExplanation"
+              data-id="{{item.id}}"
+            >
+              <text>{{expandedIds[item.id] ? '收起' : '查看解析'}}</text>
+            </view>
+            <view 
+              wx:if="{{!item.reviewed}}"
+              class="action-btn btn-primary"
+              bindtap="markReviewed"
+              data-id="{{item.id}}"
+            >
+              <image src="/images/check.png" class="btn-icon" mode="aspectFit"/>
+              <text>标记已复习</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- 底部安全区 -->
+  <view class="bottom-spacer"></view>
+
+</view>
+

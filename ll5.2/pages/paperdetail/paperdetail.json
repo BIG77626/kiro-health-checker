@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "试卷详情",
+  "usingComponents": {
+    "first-time-setup": "/components/theme/first-time-setup"
+  }
+}

@@ -1,0 +1,176 @@
+<!--pages/vocabulary/vocabulary.wxml - 智能学习流程-->
+<view class="vocab-page {{themeClass}}">
+  
+  <!-- 快速设置组件（首次使用） -->
+  <quick-setup 
+    show="{{showQuickSetup}}"
+    bind:confirm="onSetupConfirm"
+    bind:skip="onSetupSkip"
+  />
+
+  <!-- 学习页面 -->
+  <view wx:if="{{pageState === 'learning'}}" class="learning-container">
+    
+    <!-- 顶部进度条 -->
+    <view class="learning-header">
+      <view class="progress-section">
+        <view class="progress-info">
+          <text class="progress-text">今日进度 {{learnedCount}}/{{dailyGoal}}</text>
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{progress}}%"></view>
+          </view>
+        </view>
+        <text class="progress-percent">{{progress}}%</text>
+      </view>
+      <button class="btn-pause" bindtap="pauseLearning">暂停</button>
+    </view>
+
+    <!-- 单词卡片 -->
+    <view class="word-card-container">
+      <view class="word-card">
+        <text class="word-en">{{currentWord.word}}</text>
+        <text class="word-phonetic">{{currentWord.phonetic}}</text>
+        <view class="word-divider"></view>
+        <text class="word-cn">{{currentWord.meaning}}</text>
+        <view class="word-example">
+          <text class="example-label">例句</text>
+          <text class="example-en">{{currentWord.example}}</text>
+          <text class="example-cn">{{currentWord.exampleCN}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="word-actions">
+      <button class="btn-action btn-hard" bindtap="markWord" data-mastery="hard">
+        <text class="btn-text">不认识</text>
+        <text class="btn-hint">1天后复习</text>
+      </button>
+      <button class="btn-action btn-easy" bindtap="markWord" data-mastery="easy">
+        <text class="btn-text">认识</text>
+        <text class="btn-hint">7天后复习</text>
+      </button>
+    </view>
+
+  </view>
+
+  <!-- 完成页面 -->
+  <view wx:if="{{pageState === 'completed'}}" class="completion-container">
+    
+    <!-- 完成动画 -->
+    <image src="/images/celebration.png" class="celebration-icon" mode="aspectFit"/>
+    
+    <text class="completion-title">太棒了！</text>
+    <text class="completion-subtitle">今日学习目标已完成</text>
+
+    <!-- 学习统计 -->
+    <view class="completion-stats">
+      <view class="stat-item">
+        <text class="stat-num">{{sessionStats.learnedCount}}</text>
+        <text class="stat-label">学习单词</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{sessionStats.timeSpent}}</text>
+        <text class="stat-label">学习时长(分)</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{sessionStats.accuracy}}%</text>
+        <text class="stat-label">掌握率</text>
+      </view>
+    </view>
+
+    <!-- 智能建议 -->
+    <view wx:if="{{showTestSuggestion}}" class="smart-suggestion">
+      <text class="suggestion-icon">💡</text>
+      <view class="suggestion-content">
+        <text class="suggestion-title">建议进行测试巩固</text>
+        <text class="suggestion-desc">{{testSuggestionMessage}}</text>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="completion-actions">
+      <button wx:if="{{showTestSuggestion}}" class="btn-primary" bindtap="startTest">
+        立即测试
+      </button>
+      <button class="btn-secondary" bindtap="backToHome">
+        返回首页
+      </button>
+    </view>
+
+  </view>
+
+  <!-- 已完成提示页面（今日目标已达成） -->
+  <view wx:if="{{pageState === 'already_completed'}}" class="already-completed-container">
+    
+    <image src="/images/trophy.png" class="trophy-icon" mode="aspectFit"/>
+    
+    <text class="achievement-title">今日目标已完成</text>
+    <text class="achievement-subtitle">连续学习 {{streak}} 天</text>
+
+    <view class="today-stats">
+      <view class="stat-row">
+        <text class="stat-label">今日学习</text>
+        <text class="stat-value">{{todayLearned}} 个单词</text>
+      </view>
+      <view class="stat-row">
+        <text class="stat-label">累计学习</text>
+        <text class="stat-value">{{totalLearned}} 个单词</text>
+      </view>
+      <view class="stat-row">
+        <text class="stat-label">平均掌握率</text>
+        <text class="stat-value">{{accuracy}}%</text>
+      </view>
+    </view>
+
+    <view class="achievement-actions">
+      <button wx:if="{{showTestSuggestion}}" class="btn-primary" bindtap="startTest">
+        进行测试
+      </button>
+      <button class="btn-secondary" bindtap="backToHome">
+        返回首页
+      </button>
+    </view>
+
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{pageState === 'loading'}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- AI助手提示（全局） -->
+  <view wx:if="{{showAIHint}}" class="ai-hint-modal">
+    <view class="ai-hint-overlay" catchtap="onDismissHint"></view>
+    <view class="ai-hint-content">
+      <text class="ai-hint-title">AI助手</text>
+      <text class="ai-hint-message">{{aiHintMessage}}</text>
+      <view class="ai-hint-actions">
+        <button class="ai-btn-secondary" bindtap="onDismissHint">我知道了</button>
+        <button wx:if="{{aiHintAction}}" class="ai-btn-primary" bindtap="onAcceptHint">
+          {{aiHintAction}}
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 生词本提示弹窗（全局） -->
+  <vocab-book-prompt
+    visible="{{showVocabBookPrompt}}"
+    wordData="{{vocabBookWordData}}"
+    attempts="{{vocabBookAttempts}}"
+    hardCount="{{vocabBookHardCount}}"
+    bind:addToVocabBook="onAddToVocabBook"
+    bind:skipVocabBook="onSkipVocabBook"
+  />
+
+  <!-- 最小化生词本提示（右下角） -->
+  <view wx:if="{{showMiniVocabToast}}" class="mini-vocab-toast">
+    <view class="toast-content">
+      <text class="toast-icon">📖</text>
+      <text class="toast-text">已加到生词本</text>
+    </view>
+  </view>
+
+</view>

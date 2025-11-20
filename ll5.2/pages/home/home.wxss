@@ -1,0 +1,204 @@
+/* pages/home/home.wxss */
+
+/* ==================== 页面容器 ==================== */
+.container {
+  min-height: 100vh;
+  background: #F8F9FB;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==================== 顶部统计区 ==================== */
+.header {
+  padding: 40rpx 32rpx 24rpx;
+}
+
+.study-data {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 40rpx;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.stat-icon {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.stat-value {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #6B7280;
+  line-height: 1.4;
+}
+
+/* ==================== Hero 区域 ==================== */
+.hero-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 48rpx;
+  text-align: center;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 64rpx;
+}
+
+.hero-icon-wrapper {
+  width: 192rpx;
+  height: 192rpx;
+  background: #4F7FE8;
+  border-radius: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 48rpx;
+  box-shadow: 0 16rpx 40rpx rgba(79, 127, 232, 0.3);
+}
+
+.hero-icon {
+  width: 96rpx;
+  height: 96rpx;
+}
+
+.hero-title {
+  font-size: 56rpx;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.3;
+  margin-bottom: 24rpx;
+  display: block;
+}
+
+.hero-description {
+  font-size: 28rpx;
+  font-weight: 400;
+  color: #6B7280;
+  line-height: 1.6;
+  display: block;
+}
+
+/* ==================== CTA 按钮 ==================== */
+.cta-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  padding: 24rpx 64rpx;
+  background: #4F7FE8;
+  border-radius: 32rpx;
+  box-shadow: 0 8rpx 24rpx rgba(79, 127, 232, 0.3);
+  transition: all 0.3s ease;
+}
+
+.cta-button:active {
+  background: #3D5FC8;
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 16rpx rgba(79, 127, 232, 0.4);
+}
+
+.cta-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.cta-arrow {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+/* ==================== 底部间距 ==================== */
+.bottom-spacer {
+  height: 120rpx;
+}
+
+/* ==================== 加载状态 ==================== */
+.loading {
+  width: 64rpx;
+  height: 64rpx;
+  border: 8rpx solid #DBEAFE;
+  border-top: 8rpx solid #2563EB;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.fixed {
+  position: fixed;
+}
+
+.top-0 {
+  top: 0;
+}
+
+.left-0 {
+  left: 0;
+}
+
+.z-50 {
+  z-index: 50;
+}
+
+/* ==================== 暗色模式适配 ==================== */
+.theme-dark .container {
+  background: #0B1220;
+}
+
+.theme-dark .stat-value {
+  color: #F8FAFC;
+}
+
+.theme-dark .stat-label {
+  color: #94A3B8;
+}
+
+.theme-dark .hero-title {
+  color: #F8FAFC;
+}
+
+.theme-dark .hero-description {
+  color: #CBD5E1;
+}
+
+.theme-dark .hero-icon-wrapper {
+  background: #7AA0FF;
+  box-shadow: 0 16rpx 40rpx rgba(122, 160, 255, 0.3);
+}
+
+.theme-dark .cta-button {
+  background: #7AA0FF;
+}
+
+.theme-dark .cta-button:active {
+  background: #6B8FEE;
+}
+
+.theme-dark .cta-text {
+  color: #0B1220;
+}

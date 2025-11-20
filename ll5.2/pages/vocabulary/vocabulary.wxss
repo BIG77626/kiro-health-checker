@@ -1,0 +1,582 @@
+/* pages/vocabulary/vocabulary.wxss - 智能学习流程样式 */
+
+.vocab-page {
+  min-height: 100vh;
+  background: #F8FAFC;
+}
+
+/* ==================== 学习页面 ==================== */
+
+.learning-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 32rpx;
+}
+
+/* 顶部进度条 */
+.learning-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40rpx;
+  gap: 16rpx;
+}
+
+.progress-section {
+  flex: 1;
+}
+
+.progress-info {
+  margin-bottom: 12rpx;
+}
+
+.progress-text {
+  font-size: 24rpx;
+  color: #64748B;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12rpx;
+  background: #E2E8F0;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%);
+  border-radius: 8rpx;
+  transition: width 0.3s ease;
+}
+
+.progress-percent {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #3B82F6;
+  margin-left: 16rpx;
+}
+
+.btn-pause {
+  padding: 16rpx 24rpx;
+  background: #F1F5F9;
+  color: #475569;
+  font-size: 26rpx;
+  border-radius: 12rpx;
+  border: none;
+}
+
+/* 单词卡片 */
+.word-card-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40rpx;
+}
+
+.word-card {
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 32rpx;
+  padding: 64rpx 48rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.word-en {
+  display: block;
+  font-size: 72rpx;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 16rpx;
+  letter-spacing: -0.02em;
+}
+
+.word-phonetic {
+  display: block;
+  font-size: 28rpx;
+  color: #64748B;
+  margin-bottom: 32rpx;
+}
+
+.word-divider {
+  width: 120rpx;
+  height: 4rpx;
+  background: #E2E8F0;
+  margin: 0 auto 32rpx;
+  border-radius: 2rpx;
+}
+
+.word-cn {
+  display: block;
+  font-size: 32rpx;
+  color: #334155;
+  margin-bottom: 40rpx;
+  font-weight: 500;
+}
+
+.word-example {
+  background: #F8FAFC;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  text-align: left;
+}
+
+.example-label {
+  display: block;
+  font-size: 22rpx;
+  color: #94A3B8;
+  margin-bottom: 12rpx;
+}
+
+.example-en {
+  display: block;
+  font-size: 26rpx;
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 8rpx;
+}
+
+.example-cn {
+  display: block;
+  font-size: 24rpx;
+  color: #94A3B8;
+  line-height: 1.6;
+}
+
+/* 操作按钮 */
+.word-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.btn-action {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32rpx 24rpx;
+  border-radius: 20rpx;
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.btn-action:active {
+  transform: scale(0.96);
+}
+
+.btn-hard {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+}
+
+.btn-easy {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.btn-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 8rpx;
+}
+
+.btn-hint {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ==================== 完成页面 ==================== */
+
+.completion-container,
+.already-completed-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64rpx 32rpx;
+  text-align: center;
+}
+
+.celebration-icon,
+.trophy-icon {
+  width: 240rpx;
+  height: 240rpx;
+  margin-bottom: 40rpx;
+}
+
+.completion-title,
+.achievement-title {
+  font-size: 56rpx;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 16rpx;
+}
+
+.completion-subtitle,
+.achievement-subtitle {
+  font-size: 28rpx;
+  color: #64748B;
+  margin-bottom: 48rpx;
+}
+
+/* 统计卡片 */
+.completion-stats,
+.today-stats {
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin-bottom: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.completion-stats {
+  display: flex;
+  justify-content: space-around;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-num {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #3B82F6;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #94A3B8;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #F1F5F9;
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.stat-row .stat-label {
+  font-size: 28rpx;
+  color: #64748B;
+}
+
+.stat-value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #0F172A;
+}
+
+/* 智能建议 */
+.smart-suggestion {
+  width: 100%;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 32rpx;
+}
+
+.suggestion-icon {
+  font-size: 48rpx;
+  flex-shrink: 0;
+}
+
+.suggestion-content {
+  flex: 1;
+  text-align: left;
+}
+
+.suggestion-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1E40AF;
+  margin-bottom: 8rpx;
+}
+
+.suggestion-desc {
+  display: block;
+  font-size: 24rpx;
+  color: #3B82F6;
+  line-height: 1.5;
+}
+
+/* 操作按钮 */
+.completion-actions,
+.achievement-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.btn-primary {
+  width: 100%;
+  height: 88rpx;
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 16rpx;
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+  width: 100%;
+  height: 88rpx;
+  background: #F8FAFC;
+  color: #64748B;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 16rpx;
+  border: 2rpx solid #E2E8F0;
+}
+
+/* ==================== 加载中 ==================== */
+
+.loading-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner {
+  width: 80rpx;
+  height: 80rpx;
+  border: 6rpx solid #E2E8F0;
+  border-top-color: #3B82F6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 24rpx;
+  font-size: 28rpx;
+  color: #94A3B8;
+}
+
+/* ==================== AI助手 ==================== */
+
+.ai-hint-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.ai-hint-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.ai-hint-content {
+  position: relative;
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 48rpx 32rpx 32rpx;
+  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.15);
+}
+
+.ai-hint-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 16rpx;
+}
+
+.ai-hint-message {
+  display: block;
+  font-size: 28rpx;
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 32rpx;
+}
+
+.ai-hint-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.ai-btn-primary {
+  flex: 1;
+  height: 88rpx;
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 16rpx;
+  border: none;
+}
+
+.ai-btn-secondary {
+  flex: 1;
+  height: 88rpx;
+  background: #F8FAFC;
+  color: #64748B;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 16rpx;
+  border: 2rpx solid #E2E8F0;
+}
+
+/* ==================== 暗色模式 ==================== */
+
+.theme-dark .vocab-page {
+  background: #0B1220;
+}
+
+.theme-dark .word-card {
+  background: #1E293B;
+}
+
+.theme-dark .word-en {
+  color: #F8FAFC;
+}
+
+.theme-dark .word-cn {
+  color: #E2E8F0;
+}
+
+.theme-dark .word-example {
+  background: #334155;
+}
+
+.theme-dark .completion-title,
+.theme-dark .achievement-title {
+  color: #F8FAFC;
+}
+
+.theme-dark .completion-stats,
+.theme-dark .today-stats {
+  background: #1E293B;
+}
+
+.theme-dark .ai-hint-content {
+  background: #1E293B;
+}
+
+.theme-dark .ai-hint-title {
+  color: #F8FAFC;
+}
+
+.theme-dark .ai-hint-message {
+  color: #CBD5E1;
+}
+
+/* ==================== 最小化生词本提示 ==================== */
+
+.mini-vocab-toast {
+  position: fixed;
+  right: 32rpx;
+  bottom: 120rpx; /* 避开底部安全区域 */
+  z-index: 1000;
+  animation: miniToastSlideIn 0.3s ease-out;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 20rpx;
+  padding: 16rpx 24rpx;
+  backdrop-filter: blur(10rpx);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+  min-width: 160rpx;
+  justify-content: center;
+}
+
+.toast-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+  animation: miniToastIconPulse 1.5s ease-in-out;
+}
+
+.toast-text {
+  font-size: 26rpx;
+  color: #FFFFFF;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* 深色模式适配 */
+.theme-dark .toast-content {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+/* 动画效果 */
+@keyframes miniToastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100rpx) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes miniToastIconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 750rpx) {
+  .mini-vocab-toast {
+    right: 24rpx;
+    bottom: 100rpx;
+  }
+
+  .toast-content {
+    padding: 12rpx 20rpx;
+    min-width: 140rpx;
+  }
+
+  .toast-icon {
+    font-size: 28rpx;
+    margin-right: 8rpx;
+  }
+
+  .toast-text {
+    font-size: 24rpx;
+  }
+}

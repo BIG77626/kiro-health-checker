@@ -1,0 +1,203 @@
+/* pages/vocabulary/components/quick-setup/quick-setup.wxss */
+
+.quick-setup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.quick-setup-modal {
+  width: 670rpx;
+  background: #FFFFFF;
+  border-radius: 32rpx;
+  padding: 48rpx 32rpx 32rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.15);
+}
+
+/* 标题 */
+.setup-header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.setup-title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 8rpx;
+}
+
+.setup-subtitle {
+  display: block;
+  font-size: 24rpx;
+  color: #94A3B8;
+}
+
+/* 设置区块 */
+.setup-section {
+  margin-bottom: 32rpx;
+}
+
+.section-label {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 16rpx;
+}
+
+/* 选项 */
+.option-choices {
+  display: flex;
+  gap: 16rpx;
+}
+
+.choice-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 16rpx;
+  background: #F8FAFC;
+  border: 2rpx solid #E2E8F0;
+  border-radius: 16rpx;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.choice-item.active {
+  background: #EFF6FF;
+  border-color: #3B82F6;
+  box-shadow: 0 4rpx 12rpx rgba(59, 130, 246, 0.15);
+}
+
+.choice-num {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 4rpx;
+}
+
+.choice-item.active .choice-num {
+  color: #3B82F6;
+}
+
+.choice-desc {
+  font-size: 22rpx;
+  color: #94A3B8;
+}
+
+.choice-item.active .choice-desc {
+  color: #60A5FA;
+}
+
+/* 推荐标签 */
+.choice-badge {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  padding: 4rpx 12rpx;
+  background: #3B82F6;
+  color: #FFFFFF;
+  font-size: 20rpx;
+  font-weight: 600;
+  border-radius: 8rpx;
+}
+
+/* 时间估算 */
+.time-estimate {
+  text-align: center;
+  padding: 20rpx;
+  background: #F1F5F9;
+  border-radius: 12rpx;
+  margin-bottom: 32rpx;
+}
+
+.estimate-text {
+  font-size: 24rpx;
+  color: #64748B;
+}
+
+/* 按钮 */
+.setup-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.btn-start {
+  width: 100%;
+  height: 88rpx;
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 16rpx;
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(59, 130, 246, 0.3);
+}
+
+.btn-start:active {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+.skip-text {
+  display: block;
+  text-align: center;
+  font-size: 24rpx;
+  color: #94A3B8;
+  padding: 16rpx;
+}
+
+/* 暗色模式 */
+.theme-dark .quick-setup-modal {
+  background: #1E293B;
+}
+
+.theme-dark .setup-title {
+  color: #F8FAFC;
+}
+
+.theme-dark .setup-subtitle {
+  color: #64748B;
+}
+
+.theme-dark .section-label {
+  color: #E2E8F0;
+}
+
+.theme-dark .choice-item {
+  background: #334155;
+  border-color: #475569;
+}
+
+.theme-dark .choice-item.active {
+  background: #1E3A8A;
+  border-color: #3B82F6;
+}
+
+.theme-dark .choice-num {
+  color: #E2E8F0;
+}
+
+.theme-dark .choice-item.active .choice-num {
+  color: #60A5FA;
+}
+
+.theme-dark .time-estimate {
+  background: #334155;
+}
+
+.theme-dark .estimate-text {
+  color: #94A3B8;
+}
+

@@ -1,0 +1,146 @@
+<!--pages/weak-points-detail/weak-points-detail.wxml - 薄弱点详情页面-->
+<view class="page-container">
+  
+  <!-- 顶部 Header 已移除 -->
+
+  <!-- ① 主内容区 -->
+  <view class="main-content">
+    
+    <!-- 智能诊断报告卡片 -->
+    <view class="diagnosis-card">
+      <view class="card-header">
+        <view class="header-icon-bg">
+          <image src="/images/alert-circle.png" class="header-icon-small" mode="aspectFit"/>
+        </view>
+        <view class="header-info">
+          <text class="card-title">智能诊断报告</text>
+          <text class="card-description">根据你的错题记录，系统识别出以下薄弱环节。建议优先攻克错题率最高的模块，循序渐进提升整体水平。</text>
+          <view class="improvement-hint">
+            <image src="/images/trending-up.png" class="hint-icon" mode="aspectFit"/>
+            <text class="hint-text">针对性训练可提升20-30%的答题正确率</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 薄弱点排行 -->
+    <view class="weak-points-section">
+      <text class="section-title">薄弱点排行</text>
+
+      <!-- 加载状态 -->
+      <view wx:if="{{isLoading}}" class="loading-state">
+        <view class="loading-spinner"></view>
+        <text class="loading-text">加载中...</text>
+      </view>
+
+      <!-- 空状态 -->
+      <view wx:elif="{{weakPoints.length === 0}}" class="empty-state">
+        <view class="empty-icon-bg">
+          <image src="/images/target.png" class="empty-icon" mode="aspectFit"/>
+        </view>
+        <text class="empty-title">表现优秀！</text>
+        <text class="empty-text">目前没有明显的薄弱点</text>
+      </view>
+
+      <!-- 薄弱点列表 -->
+      <view wx:else class="weak-points-list">
+        <view 
+          wx:for="{{weakPoints}}" 
+          wx:key="type"
+          class="weak-point-card"
+          bindtap="startTraining"
+          data-type="{{item.type}}"
+        >
+          <view class="card-top-bar bar-{{item.type}}"></view>
+          
+          <view class="card-content">
+            <!-- 卡片头部 -->
+            <view class="card-header-row">
+              <view class="header-left">
+                <view class="rank-number rank-{{item.type}}">
+                  <text>#{{index + 1}}</text>
+                </view>
+                <view class="type-info">
+                  <view class="type-name-row">
+                    <text class="type-name">{{item.typeName}}</text>
+                    <view class="severity-badge badge-{{item.severity}}">
+                      <text>{{item.severityText}}</text>
+                    </view>
+                  </view>
+                  <text class="type-stats">共{{item.count}}道错题，占比{{item.percentage}}%</text>
+                </view>
+              </view>
+              <image src="/images/chevron-right.png" class="arrow-icon" mode="aspectFit"/>
+            </view>
+
+            <!-- 进度条 -->
+            <view class="progress-section">
+              <view class="progress-header">
+                <text class="progress-label">错题占比</text>
+                <text class="progress-value">{{item.percentage}}%</text>
+              </view>
+              <view class="progress-bar">
+                <view class="progress-fill fill-{{item.type}}" style="width: {{item.percentage}}%"></view>
+              </view>
+            </view>
+
+            <!-- 统计数据 -->
+            <view class="stats-grid">
+              <view class="stat-box stat-gray">
+                <view class="stat-label">
+                  <image src="/images/book-open.png" class="stat-icon" mode="aspectFit"/>
+                  <text class="stat-text">总错题数</text>
+                </view>
+                <text class="stat-value">{{item.count}}</text>
+              </view>
+              <view class="stat-box stat-{{item.type}}">
+                <view class="stat-label">
+                  <image src="/images/alert-circle.png" class="stat-icon" mode="aspectFit"/>
+                  <text class="stat-text">待复习</text>
+                </view>
+                <text class="stat-value">{{item.unreviewedCount}}</text>
+              </view>
+            </view>
+
+            <!-- 操作按钮 - 简化版 -->
+            <view class="action-btn-simple">
+              <text class="btn-text-simple">开始专项训练</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 学习建议卡片 -->
+    <view wx:if="{{weakPoints.length > 0}}" class="recommendation-card">
+      <view class="recommendation-header">
+        <image src="/images/target.png" class="recommendation-icon" mode="aspectFit"/>
+        <text class="recommendation-title">学习建议</text>
+      </view>
+      <view class="recommendation-list">
+        <view class="recommendation-item">
+          <text class="item-number">1.</text>
+          <text class="item-text">优先复习"{{weakPoints[0].typeName}}"模块，这是你当前最需要提升的领域</text>
+        </view>
+        <view class="recommendation-item">
+          <text class="item-number">2.</text>
+          <text class="item-text">建议每天针对薄弱点完成10-15道练习题，持续2周可见明显效果</text>
+        </view>
+        <view class="recommendation-item">
+          <text class="item-number">3.</text>
+          <text class="item-text">复习时注重理解解题思路，而不是死记硬背答案</text>
+        </view>
+        <view class="recommendation-item">
+          <text class="item-number">4.</text>
+          <text class="item-text">定期回顾已掌握的错题，巩固学习成果</text>
+        </view>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- 底部安全区 -->
+  <view class="bottom-spacer"></view>
+
+</view>
+

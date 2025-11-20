@@ -1,0 +1,281 @@
+<!-- pages/morpheme-study/morpheme-study.wxml -->
+<!-- 词根学习详情页 - 6阶段学习流程 -->
+
+<view class="study-container">
+  
+  <!-- 学习进度指示器 -->
+  <view class="stage-indicator">
+    <view 
+      wx:for="{{stages}}" 
+      wx:key="id" 
+      class="stage-item {{item.status}}"
+    >
+      <view class="stage-dot"></view>
+      <text class="stage-name">{{item.name}}</text>
+    </view>
+  </view>
+  
+  <!-- 阶段1: 词根理解 -->
+  <view wx:if="{{currentStage === 1}}" class="stage-content">
+    <view class="content-header">
+      <text class="stage-title">阶段1: 词根理解</text>
+      <text class="stage-subtitle">建立概念联想</text>
+    </view>
+    
+    <view class="etymology-card">
+      <view class="card-section">
+        <text class="section-label">词根</text>
+        <text class="morpheme-display">{{morphemeData.name}}</text>
+      </view>
+      
+      <view class="card-section">
+        <text class="section-label">核心含义</text>
+        <text class="meaning-text">{{morphemeData.meaning}}</text>
+      </view>
+      
+      <view class="card-section">
+        <text class="section-label">词源故事</text>
+        <view class="timeline">
+          <view 
+            wx:for="{{morphemeData.etymology.timeline}}" 
+            wx:key="index" 
+            class="timeline-item"
+          >
+            <view class="timeline-dot"></view>
+            <view wx:if="{{index < morphemeData.etymology.timeline.length - 1}}" class="timeline-line"></view>
+            <view class="timeline-content">
+              <text class="timeline-time">{{item.time}}</text>
+              <text class="timeline-event">{{item.event}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <view class="card-section">
+        <text class="section-label">记忆口诀</text>
+        <view class="mnemonic-list">
+          <text 
+            wx:for="{{morphemeData.mnemonics}}" 
+            wx:key="index" 
+            class="mnemonic-item"
+          >
+            {{item}}
+          </text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="countdown-section" wx:if="{{countdown > 0}}">
+      <text class="countdown-label">建议学习时间</text>
+      <text class="countdown-time">{{countdownDisplay}}</text>
+    </view>
+    
+    <view class="action-buttons">
+      <button class="btn-secondary" bindtap="onSkipStage">跳过</button>
+      <button class="btn-primary" bindtap="onNextStage">下一阶段</button>
+    </view>
+  </view>
+  
+  <!-- 阶段2: 词族扩展 -->
+  <view wx:elif="{{currentStage === 2}}" class="stage-content">
+    <view class="content-header">
+      <text class="stage-title">阶段2: 词族扩展</text>
+      <text class="stage-subtitle">识别词汇模式</text>
+    </view>
+    
+    <view class="word-family-list">
+      <view 
+        wx:for="{{morphemeData.derivedWords}}" 
+        wx:key="id" 
+        class="word-card"
+      >
+        <view class="word-breakdown">
+          <text class="prefix">{{item.prefix}}</text>
+          <text class="root">{{morphemeData.name}}</text>
+          <text class="suffix">{{item.suffix}}</text>
+        </view>
+        
+        <view class="word-info">
+          <text class="word-full">{{item.word}}</text>
+          <text class="word-meaning">{{item.meaning}}</text>
+        </view>
+        
+        <view class="word-explanation">
+          <text class="explanation-text">{{item.explanation}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="action-buttons">
+      <button class="btn-secondary" bindtap="onPrevStage">上一阶段</button>
+      <button class="btn-primary" bindtap="onNextStage">下一阶段</button>
+    </view>
+  </view>
+  
+  <!-- 阶段3: 语境阅读 -->
+  <view wx:elif="{{currentStage === 3}}" class="stage-content">
+    <view class="content-header">
+      <text class="stage-title">阶段3: 语境阅读</text>
+      <text class="stage-subtitle">在上下文中理解词义</text>
+    </view>
+    
+    <view class="reading-tips">
+      <text class="tip-title">阅读提示</text>
+      <view class="tip-list">
+        <text class="tip-item">不要翻译，直接理解</text>
+        <text class="tip-item">注意新词在语境中的用法</text>
+        <text class="tip-item">从上下文推测不认识的词</text>
+      </view>
+    </view>
+    
+    <view class="article-container">
+      <text class="article-title">{{article.title}}</text>
+      <text class="article-content">{{article.content}}</text>
+    </view>
+    
+    <view class="reading-timer">
+      <text class="timer-label">阅读用时</text>
+      <text class="timer-value">{{readingTime}}</text>
+    </view>
+    
+    <view class="action-buttons">
+      <button class="btn-secondary" bindtap="onPrevStage">上一阶段</button>
+      <button class="btn-primary" bindtap="onReadingComplete">阅读完成</button>
+    </view>
+  </view>
+  
+  <!-- 阶段4: 填空测试 -->
+  <view wx:elif="{{currentStage === 4}}" class="stage-content">
+    <view class="content-header">
+      <text class="stage-title">阶段4: 填空测试</text>
+      <text class="stage-subtitle">主动提取记忆</text>
+    </view>
+    
+    <view class="test-progress">
+      <text class="progress-text">进度: {{currentBlankIndex + 1}}/{{blanks.length}}</text>
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{testProgressPercent}}%"></view>
+      </view>
+    </view>
+    
+    <view class="blank-question">
+      <text class="question-text">{{blanks[currentBlankIndex].context}}</text>
+      
+      <view class="answer-input">
+        <input 
+          class="blank-input" 
+          placeholder="请输入单词"
+          value="{{userAnswer}}"
+          bindinput="onAnswerInput"
+          bindconfirm="onSubmitAnswer"
+        />
+      </view>
+      
+      <view wx:if="{{showHint}}" class="hint-box">
+        <text class="hint-text">{{currentHint}}</text>
+      </view>
+    </view>
+    
+    <view class="action-buttons">
+      <button class="btn-secondary" bindtap="onRequestHint">提示</button>
+      <button class="btn-primary" bindtap="onSubmitAnswer">提交</button>
+    </view>
+  </view>
+  
+  <!-- 阶段5: 复述表达 -->
+  <view wx:elif="{{currentStage === 5}}" class="stage-content">
+    <view class="content-header">
+      <text class="stage-title">阶段5: 复述表达</text>
+      <text class="stage-subtitle">主动输出内化</text>
+    </view>
+    
+    <view class="retelling-task">
+      <text class="task-title">任务</text>
+      <text class="task-desc">用你自己的话，复述刚才的文章内容（50-80词）</text>
+      
+      <view class="task-requirements">
+        <text class="req-title">要求</text>
+        <text class="req-item">■ 必须用上这{{targetWords.length}}个新词</text>
+        <text class="req-item">■ 不能照抄原文</text>
+        <text class="req-item">■ 保持语义完整</text>
+      </view>
+    </view>
+    
+    <view class="retelling-input">
+      <textarea 
+        class="retelling-textarea"
+        placeholder="开始输入..."
+        value="{{retellingText}}"
+        bindinput="onRetellingInput"
+        maxlength="500"
+      />
+      <text class="word-count">{{retellingWordCount}} / 50-80</text>
+    </view>
+    
+    <view class="word-usage">
+      <text class="usage-label">已用新词</text>
+      <view class="usage-list">
+        <text 
+          wx:for="{{targetWords}}" 
+          wx:key="*this" 
+          class="usage-word {{item.used ? 'used' : 'unused'}}"
+        >
+          {{item.word}}
+        </text>
+      </view>
+    </view>
+    
+    <view class="action-buttons">
+      <button class="btn-secondary" bindtap="onPrevStage">上一阶段</button>
+      <button class="btn-primary" bindtap="onSubmitRetelling">提交</button>
+    </view>
+  </view>
+  
+  <!-- 阶段6: 实战应用 -->
+  <view wx:elif="{{currentStage === 6}}" class="stage-content">
+    <view class="content-header">
+      <text class="stage-title">阶段6: 实战应用</text>
+      <text class="stage-subtitle">场景化迁移学习</text>
+    </view>
+    
+    <view class="scenario-list">
+      <view 
+        wx:for="{{scenarios}}" 
+        wx:key="id" 
+        class="scenario-card"
+      >
+        <text class="scenario-title">{{item.title}}</text>
+        <text class="scenario-task">{{item.task}}</text>
+        
+        <textarea 
+          class="scenario-textarea"
+          placeholder="开始写作..."
+          value="{{item.answer}}"
+          bindinput="onScenarioInput"
+          data-index="{{index}}"
+          maxlength="200"
+        />
+        <text class="scenario-count">{{item.wordCount}}/50+</text>
+      </view>
+    </view>
+    
+    <view class="action-buttons">
+      <button class="btn-secondary" bindtap="onPrevStage">上一阶段</button>
+      <button class="btn-primary" bindtap="onCompleteStudy">完成学习</button>
+    </view>
+  </view>
+  
+  <!-- AI助手提示（全局） -->
+  <view wx:if="{{showAIHint}}" class="ai-hint-modal">
+    <view class="ai-hint-content">
+      <text class="ai-hint-title">AI助手</text>
+      <text class="ai-hint-message">{{aiHintMessage}}</text>
+      <view class="ai-hint-actions">
+        <button class="ai-btn-secondary" bindtap="onDismissHint">我知道了</button>
+        <button wx:if="{{aiHintAction}}" class="ai-btn-primary" bindtap="onAcceptHint">{{aiHintAction}}</button>
+      </view>
+    </view>
+  </view>
+  
+</view>
+

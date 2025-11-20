@@ -1,0 +1,149 @@
+<!--pages/profile/profile.wxml-->
+<view class="profile-page">
+  <!-- Header with Gradient Background -->
+  <view class="profile-header-new">
+    <view class="header-inner-wrapper" wx:if="{{hasLogin}}">
+      <!-- Large Avatar -->
+      <view class="avatar-large">
+        <text class="avatar-letter">{{userInfo.nickName ? userInfo.nickName.charAt(0).toUpperCase() : 'C'}}</text>
+      </view>
+      
+      <!-- User Name -->
+      <text class="user-name-large">{{userInfo.nickName || 'User'}}</text>
+      
+      <!-- Email -->
+      <text class="user-email-text">{{userInfo.email || 'user@example.com'}}</text>
+    </view>
+    
+    <!-- Not Logged In -->
+    <view class="header-inner-wrapper" wx:else>
+      <view class="avatar-large">
+        <text class="avatar-letter">?</text>
+      </view>
+      <text class="user-name-large">未登录</text>
+      <text class="user-email-text">登录后可查看学习数据</text>
+    </view>
+  </view>
+  
+  <!-- 3 White Stats Cards - Overlapping Header -->
+  <view class="stats-overlap-container">
+    <view class="stat-mini-card">
+      <view class="icon-circle-bg orange-bg">
+        <text class="icon-emoji">🔥</text>
+      </view>
+      <text class="stat-big-number">{{studyDays || 3}}</text>
+      <text class="stat-gray-label">学习天数</text>
+    </view>
+    
+    <view class="stat-mini-card">
+      <view class="icon-circle-bg blue-bg">
+        <text class="icon-emoji">🏆</text>
+      </view>
+      <text class="stat-big-number">{{achievements.totalStudyTime || 225}}</text>
+      <text class="stat-gray-label">累计分钟</text>
+    </view>
+    
+    <view class="stat-mini-card">
+      <view class="icon-circle-bg green-bg">
+        <text class="icon-emoji">🎯</text>
+      </view>
+      <text class="stat-big-number">{{achievements.totalQuestions || 3}}</text>
+      <text class="stat-gray-label">掌握词汇</text>
+    </view>
+  </view>
+
+  <!-- Main Content -->
+  <view class="main-content">
+    <!-- Learning Overview Purple Card -->
+    <view class="learning-overview-purple">
+      <text class="overview-title">学习概览</text>
+      <view class="overview-data-row">
+        <view class="overview-col">
+          <text class="overview-label-small">完成目标</text>
+          <text class="overview-value-large">{{achievements.totalQuestions || 119}}</text>
+        </view>
+        <view class="overview-col">
+          <text class="overview-label-small">正确率</text>
+          <text class="overview-value-large">{{achievements.bestAccuracy || 87}}%</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Menu List -->
+    <view class="menu-section">
+      <view class="menu-card">
+        <view class="menu-item" bindtap="goToStudySettings">
+          <image src="/images/settings.png" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">学习设置</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        
+        <view class="menu-item" bindtap="goToStudyHistory">
+          <image src="/images/history.png" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">学习记录</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        
+        <view class="menu-item" bindtap="goToFeedback">
+          <image src="/images/message.png" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">意见反馈</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        
+        <view class="menu-item" bindtap="editUserInfo" wx:if="{{hasLogin}}">
+          <image src="/images/profile.png" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">编辑资料</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        
+        <view class="menu-item" bindtap="clearCache">
+          <image src="/images/refresh.png" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">清除缓存</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        
+        <view class="menu-item" bindtap="showAbout">
+          <image src="/images/info.png" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">关于我们</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        
+        <view class="menu-item logout-item" bindtap="handleLogout" wx:if="{{hasLogin}}">
+          <image src="/images/logout.png" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text logout-text">退出登录</text>
+          <text class="menu-arrow">›</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 版本信息 -->
+  <view class="text-center text-caption color-tertiary section-spacing">
+    <text>考研刷题小程序 v{{version}}</text>
+  </view>
+</view>
+
+<!-- 首次主题设置弹窗 -->
+<first-time-setup 
+  visible="{{showThemeSetup}}"
+  system-theme="{{systemTheme}}"
+  bind:confirm="onThemeSetupConfirm"
+  bind:close="onThemeSetupClose"
+/>
+
+<!-- 关于我们弹窗 -->
+  <view wx:if="{{showAboutModal}}" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex items-center justify-center" bindtap="hideAbout">
+    <view class="profile-card max-w-sm" catchtap="">
+      <view class="align-center mb-4">
+        <image src="/images/info.png" class="icon-lg mb-3" mode="aspectFit"></image>
+        <text class="text-title">关于我们</text>
+        <text class="text-caption color-tertiary mt-1">考研刷题小程序 v{{version}}</text>
+      </view>
+      <view class="text-body mb-6">
+        <text>考研刷题小程序是一款专为考研学子打造的高效学习工具，提供全面的题目练习和智能学习分析功能。</text>
+      </view>
+      <view class="align-center">
+        <button class="profile-btn profile-btn-primary" bindtap="hideAbout">确定</button>
+      </view>
+    </view>
+  </view>

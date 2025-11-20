@@ -1,0 +1,697 @@
+/* pages/morpheme-study/morpheme-study.wxss */
+/* 词根学习详情页 - 6阶段学习流程 */
+
+@import "../../styles/design-system.wxss";
+
+.study-container {
+  min-height: 100vh;
+  background: var(--bg-page);
+  padding-bottom: 160rpx;
+}
+
+/* ========== 学习阶段指示器 ========== */
+.stage-indicator {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-xl);
+  background: var(--bg-card);
+  border-bottom: 1rpx solid var(--border-default);
+}
+
+.stage-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex: 1;
+  position: relative;
+}
+
+.stage-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: var(--border-default);
+  transition: all var(--transition-base);
+}
+
+.stage-item.current .stage-dot {
+  width: 24rpx;
+  height: 24rpx;
+  background: var(--color-primary);
+}
+
+.stage-item.completed .stage-dot {
+  background: var(--color-success);
+}
+
+.stage-name {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+.stage-item.current .stage-name {
+  color: var(--color-primary);
+  font-weight: var(--font-semibold);
+}
+
+/* ========== 阶段内容容器 ========== */
+.stage-content {
+  padding: var(--spacing-xl);
+}
+
+.content-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.stage-title {
+  display: block;
+  font-size: var(--font-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.stage-subtitle {
+  display: block;
+  font-size: var(--font-base);
+  color: var(--text-tertiary);
+}
+
+/* ========== 阶段1: 词源卡片 ========== */
+.etymology-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.card-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.card-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-label {
+  display: block;
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.morpheme-display {
+  display: block;
+  font-size: var(--font-3xl);
+  font-weight: var(--font-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.meaning-text {
+  display: block;
+  font-size: var(--font-lg);
+  color: var(--text-primary);
+}
+
+/* 时间线 */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 40rpx;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: 0;
+  top: 8rpx;
+  width: 12rpx;
+  height: 12rpx;
+  background: var(--color-primary);
+  border-radius: 50%;
+}
+
+.timeline-line {
+  position: absolute;
+  left: 5rpx;
+  top: 20rpx;
+  width: 2rpx;
+  height: calc(100% + var(--spacing-md));
+  background: var(--border-default);
+}
+
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.timeline-time {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+}
+
+.timeline-event {
+  font-size: var(--font-base);
+  color: var(--text-primary);
+}
+
+/* 记忆口诀 */
+.mnemonic-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.mnemonic-item {
+  display: block;
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+  padding-left: var(--spacing-md);
+  position: relative;
+}
+
+.mnemonic-item::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-primary);
+}
+
+/* 倒计时 */
+.countdown-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--bg-subtle);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.countdown-label {
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+}
+
+.countdown-time {
+  font-size: var(--font-xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-primary);
+}
+
+/* ========== 阶段2: 词族列表 ========== */
+.word-family-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.word-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.word-breakdown {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.prefix,
+.suffix {
+  font-size: var(--font-lg);
+  color: var(--text-tertiary);
+}
+
+.root {
+  font-size: var(--font-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-primary);
+}
+
+.word-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.word-full {
+  font-size: var(--font-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.word-meaning {
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+}
+
+.word-explanation {
+  padding: var(--spacing-md);
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.explanation-text {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  line-height: var(--leading-relaxed);
+}
+
+/* ========== 阶段3: 语境阅读 ========== */
+.reading-tips {
+  background: var(--color-info-bg);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.tip-title {
+  display: block;
+  font-size: var(--font-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-info);
+  margin-bottom: var(--spacing-sm);
+}
+
+.tip-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.tip-item {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  padding-left: var(--spacing-md);
+  position: relative;
+}
+
+.tip-item::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-info);
+}
+
+.article-container {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.article-title {
+  display: block;
+  font-size: var(--font-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.article-content {
+  display: block;
+  font-size: var(--font-base);
+  color: var(--text-primary);
+  line-height: var(--leading-relaxed);
+}
+
+.reading-timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.timer-label {
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+}
+
+.timer-value {
+  font-size: var(--font-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-primary);
+}
+
+/* ========== 阶段4: 填空测试 ========== */
+.test-progress {
+  margin-bottom: var(--spacing-xl);
+}
+
+.progress-text {
+  display: block;
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12rpx;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+.blank-question {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.question-text {
+  display: block;
+  font-size: var(--font-lg);
+  color: var(--text-primary);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--spacing-lg);
+}
+
+.answer-input {
+  margin-bottom: var(--spacing-lg);
+}
+
+.blank-input {
+  width: 100%;
+  height: 88rpx;
+  padding: 0 var(--spacing-lg);
+  background: var(--bg-subtle);
+  border: 2rpx solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--font-lg);
+  color: var(--text-primary);
+}
+
+.hint-box {
+  padding: var(--spacing-lg);
+  background: var(--color-warning-bg);
+  border-radius: var(--radius-md);
+  border-left: 4rpx solid var(--color-warning);
+}
+
+.hint-text {
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+}
+
+/* ========== 阶段5: 复述表达 ========== */
+.retelling-task {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.task-title {
+  display: block;
+  font-size: var(--font-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.task-desc {
+  display: block;
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.task-requirements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.req-title {
+  font-size: var(--font-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-tertiary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.req-item {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+.retelling-input {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.retelling-textarea {
+  width: 100%;
+  min-height: 400rpx;
+  padding: var(--spacing-md);
+  background: var(--bg-subtle);
+  border: 2rpx solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  color: var(--text-primary);
+  line-height: var(--leading-relaxed);
+}
+
+.word-count {
+  display: block;
+  text-align: right;
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  margin-top: var(--spacing-sm);
+}
+
+.word-usage {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.usage-label {
+  display: block;
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.usage-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.usage-word {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-sm);
+  background: var(--bg-subtle);
+  color: var(--text-tertiary);
+}
+
+.usage-word.used {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+/* ========== 阶段6: 实战应用 ========== */
+.scenario-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.scenario-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+}
+
+.scenario-title {
+  display: block;
+  font-size: var(--font-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.scenario-task {
+  display: block;
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.scenario-textarea {
+  width: 100%;
+  min-height: 300rpx;
+  padding: var(--spacing-md);
+  background: var(--bg-subtle);
+  border: 2rpx solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  color: var(--text-primary);
+  line-height: var(--leading-relaxed);
+}
+
+.scenario-count {
+  display: block;
+  text-align: right;
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  margin-top: var(--spacing-sm);
+}
+
+/* ========== 操作按钮 ========== */
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+}
+
+.btn-primary,
+.btn-secondary {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-lg);
+  font-weight: var(--font-semibold);
+  transition: all var(--transition-base);
+  border: none;
+}
+
+.btn-primary::after,
+.btn-secondary::after {
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  color: var(--text-white);
+}
+
+.btn-secondary {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  border: 2rpx solid var(--border-default);
+}
+
+.btn-primary:active {
+  opacity: 0.8;
+}
+
+.btn-secondary:active {
+  background: var(--bg-hover);
+}
+
+/* ========== AI助手提示 ========== */
+.ai-hint-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.ai-hint-content {
+  width: 80%;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+}
+
+.ai-hint-title {
+  display: block;
+  font-size: var(--font-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.ai-hint-message {
+  display: block;
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--spacing-xl);
+}
+
+.ai-hint-actions {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.ai-btn-primary,
+.ai-btn-secondary {
+  flex: 1;
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  font-weight: var(--font-medium);
+  border: none;
+}
+
+.ai-btn-primary::after,
+.ai-btn-secondary::after {
+  border: none;
+}
+
+.ai-btn-primary {
+  background: var(--color-primary);
+  color: var(--text-white);
+}
+
+.ai-btn-secondary {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+/* ========== 深色模式适配 ========== */
+@media (prefers-color-scheme: dark) {
+  .etymology-card,
+  .word-card,
+  .article-container,
+  .blank-question,
+  .retelling-task,
+  .retelling-input,
+  .word-usage,
+  .scenario-card,
+  .ai-hint-content {
+    box-shadow: none;
+    border-bottom: 1rpx solid var(--border-default);
+  }
+}
+

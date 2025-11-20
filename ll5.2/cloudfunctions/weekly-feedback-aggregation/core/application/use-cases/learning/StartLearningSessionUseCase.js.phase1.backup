@@ -1,0 +1,88 @@
+/**
+ * 开始学习会话用例
+ * 
+ * 职责：
+ * 1. 创建新的学习会话
+ * 2. 记录会话开始时间
+ * 3. 返回会话ID供后续使用
+ * 
+ * @class StartLearningSessionUseCase
+ */
+class StartLearningSessionUseCase {
+  /**
+   * @param {IUserRepository} userRepository - 用户仓储
+   * @param {IStorageAdapter} storageAdapter - 存储适配器
+   */
+  constructor(userRepository, storageAdapter) {
+    this.userRepository = userRepository
+    this.storageAdapter = storageAdapter
+  }
+
+  /**
+   * 执行开始学习会话
+   * @param {Object} params - 参数
+   * @param {string} params.userId - 用户ID
+   * @param {string} params.lessonType - 课程类型（vocabulary/reading/cloze/translation/writing）
+   * @param {Object} [params.metadata] - 额外元数据
+   * @returns {Promise<Object>} 会话信息
+   * 
+   * @example
+   * const session = await startLearningSessionUseCase.execute({
+   *   userId: 'user_xxx',
+   *   lessonType: 'vocabulary',
+   *   metadata: { difficulty: 'medium' }
+   * });
+   * // session: { sessionId: 'session_xxx', startTime: '...', ... }
+   */
+  async execute({ userId, lessonType, metadata = {} }) {
+    try {
+      // 1. 验证用户存在
+      const user = await this.userRepository.findById(userId)
+      if (!user) {
+        throw new Error('User not found')
+      }
+
+      // 2. 创建学习会话
+      const sessionId = this._generateSessionId()
+      const session = {
+        id: sessionId,
+        userId,
+        lessonType,
+        startTime: new Date().toISOString(),
+        status: 'IN_PROGRESS',
+        metadata,
+        records: [] // 答题记录
+      }
+
+      // 3. 保存到本地存储
+      await this.storageAdapter.save(`session_${sessionId}`, session)
+      await this.storageAdapter.save('currentSessionId', sessionId)
+
+      // 4. 返回会话信息
+      return {
+        success: true,
+        session
+      }
+    } catch (error) {
+      console.error('[StartLearningSessionUseCase] Error:', error)
+      return {
+        success: false,
+        error: error.message
+      }
+    }
+  }
+
+  /**
+   * 生成会话ID
+   * @private
+   * @returns {string}
+   */
+  _generateSessionId() {
+    const timestamp = Date.now()
+    const random = Math.random().toString(36).substr(2, 9)
+    return `session_${timestamp}_${random}`
+  }
+}
+
+module.exports = StartLearningSessionUseCase
+

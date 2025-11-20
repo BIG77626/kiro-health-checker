@@ -1,0 +1,333 @@
+/* pages/morpheme-learning/morpheme-learning.wxss */
+/* 词根词素学习页面 - 极简UI设计 */
+
+@import "../../styles/design-system.wxss";
+
+.page-container {
+  min-height: 100vh;
+  background: var(--bg-page);
+  padding-bottom: 160rpx;
+}
+
+/* ========== 学习进度卡片 ========== */
+.progress-card {
+  background: var(--bg-card);
+  margin: 0 0 var(--spacing-md) 0;
+  border-bottom: 1rpx solid var(--border-default);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.progress-title {
+  font-size: var(--font-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.toggle-icon {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  transition: transform var(--transition-base);
+}
+
+.progress-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: 0 var(--spacing-xl) var(--spacing-lg);
+}
+
+.summary-item {
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+}
+
+.divider {
+  color: var(--border-default);
+}
+
+/* 展开的详细进度 */
+.progress-detail {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-top: 1rpx solid var(--border-default);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000rpx;
+  }
+}
+
+.detail-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  display: block;
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* 进度条 */
+.progress-bar {
+  width: 100%;
+  height: 12rpx;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--spacing-lg);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+/* 任务列表 */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) 0;
+}
+
+.task-status {
+  font-size: var(--font-lg);
+  color: var(--text-tertiary);
+  width: 32rpx;
+  text-align: center;
+}
+
+.task-item .task-status {
+  color: var(--color-primary);
+}
+
+.task-name {
+  flex: 1;
+  font-size: var(--font-base);
+  color: var(--text-primary);
+}
+
+.task-count {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+}
+
+/* 统计网格 */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-md);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.stat-value {
+  font-size: var(--font-xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-primary);
+}
+
+.stat-label {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+/* ========== 章节标题 ========== */
+.section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.section-title {
+  display: block;
+  font-size: var(--font-md);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+/* ========== 词根卡片列表 ========== */
+.morpheme-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: 0 var(--spacing-xl);
+}
+
+.morpheme-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+.morpheme-card:active {
+  transform: scale(0.98);
+  box-shadow: var(--shadow-xs);
+}
+
+/* 卡片状态样式 */
+.morpheme-card.learning {
+  border-left: 4rpx solid var(--color-primary);
+}
+
+.morpheme-card.completed {
+  border-left: 4rpx solid var(--color-success);
+}
+
+.morpheme-card.new {
+  border-left: 4rpx solid var(--border-default);
+}
+
+/* 卡片头部 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+}
+
+.morpheme-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.morpheme-name {
+  font-size: var(--font-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.morpheme-meaning {
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+}
+
+.status-icon {
+  font-size: 40rpx;
+}
+
+/* 卡片主体 */
+.card-body {
+  display: flex;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.word-count {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+}
+
+.status-text {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+}
+
+/* 卡片底部 */
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 var(--spacing-xl);
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  font-weight: var(--font-medium);
+  transition: all var(--transition-base);
+  border: none;
+}
+
+.action-btn::after {
+  border: none;
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  color: var(--text-white);
+}
+
+.action-btn.secondary {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.action-btn.primary:active {
+  opacity: 0.8;
+}
+
+.action-btn.secondary:active {
+  background: var(--bg-hover);
+}
+
+/* ========== 底部操作 ========== */
+.footer-action {
+  padding: var(--spacing-xl);
+}
+
+.btn-outline {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: transparent;
+  border: 2rpx solid var(--border-default);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-base);
+  color: var(--text-primary);
+  transition: all var(--transition-base);
+}
+
+.btn-outline::after {
+  border: none;
+}
+
+.btn-outline:active {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+}
+
+/* ========== 深色模式适配 ========== */
+@media (prefers-color-scheme: dark) {
+  .progress-card,
+  .morpheme-card {
+    box-shadow: none;
+    border-bottom: 1rpx solid var(--border-default);
+  }
+}
+

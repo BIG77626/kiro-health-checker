@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "openapi": []
+  },
+  "triggers": [
+    {
+      "name": "weekly-aggregation-trigger",
+      "type": "timer",
+      "config": "0 2 * * 0"
+    }
+  ],
+  "timeout": 20,
+  "envVariables": {},
+  "memorySize": 256
+}

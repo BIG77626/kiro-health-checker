@@ -1,0 +1,276 @@
+<!--pages/reading-article/reading-article.wxml-->
+<view class="reading-container theme-{{readingSettings.theme}}">
+  <!-- 自定义导航栏 -->
+  <view class="custom-navbar">
+    <view class="navbar-left">
+      <view class="nav-btn" bindtap="goBack">
+        <image src="/images/arrow-left.png" class="nav-icon" mode="aspectFit"></image>
+      </view>
+    </view>
+    
+    <view class="navbar-center">
+      <text class="navbar-title">阅读理解</text>
+    </view>
+    
+    <view class="navbar-right">
+      <view class="nav-btn" bindtap="toggleFullTranslation">
+        <image src="/images/globe.png" class="nav-icon" mode="aspectFit"></image>
+      </view>
+      <view class="nav-btn" bindtap="toggleSettings">
+        <image src="/images/settings.png" class="nav-icon" mode="aspectFit"></image>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{isLoading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载文章中...</text>
+  </view>
+
+  <!-- 错误状态 -->
+  <view wx:elif="{{loadError}}" class="error-container">
+    <image src="/images/alert-circle.png" class="error-icon" mode="aspectFit"></image>
+    <text class="error-title">加载失败</text>
+    <text class="error-desc">文章加载失败，请检查网络连接</text>
+    <view class="retry-btn" bindtap="loadArticle">重试</view>
+  </view>
+
+  <!-- 文章内容 -->
+  <view wx:elif="{{article}}" class="article-content">
+    <!-- 文章头部信息 -->
+    <view class="article-header">
+      <text class="article-title">{{article.title}}</text>
+      <view class="article-meta">
+        <view class="meta-item" wx:if="{{article.paperTitle}}">
+          <image src="/images/book.png" class="meta-icon" mode="aspectFit"></image>
+          <text class="meta-text">{{article.paperTitle}}</text>
+        </view>
+        <view class="meta-item" wx:if="{{article.year}}">
+          <image src="/images/calendar.png" class="meta-icon" mode="aspectFit"></image>
+          <text class="meta-text">{{article.year}}</text>
+        </view>
+        <view class="meta-item" wx:if="{{article.source}}">
+          <image src="/images/external-link.png" class="meta-icon" mode="aspectFit"></image>
+          <text class="meta-text">{{article.source}}</text>
+        </view>
+      </view>
+      
+      <!-- 文章统计信息 -->
+      <view class="article-stats" wx:if="{{article.wordCount || article.readingTime || article.topic}}">
+        <view class="stat-item" wx:if="{{article.wordCount}}">
+          <text class="stat-label">词数:</text>
+          <text class="stat-value">{{article.wordCount}}</text>
+        </view>
+        <view class="stat-item" wx:if="{{article.readingTime}}">
+          <text class="stat-label">阅读时间:</text>
+          <text class="stat-value">{{article.readingTime}}</text>
+        </view>
+        <view class="stat-item" wx:if="{{article.topic}}">
+          <text class="stat-label">主题:</text>
+          <text class="stat-value">{{article.topic}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 文章段落 -->
+    <view class="article-body">
+      <view 
+        class="paragraph-container" 
+        wx:for="{{article.paragraphs}}" 
+        wx:key="number">
+        
+        <view class="paragraph-number">{{item.number}}</view>
+        
+        <view class="paragraph-content">
+          <!-- 原文 -->
+          <view 
+            class="original-text" 
+            style="font-size: {{readingSettings.fontSize}}px; line-height: {{readingSettings.lineHeight}};"
+            bindlongpress="onSentenceLongPress"
+            data-sentence="{{item.text}}">
+            <text class="paragraph-text">{{item.text}}</text>
+          </view>
+          
+          <!-- 译文（对照版） -->
+          <view wx:if="{{readingSettings.showTranslation && item.translation}}" class="translation-text" 
+                style="font-size: {{readingSettings.fontSize - 1}}px; line-height: {{readingSettings.lineHeight}};">
+            <text class="translation-content">{{item.translation}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部操作区 -->
+    <view class="article-footer">
+      <view class="reading-progress">
+        <text class="progress-text">已阅读 {{article.paragraphs.length}} 段</text>
+      </view>
+      
+      <view class="action-buttons">
+        <view class="action-btn secondary" bindtap="goBack">
+          <text>返回</text>
+        </view>
+        <view class="action-btn primary" bindtap="startQuestions">
+          <text>开始答题</text>
+          <image src="/images/arrow-right.png" class="btn-icon" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 设置面板 -->
+  <view wx:if="{{showSettings}}" class="settings-overlay" bindtap="toggleSettings">
+    <view class="settings-panel" catchtap="">
+      <view class="settings-header">
+        <text class="settings-title">阅读设置</text>
+        <view class="close-btn" bindtap="toggleSettings">
+          <image src="/images/x.png" class="close-icon" mode="aspectFit"></image>
+        </view>
+      </view>
+      
+      <view class="settings-content">
+        <!-- 字体大小 -->
+        <view class="setting-group">
+          <text class="setting-label">字体大小</text>
+          <view class="setting-options">
+            <view 
+              class="option-btn {{readingSettings.fontSize === item.value ? 'active' : ''}}"
+              wx:for="{{fontSizeOptions}}"
+              wx:key="value"
+              bindtap="setFontSize"
+              data-size="{{item.value}}">
+              <text class="option-text">{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 行间距 -->
+        <view class="setting-group">
+          <text class="setting-label">行间距</text>
+          <view class="setting-options">
+            <view 
+              class="option-btn {{readingSettings.lineHeight === item.value ? 'active' : ''}}"
+              wx:for="{{lineHeightOptions}}"
+              wx:key="value"
+              bindtap="setLineHeight"
+              data-height="{{item.value}}">
+              <text class="option-text">{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 主题 -->
+        <view class="setting-group">
+          <text class="setting-label">阅读主题</text>
+          <view class="setting-options">
+            <view 
+              class="theme-btn {{readingSettings.theme === item.value ? 'active' : ''}}"
+              wx:for="{{themeOptions}}"
+              wx:key="value"
+              bindtap="setTheme"
+              data-theme="{{item.value}}"
+              style="background: {{item.bg}}; color: {{item.color}};">
+              <text class="theme-text">{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 翻译开关 -->
+        <view class="setting-group">
+          <view class="setting-switch">
+            <text class="setting-label">显示翻译</text>
+            <switch 
+              checked="{{readingSettings.showTranslation}}" 
+              bindchange="toggleTranslation"
+              color="#3b82f6">
+            </switch>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 单词翻译弹窗 -->
+<view wx:if="{{showWordPopup}}" class="word-popup-overlay" bindtap="closeWordPopup">
+  <view class="word-popup" catchtap="">
+    <view class="word-popup-header">
+      <text class="word-title">{{selectedWord}}</text>
+      <view class="close-btn" bindtap="closeWordPopup">
+        <image src="/images/x.png" class="close-icon" mode="aspectFit"></image>
+      </view>
+    </view>
+    
+    <view class="word-popup-content">
+      <view wx:if="{{wordPhonetic}}" class="word-phonetic">
+        <text class="phonetic-text">{{wordPhonetic}}</text>
+      </view>
+      
+      <view class="word-definition">
+        <text class="definition-text">{{wordDefinition}}</text>
+      </view>
+      
+      <view wx:if="{{wordExamples.length > 0}}" class="word-examples">
+        <text class="examples-title">例句：</text>
+        <view wx:for="{{wordExamples}}" wx:key="index" class="example-item">
+          <text class="example-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="word-popup-actions">
+      <view class="action-btn" bindtap="speakWord" data-word="{{selectedWord}}">
+        <image src="/images/volume.png" class="action-icon" mode="aspectFit"></image>
+        <text>朗读</text>
+      </view>
+      <view class="action-btn" bindtap="collectWord" data-word="{{selectedWord}}">
+        <image src="/images/star.png" class="action-icon" mode="aspectFit"></image>
+        <text>收藏</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 句子翻译弹窗 -->
+<view wx:if="{{showSentenceTranslation}}" class="sentence-translation-overlay" bindtap="closeSentenceTranslation">
+  <view class="sentence-translation-popup" catchtap="">
+    <view class="translation-header">
+      <text class="translation-title">句子翻译</text>
+      <view class="close-btn" bindtap="closeSentenceTranslation">
+        <image src="/images/x.png" class="close-icon" mode="aspectFit"></image>
+      </view>
+    </view>
+    
+    <view class="translation-content">
+      <view class="original-sentence">
+        <text class="sentence-label">原文：</text>
+        <text class="sentence-text">{{selectedSentence}}</text>
+      </view>
+      
+      <view class="translated-sentence">
+        <text class="sentence-label">译文：</text>
+        <text class="sentence-text">{{sentenceTranslation}}</text>
+      </view>
+    </view>
+    
+    <view class="translation-actions">
+      <view class="action-btn" bindtap="speakSentence" data-sentence="{{selectedSentence}}">
+        <image src="/images/volume.png" class="action-icon" mode="aspectFit"></image>
+        <text>朗读原文</text>
+      </view>
+      <view class="action-btn" bindtap="collectSentence" data-sentence="{{selectedSentence}}">
+        <image src="/images/star.png" class="action-icon" mode="aspectFit"></image>
+        <text>收藏句子</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 首次主题设置弹窗 -->
+<first-time-setup 
+  visible="{{showThemeSetup}}"
+  system-theme="{{systemTheme}}"
+  bind:confirm="onThemeSetupConfirm"
+  bind:close="onThemeSetupClose"
+/>

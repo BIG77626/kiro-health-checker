@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "考研英语阅读",
+  "navigationStyle": "custom",
+  "disableScroll": true,
+  "usingComponents": {
+    "first-time-setup": "/components/theme/first-time-setup"
+  }
+}

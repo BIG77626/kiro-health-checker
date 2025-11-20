@@ -1,0 +1,81 @@
+<!--pages/vocabulary/components/quick-setup/quick-setup.wxml-->
+<view wx:if="{{show}}" class="quick-setup-overlay" catchtap="onClose">
+  <view class="quick-setup-modal" catchtap="stopPropagation">
+    
+    <!-- 标题 -->
+    <view class="setup-header">
+      <text class="setup-title">制定学习计划</text>
+      <text class="setup-subtitle">个性化你的学习目标</text>
+    </view>
+
+    <!-- 每日目标 -->
+    <view class="setup-section">
+      <text class="section-label">每日学习目标</text>
+      <view class="option-choices">
+        <view 
+          class="choice-item {{dailyGoal === 20 ? 'active' : ''}}" 
+          bindtap="selectDailyGoal" 
+          data-value="20">
+          <text class="choice-num">20词</text>
+          <text class="choice-desc">轻松学习</text>
+        </view>
+        <view 
+          class="choice-item {{dailyGoal === 50 ? 'active' : ''}}" 
+          bindtap="selectDailyGoal" 
+          data-value="50">
+          <text class="choice-num">50词</text>
+          <text class="choice-desc">推荐</text>
+          <view class="choice-badge">推荐</view>
+        </view>
+        <view 
+          class="choice-item {{dailyGoal === 100 ? 'active' : ''}}" 
+          bindtap="selectDailyGoal" 
+          data-value="100">
+          <text class="choice-num">100词</text>
+          <text class="choice-desc">挑战</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 难度等级 -->
+    <view class="setup-section">
+      <text class="section-label">词汇难度</text>
+      <view class="option-choices">
+        <view 
+          class="choice-item {{difficultyLevel === 'basic' ? 'active' : ''}}" 
+          bindtap="selectDifficulty" 
+          data-value="basic">
+          <text class="choice-num">基础</text>
+          <text class="choice-desc">四级词汇</text>
+        </view>
+        <view 
+          class="choice-item {{difficultyLevel === 'medium' ? 'active' : ''}}" 
+          bindtap="selectDifficulty" 
+          data-value="medium">
+          <text class="choice-num">进阶</text>
+          <text class="choice-desc">六级词汇</text>
+        </view>
+        <view 
+          class="choice-item {{difficultyLevel === 'advanced' ? 'active' : ''}}" 
+          bindtap="selectDifficulty" 
+          data-value="advanced">
+          <text class="choice-num">高级</text>
+          <text class="choice-desc">考研词汇</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 估算时间 -->
+    <view class="time-estimate">
+      <text class="estimate-text">预计每天学习约 {{estimatedTime}} 分钟</text>
+    </view>
+
+    <!-- 按钮 -->
+    <view class="setup-actions">
+      <button class="btn-start" bindtap="onConfirm">开始学习</button>
+      <text class="skip-text" bindtap="onSkip">跳过，稍后设置</text>
+    </view>
+
+  </view>
+</view>
+

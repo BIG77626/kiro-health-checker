@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "词根词素学习",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#F5F7FA",
+  "enablePullDownRefresh": true,
+  "usingComponents": {}
+}
+

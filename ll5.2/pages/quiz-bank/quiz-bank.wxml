@@ -1,0 +1,232 @@
+<!--pages/quiz-bank/quiz-bank.wxml - 使用Study样式 + Quiz-Bank功能-->
+<view class="quiz-page {{themeClass}}">
+  
+  <!-- ① 顶部背景图片（独立，无容器） -->
+  <image src="/images/green-header-subjects.png" class="top-bg-image" mode="widthFix"/>
+
+  <!-- ② 主内容卡片（白色，向上覆盖） -->
+  <view class="main-content-card">
+    
+    <!-- ③ 题库横向滚动卡片 -->
+    <view class="subjects-section">
+      <view class="section-header">
+        <text class="section-title">题目类型</text>
+        <text class="section-subtitle">精选题型，科学备考</text>
+      </view>
+      
+      <!-- ⭐ 紧急修复：移除 scroll-view，改用普通 view + CSS 滚动 -->
+      <view class="subjects-scroll-wrapper">
+        <view class="subjects-list">
+          
+          <!-- 词汇学习 - 黄色 -->
+          <view class="subject-card card-vocab" bindtap="goToVocabulary">
+            <view class="card-decoration"></view>
+            <image src="/images/vocab.png" class="subject-icon" mode="aspectFit"/>
+            <text class="subject-title">词汇学习</text>
+          </view>
+          
+          <!-- 阅读理解 - 橙色 -->
+          <view class="subject-card card-reading" bindtap="goToReading">
+            <view class="card-decoration"></view>
+            <image src="/images/reading.png" class="subject-icon" mode="aspectFit"/>
+            <text class="subject-title">阅读理解</text>
+          </view>
+          
+          <!-- 完形填空 - 蓝紫色 -->
+          <view class="subject-card card-cloze" bindtap="goToCloze">
+            <view class="card-decoration"></view>
+            <image src="/images/cloze.png" class="subject-icon" mode="aspectFit"/>
+            <text class="subject-title">完形填空</text>
+          </view>
+          
+          <!-- 翻译练习 - 青绿色 -->
+          <view class="subject-card card-translation" bindtap="goToTranslation">
+            <view class="card-decoration"></view>
+            <image src="/images/translation.png" class="subject-icon" mode="aspectFit"/>
+            <text class="subject-title">翻译练习</text>
+          </view>
+          
+          <!-- 写作练习 - 橙黄色 -->
+          <view class="subject-card card-writing" bindtap="goToWriting">
+            <view class="card-decoration"></view>
+            <image src="/images/vocab.png" class="subject-icon" mode="aspectFit"/>
+            <text class="subject-title">写作练习</text>
+          </view>
+          
+          <!-- 词根词素 - 紫色 -->
+          <view class="subject-card card-morpheme" bindtap="goToMorpheme">
+            <view class="card-decoration"></view>
+            <image src="/images/book-open.png" class="subject-icon" mode="aspectFit"/>
+            <text class="subject-title">词根词素</text>
+          </view>
+          
+        </view>
+      </view>
+    </view>
+
+    <!-- ④ 今日进度 - 仅保留总体时长 -->
+    <view class="daily-progress-section">
+      <view class="section-header">
+        <text class="section-title">今日进度</text>
+        <text class="section-subtitle">坚持每天进步，养成学习习惯</text>
+      </view>
+      
+      <!-- 总体学习时长 -->
+      <view class="daily-progress-card">
+        <view class="progress-header">
+          <view class="progress-info">
+            <text class="progress-label">已学习时长</text>
+            <text class="progress-time">{{todayStudyTime || 45}} 分钟</text>
+          </view>
+          <view class="progress-icon-bg">
+            <image src="/images/trending-up.png" class="progress-icon" mode="aspectFit"/>
+          </view>
+        </view>
+        <view class="progress-bar-container">
+          <view class="progress-bar-bg">
+            <view class="progress-bar-fill" style="width: {{studyProgress || 65}}%"></view>
+          </view>
+        </view>
+        <text class="progress-hint">目标: {{targetTime || 70}}分钟 · 还需 {{remainingTime || 25}}分钟</text>
+      </view>
+    </view>
+
+    <!-- ⑤ 今日任务 - 融合学习模块进度 -->
+    <view class="tasks-section">
+      <view class="section-header">
+        <text class="section-title">今日任务</text>
+        <text class="section-subtitle">完成每日计划，高效备考</text>
+      </view>
+      
+      <!-- ⭐ 学习模块进度列表 -->
+      <view class="module-progress-list">
+        <!-- 单词记忆 -->
+        <view class="module-progress-item" bindtap="goToVocabulary">
+          <view class="module-info">
+            <image src="/images/vocab.png" class="module-icon" mode="aspectFit"/>
+            <view class="module-text">
+              <text class="module-name">单词记忆</text>
+              <text class="module-target">今日目标: 50词</text>
+            </view>
+          </view>
+          <view class="module-progress-wrapper">
+            <text class="module-percent">35%</text>
+            <view class="module-progress-bar">
+              <view class="module-progress-fill" style="width: 35%"></view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 阅读理解 -->
+        <view class="module-progress-item" bindtap="goToReading">
+          <view class="module-info">
+            <image src="/images/reading.png" class="module-icon" mode="aspectFit"/>
+            <view class="module-text">
+              <text class="module-name">阅读理解</text>
+              <text class="module-target">今日目标: 2篇</text>
+            </view>
+          </view>
+          <view class="module-progress-wrapper">
+            <text class="module-percent">20%</text>
+            <view class="module-progress-bar">
+              <view class="module-progress-fill" style="width: 20%"></view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 长难句分析 -->
+        <view class="module-progress-item" bindtap="goToReading">
+          <view class="module-info">
+            <image src="/images/book-open.png" class="module-icon" mode="aspectFit"/>
+            <view class="module-text">
+              <text class="module-name">长难句分析</text>
+              <text class="module-target">今日目标: 10句</text>
+            </view>
+          </view>
+          <view class="module-progress-wrapper">
+            <text class="module-percent">45%</text>
+            <view class="module-progress-bar">
+              <view class="module-progress-fill" style="width: 45%"></view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 完形填空 -->
+        <view class="module-progress-item" bindtap="goToCloze">
+          <view class="module-info">
+            <image src="/images/cloze.png" class="module-icon" mode="aspectFit"/>
+            <view class="module-text">
+              <text class="module-name">完形填空</text>
+              <text class="module-target">今日目标: 1篇</text>
+            </view>
+          </view>
+          <view class="module-progress-wrapper">
+            <text class="module-percent">0%</text>
+            <view class="module-progress-bar">
+              <view class="module-progress-fill" style="width: 0%"></view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 翻译练习 -->
+        <view class="module-progress-item" bindtap="goToTranslation">
+          <view class="module-info">
+            <image src="/images/translation.png" class="module-icon" mode="aspectFit"/>
+            <view class="module-text">
+              <text class="module-name">翻译练习</text>
+              <text class="module-target">今日目标: 5句</text>
+            </view>
+          </view>
+          <view class="module-progress-wrapper">
+            <text class="module-percent">0%</text>
+            <view class="module-progress-bar">
+              <view class="module-progress-fill" style="width: 0%"></view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 写作练习 -->
+        <view class="module-progress-item" bindtap="goToWriting">
+          <view class="module-info">
+            <image src="/images/vocab.png" class="module-icon" mode="aspectFit"/>
+            <view class="module-text">
+              <text class="module-name">写作练习</text>
+              <text class="module-target">今日目标: 1篇</text>
+            </view>
+          </view>
+          <view class="module-progress-wrapper">
+            <text class="module-percent">0%</text>
+            <view class="module-progress-bar">
+              <view class="module-progress-fill" style="width: 0%"></view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ⑥ 快捷工具 - Quiz-Bank功能 -->
+    <view class="quick-tools-section">
+      <view class="section-header">
+        <text class="section-title">快捷工具</text>
+        <text class="section-subtitle">高效复习，查漏补缺</text>
+      </view>
+      
+      <view class="quick-tools">
+        <view class="tool-btn" bindtap="goToVocabBook">
+          <text class="tool-icon">📖</text>
+          <text class="tool-text">生词本</text>
+        </view>
+        <view class="tool-btn" bindtap="goToWrongQuestions">
+          <text class="tool-icon">❌</text>
+          <text class="tool-text">错题复习</text>
+        </view>
+        <view class="tool-btn" bindtap="startMockExam">
+          <text class="tool-icon">📝</text>
+          <text class="tool-text">真题模考</text>
+        </view>
+      </view>
+    </view>
+
+  </view>
+
+</view>

@@ -1,0 +1,72 @@
+<!-- pages/test-result/test-result.wxml -->
+<view class="result-container {{themeClass}}">
+
+  <!-- 成绩卡片 -->
+  <view class="score-card">
+    <view class="score-icon {{scoreLevel}}">
+      <text wx:if="{{scoreLevel === 'excellent'}}">🏆</text>
+      <text wx:elif="{{scoreLevel === 'good'}}">🌟</text>
+      <text wx:elif="{{scoreLevel === 'pass'}}">👍</text>
+      <text wx:else>💪</text>
+    </view>
+    
+    <text class="score-title">{{scoreTitle}}</text>
+    <text class="score-subtitle">{{scoreSubtitle}}</text>
+    
+    <view class="score-number">
+      <text class="score-value">{{accuracy}}</text>
+      <text class="score-unit">分</text>
+    </view>
+  </view>
+
+  <!-- 统计数据 -->
+  <view class="stats-card">
+    <view class="stat-item">
+      <text class="stat-label">正确率</text>
+      <text class="stat-value">{{accuracy}}%</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-label">正确题数</text>
+      <text class="stat-value">{{correctCount}}/{{totalQuestions}}</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-label">用时</text>
+      <text class="stat-value">{{timeSpentDisplay}}</text>
+    </view>
+  </view>
+
+  <!-- AI评价 -->
+  <view class="ai-evaluation">
+    <view class="evaluation-header">
+      <text class="evaluation-icon">💡</text>
+      <text class="evaluation-title">AI评价</text>
+    </view>
+    <text class="evaluation-content">{{aiEvaluation}}</text>
+  </view>
+
+  <!-- 建议 -->
+  <view wx:if="{{suggestions.length > 0}}" class="suggestions">
+    <text class="suggestions-title">提升建议</text>
+    <view wx:for="{{suggestions}}" wx:key="index" class="suggestion-item">
+      <text class="suggestion-dot">•</text>
+      <text class="suggestion-text">{{item}}</text>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="result-actions">
+    <button class="btn-primary" bindtap="reviewWrong">
+      查看错题
+    </button>
+    <button class="btn-secondary" bindtap="retakeTest">
+      再测一次
+    </button>
+    <button class="btn-text" bindtap="backToHome">
+      返回首页
+    </button>
+  </view>
+
+</view>
+

@@ -1,0 +1,65 @@
+<!--pages/test-hint/test-hint.wxml - 短链思考系统测试页面-->
+<view class="test-page">
+  
+  <text class="test-title">🧠 短链思考系统测试</text>
+  
+  <!-- 测试hint-bar组件 -->
+  <view class="test-section">
+    <text class="section-title">1. Hint-Bar组件测试</text>
+    
+    <hint-bar
+      questionId="q_test_001"
+      focus="{{testFocus}}"
+      canExpand="{{true}}"
+      remainSteps="{{2}}"
+      bind:expand="onHintExpand"
+      bind:retry="onHintRetry"
+    />
+  </view>
+  
+  <!-- 控制按钮 -->
+  <view class="test-section">
+    <text class="section-title">2. 状态控制测试</text>
+    
+    <view class="test-controls">
+      <button bindtap="testLoading">显示Loading骨架</button>
+      <button bindtap="testFocus">显示Focus提示</button>
+      <button bindtap="testError">显示错误状态</button>
+    </view>
+  </view>
+  
+  <!-- 高亮测试 -->
+  <view class="test-section">
+    <text class="section-title">3. 高亮匹配测试</text>
+    
+    <view class="highlight-test-box">
+      <text class="test-label">原文：</text>
+      <text class="test-text">{{testText}}</text>
+      
+      <text class="test-label">高亮关键词：however, therefore, consider</text>
+      <rich-text nodes="{{highlightedNodes}}" class="highlighted-content"></rich-text>
+      
+      <text class="test-label">性能：{{highlightTime}}ms (100次匹配)</text>
+    </view>
+  </view>
+  
+  <!-- 状态机测试 -->
+  <view class="test-section">
+    <text class="section-title">4. 状态机测试</text>
+    
+    <view class="state-test-box">
+      <text class="state-info">当前状态：{{currentState}}</text>
+      
+      <view class="state-controls">
+        <button bindtap="testStateTransition" data-target="LOADING">→ LOADING</button>
+        <button bindtap="testStateTransition" data-target="STEP1">→ STEP1</button>
+        <button bindtap="testStateTransition" data-target="STEP2">→ STEP2</button>
+        <button bindtap="testStateTransition" data-target="STEP3">→ STEP3</button>
+      </view>
+      
+      <text class="state-result">{{stateTestResult}}</text>
+    </view>
+  </view>
+  
+</view>
+

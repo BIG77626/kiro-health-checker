@@ -1,0 +1,213 @@
+<!-- pages/vocab-book/vocab-book.wxml - 生词本页面 -->
+
+<view class="vocab-book-page {{themeClass}}">
+
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar">
+    <view class="nav-back" bindtap="onBack">
+      <text class="back-icon">←</text>
+    </view>
+    <view class="nav-title">
+      <text>生词本</text>
+    </view>
+    <view class="nav-actions">
+      <view class="nav-action" bindtap="toggleSearch">
+        <text class="action-icon">🔍</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-section" wx:if="{{pageState === 'loaded'}}">
+    <view class="stats-grid">
+      <view class="stat-card">
+        <text class="stat-value">{{vocabBook.stats.totalWords}}</text>
+        <text class="stat-label">总单词</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-value">{{vocabBook.stats.reviewedToday}}</text>
+        <text class="stat-label">今日复习</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-value">{{vocabBook.stats.masteredWords}}</text>
+        <text class="stat-label">已掌握</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 筛选和排序栏 -->
+  <view class="filter-bar" wx:if="{{pageState === 'loaded'}}">
+    <scroll-view class="filter-scroll" scroll-x="true">
+      <view class="filter-tabs">
+        <view
+          class="filter-tab {{filterType === 'all' ? 'active' : ''}}"
+          bindtap="onFilterChange"
+          data-type="all"
+        >
+          <text>全部</text>
+        </view>
+        <view
+          class="filter-tab {{filterType === 'thisWeek' ? 'active' : ''}}"
+          bindtap="onFilterChange"
+          data-type="thisWeek"
+        >
+          <text>本周</text>
+        </view>
+        <view
+          class="filter-tab {{filterType === 'thisMonth' ? 'active' : ''}}"
+          bindtap="onFilterChange"
+          data-type="thisMonth"
+        >
+          <text>本月</text>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="sort-selector">
+      <picker
+        mode="selector"
+        range="{{['时间', '频率', '掌握度']}}"
+        value="{{sortType === 'time' ? 0 : sortType === 'frequency' ? 1 : 2}}"
+        bindchange="onSortChange"
+      >
+        <view class="sort-text">
+          <text>{{sortType === 'time' ? '时间' : sortType === 'frequency' ? '频率' : '掌握度'}}</text>
+          <text class="sort-icon">▼</text>
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar" wx:if="{{showSearch}}">
+    <input
+      class="search-input"
+      placeholder="搜索单词或释义"
+      value="{{searchKeyword}}"
+      bindinput="onSearchInput"
+      confirm-type="search"
+    />
+  </view>
+
+  <!-- 单词列表 -->
+  <view class="words-list" wx:if="{{pageState === 'loaded'}}">
+    <view
+      class="word-item"
+      wx:for="{{getCurrentPageWords()}}"
+      wx:key="wordId"
+    >
+      <view class="word-header">
+        <view class="word-main">
+          <text class="word-text">{{item.word}}</text>
+          <text class="word-phonetic" wx:if="{{item.phonetic}}">{{item.phonetic}}</text>
+        </view>
+        <view class="word-status">
+          <text class="status-text {{item.reviewStatus}}">{{item.reviewStatusText}}</text>
+        </view>
+      </view>
+
+      <view class="word-content">
+        <text class="word-meaning">{{item.meaning}}</text>
+        <view class="word-meta">
+          <text class="meta-item">遇到{{item.attempts || 1}}次</text>
+          <text class="meta-item">{{item.displayDate}}添加</text>
+        </view>
+      </view>
+
+      <view class="word-progress" wx:if="{{item.reviewCount > 0}}">
+        <view class="progress-bar">
+          <view
+            class="progress-fill"
+            style="width: {{item.masteryRate}}%"
+          ></view>
+        </view>
+        <text class="progress-text">{{item.reviewCount}}次复习</text>
+      </view>
+
+      <view class="word-actions">
+        <button
+          class="action-btn review-btn"
+          bindtap="onStartReview"
+          data-word-id="{{item.wordId}}"
+          wx:if="{{!item.mastered}}"
+        >
+          复习
+        </button>
+        <button
+          class="action-btn mastered-btn"
+          bindtap="onMarkMastered"
+          data-word-id="{{item.wordId}}"
+          wx:if="{{!item.mastered}}"
+        >
+          已掌握
+        </button>
+        <button
+          class="action-btn remove-btn"
+          bindtap="onRemoveWord"
+          data-word-id="{{item.wordId}}"
+        >
+          移除
+        </button>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{hasMore}}" bindtap="loadMore">
+      <text>加载更多</text>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{pageState === 'empty'}}">
+    <view class="empty-icon">📖</view>
+    <text class="empty-title">生词本是空的</text>
+    <text class="empty-desc">在学习过程中遇到难词时，系统会自动提示您加入生词本</text>
+    <button class="empty-btn" bindtap="onBack">返回学习</button>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{pageState === 'loading'}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 错误状态 -->
+  <view class="error-state" wx:if="{{pageState === 'error'}}">
+    <view class="error-icon">⚠️</view>
+    <text class="error-title">加载失败</text>
+    <button class="error-btn" bindtap="initializePage">重试</button>
+  </view>
+
+  <!-- 复习模态框 -->
+  <view class="review-modal" wx:if="{{showReviewModal}}" catchtap="onCloseReviewModal">
+    <view class="modal-overlay" catchtap="onCloseReviewModal"></view>
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">复习单词</text>
+        <view class="modal-close" bindtap="onCloseReviewModal">
+          <text>✕</text>
+        </view>
+      </view>
+
+      <view class="review-word">
+        <text class="review-word-text">{{reviewWord.word}}</text>
+        <text class="review-word-phonetic" wx:if="{{reviewWord.phonetic}}">{{reviewWord.phonetic}}</text>
+        <text class="review-word-meaning">{{reviewWord.meaning}}</text>
+      </view>
+
+      <view class="review-options">
+        <view
+          class="review-option"
+          wx:for="{{reviewOptions}}"
+          wx:key="value"
+          bindtap="onSubmitReview"
+          data-performance="{{item.value}}"
+        >
+          <view class="option-indicator" style="background-color: {{item.color}}"></view>
+          <text class="option-text">{{item.text}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+</view>

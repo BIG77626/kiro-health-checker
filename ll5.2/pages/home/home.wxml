@@ -1,0 +1,48 @@
+<!--pages/home/home.wxml-->
+<view class="container">
+  <!-- 学习统计 (顶部) -->
+  <view class="header">
+    <view class="study-data">
+      <view wx:for="{{recentStats}}" wx:key="index" class="stat-item">
+        <image src="{{item.icon}}" class="stat-icon" mode="aspectFit"></image>
+        <text class="stat-value">{{item.value}}</text>
+        <text class="stat-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 主英雄区域 -->
+  <view class="hero-section">
+    <view class="hero-content">
+      <view class="hero-icon-wrapper">
+        <image src="/images/book-open.png" class="hero-icon" mode="aspectFit"></image>
+      </view>
+      <text class="hero-title">考研英语长文攻克</text>
+      <text class="hero-description">精准定位证据句，系统分析改写链，科学提升阅读理解能力。</text>
+    </view>
+
+    <view class="cta-button" bindtap="goToStudy">
+      <text class="cta-text">开始学习</text>
+      <image src="/images/arrow-right.png" class="cta-arrow" mode="aspectFit"></image>
+    </view>
+  </view>
+
+  <!-- 底部导航间距 -->
+  <view class="bottom-spacer"></view>
+</view>
+
+<!-- 首次主题设置弹窗 -->
+<first-time-setup
+  visible="{{showThemeSetup}}"
+  system-theme="{{systemTheme}}"
+  bind:confirm="onThemeSetupConfirm"
+  bind:close="onThemeSetupClose"
+/>
+
+<!-- 加载状态 -->
+<view wx:if="{{isLoading}}" class="fixed top-0 left-0 w-full h-full bg-white flex items-center justify-center z-50">
+  <view class="flex flex-col items-center">
+    <view class="loading w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full mb-4"></view>
+    <text class="text-gray-600">加载中...</text>
+  </view>
+</view>
