@@ -1,11 +1,12 @@
 // pages/profile/profile.js
 // ✅ 新架构已启用，不再使用CloudDatabase
 // const { CloudDatabase } = require('../../utils/cloud.js')
-const { showSuccess, showError, getDaysDiff } = require('../../utils/util.js')
+const { showSuccess, showError } = require('../../utils/util.js')
 const themeUtils = require('../../utils/theme.js')
+const Logger = require('../../core/infrastructure/logging/Logger')
 
 // 新架构相关导入（强制使用新架构，旧架构已完全移除）
-const ProfileViewModel = require('./ProfileViewModel')
+// ProfileViewModel已集成到Container中，无需单独导入
 const createProfileContainer = require('../../core/infrastructure/di/profileContainer')
 
 console.log('✅ Profile页面：使用新架构 (Clean Architecture)')
@@ -66,7 +67,13 @@ Page({
       this._loadNewArchitectureData()
 
     } catch (error) {
-      console.error('❌ Profile页面：新架构初始化失败', error)
+      Logger.error('Profile', 'InitArchitectureFailed', {
+        errorType: error.name || 'InitError',
+        errorMsg: error.message || 'Init architecture failed',
+        errorCode: 'ERR_PROFILE_INIT_ARCH',
+        fallback: 'show_error_state',
+        impact: 'ui_blocked'
+      })
       this.setData({
         viewModelError: error.message
       })
@@ -89,7 +96,13 @@ Page({
       await this.viewModel.loadUserData()
 
     } catch (error) {
-      console.error('❌ Profile页面：新架构数据加载失败', error)
+      Logger.error('Profile', 'LoadDataFailed', {
+        errorType: error.name || 'LoadError',
+        errorMsg: error.message || 'Load data failed',
+        errorCode: 'ERR_PROFILE_LOAD_DATA',
+        fallback: 'show_error_state',
+        impact: 'feature_degradation'
+      })
       this.setData({
         viewModelError: error.message
       })
@@ -141,6 +154,13 @@ Page({
         await this.viewModel.loadUserData()
       } catch (error) {
         console.error('Profile页面：加载用户数据失败', error)
+        Logger.error('Profile', 'LoadUserDataFailed', {
+          errorType: error.name || 'LoadError',
+          errorMsg: error.message || 'Load user data failed',
+          errorCode: 'ERR_PROFILE_LOAD_USER',
+          fallback: 'silent_fail',
+          impact: 'no_impact'
+        })
         // 错误已记录到ViewModel的state.error，页面会通过subscribe自动更新
       }
     }
@@ -201,7 +221,13 @@ Page({
       }
 
     } catch (error) {
-      console.error('新架构登录失败:', error)
+      Logger.error('Profile', 'LoginFailed', {
+        errorType: error.name || 'LoginError',
+        errorMsg: error.message || 'Login failed',
+        errorCode: 'ERR_PROFILE_LOGIN',
+        fallback: 'show_error_toast',
+        impact: 'feature_degradation'
+      })
       showError(error.message || '登录失败')
     }
   },
@@ -235,7 +261,13 @@ Page({
               showError(result.error || '登出失败')
             }
           } catch (error) {
-            console.error('新架构登出失败:', error)
+            Logger.error('Profile', 'LogoutFailed', {
+              errorType: error.name || 'LogoutError',
+              errorMsg: error.message || 'Logout failed',
+              errorCode: 'ERR_PROFILE_LOGOUT',
+              fallback: 'show_error_toast',
+              impact: 'no_impact'
+            })
             showError(error.message || '登出失败')
           }
         }
@@ -287,7 +319,13 @@ Page({
               showError(result.error || '清除缓存失败')
             }
           } catch (error) {
-            console.error('新架构清除缓存失败:', error)
+            Logger.error('Profile', 'ClearCacheFailed', {
+              errorType: error.name || 'CacheError',
+              errorMsg: error.message || 'Clear cache failed',
+              errorCode: 'ERR_PROFILE_CLEAR_CACHE',
+              fallback: 'show_error_toast',
+              impact: 'no_impact'
+            })
             showError(error.message || '清除缓存失败')
           }
         }
@@ -328,7 +366,13 @@ Page({
         showError(result.message || '刷新失败')
       }
     } catch (error) {
-      console.error('新架构刷新失败:', error)
+      Logger.error('Profile', 'RefreshUserInfoFailed', {
+        errorType: error.name || 'RefreshError',
+        errorMsg: error.message || 'Refresh user info failed',
+        errorCode: 'ERR_PROFILE_REFRESH',
+        fallback: 'show_error_toast',
+        impact: 'no_impact'
+      })
       showError(error.message || '刷新失败')
     } finally {
       wx.hideLoading()
@@ -362,7 +406,13 @@ Page({
         console.log('【下拉刷新】完成')
       }, 1000)
     } catch (error) {
-      console.error('新架构下拉刷新失败:', error)
+      Logger.error('Profile', 'PullDownRefreshFailed', {
+        errorType: error.name || 'RefreshError',
+        errorMsg: error.message || 'Pull down refresh failed',
+        errorCode: 'ERR_PROFILE_PULL_REFRESH',
+        fallback: 'stop_refresh',
+        impact: 'no_impact'
+      })
       wx.stopPullDownRefresh()
     }
   },
@@ -391,7 +441,13 @@ Page({
         showError(result.error || '数据同步失败')
       }
     } catch (error) {
-      console.error('新架构数据同步失败:', error)
+      Logger.error('Profile', 'SyncDataFailed', {
+        errorType: error.name || 'SyncError',
+        errorMsg: error.message || 'Sync data failed',
+        errorCode: 'ERR_PROFILE_SYNC_DATA',
+        fallback: 'show_error_toast',
+        impact: 'feature_degradation'
+      })
       showError(error.message || '数据同步失败')
     }
   },
@@ -456,7 +512,13 @@ Page({
         }, 1000)
       }
     } catch (error) {
-      console.error('检查主题设置失败:', error)
+      Logger.warn('Profile', 'CheckThemeSetupFailed', {
+        errorType: error.name || 'ThemeError',
+        errorMsg: error.message || 'Check theme setup failed',
+        errorCode: 'ERR_PROFILE_CHECK_THEME',
+        fallback: 'assume_not_set',
+        impact: 'no_impact'
+      })
       // 降级处理：假设未设置
       const systemTheme = themeUtils.getSystemTheme()
       setTimeout(() => {
@@ -483,7 +545,13 @@ Page({
 
       console.log('✅ 主题设置完成:', { theme, followSystem })
     } catch (error) {
-      console.error('主题设置失败:', error)
+      Logger.error('Profile', 'SetThemeFailed', {
+        errorType: error.name || 'ThemeError',
+        errorMsg: error.message || 'Set theme failed',
+        errorCode: 'ERR_PROFILE_SET_THEME',
+        fallback: 'show_error_toast',
+        impact: 'no_impact'
+      })
       wx.showToast({
         title: '主题设置失败，请重试',
         icon: 'none'
@@ -501,7 +569,13 @@ Page({
         showThemeSetup: false
       })
     } catch (error) {
-      console.error('关闭主题设置失败:', error)
+      Logger.warn('Profile', 'CloseThemeSetupFailed', {
+        errorType: error.name || 'ThemeError',
+        errorMsg: error.message || 'Close theme setup failed',
+        errorCode: 'ERR_PROFILE_CLOSE_THEME',
+        fallback: 'close_anyway',
+        impact: 'no_impact'
+      })
       // 降级处理：直接关闭弹窗
       this.setData({
         showThemeSetup: false

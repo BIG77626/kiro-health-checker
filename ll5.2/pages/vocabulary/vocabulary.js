@@ -76,7 +76,14 @@ Page({
       })
       console.log('✅ [词汇学习] ViewModel 初始化成功')
     } catch (error) {
-      console.error('❌ [词汇学习] ViewModel 初始化失败:', error)
+      console.error('❗ [词汇学习] ViewModel 初始化失败:', error)
+      Logger.error('Vocabulary', 'ViewModelInitFailed', {
+        errorType: error.name || 'InitError',
+        errorMsg: error.message || 'ViewModel initialization failed',
+        errorCode: 'ERR_VOCAB_VM_INIT',
+        fallback: 'continue_without_vm',
+        impact: 'feature_degradation'
+      })
       // 失败不影响旧逻辑运行
     }
     
@@ -85,10 +92,10 @@ Page({
 
   onReady() {
     // 性能跟踪
-    const app = getApp()
-    if (app.globalData && app.globalData.perfTest) {
+    const _app = getApp()
+    if (_app.globalData && _app.globalData.perfTest) {
       const loadTime = Date.now() - this.__loadStartTime
-      app.globalData.perfTest.recordPagePerformance('vocabulary', { loadTime })
+      _app.globalData.perfTest.recordPagePerformance('vocabulary', { loadTime })
     }
   },
 
@@ -158,8 +165,15 @@ Page({
       }
 
     } catch (error) {
-      console.error('❌ [词汇学习] 初始化失败:', error)
+      console.error('❗ [词汇学习] 初始化失败:', error)
       console.error('错误详情:', error.message, error.stack)
+      Logger.error('Vocabulary', 'InitPageFailed', {
+        errorType: error.name || 'InitError',
+        errorMsg: error.message || 'Initialize page failed',
+        errorCode: 'ERR_VOCAB_INIT_PAGE',
+        fallback: 'show_quick_setup',
+        impact: 'feature_degradation'
+      })
       
       // 降级方案：显示快速设置，让用户可以开始学习
       this.setData({
@@ -574,14 +588,14 @@ Page({
   /**
    * 显示生词本提示弹窗
    */
-  showVocabBookPrompt(wordData, attempts, hardCount) {
+  showVocabBookPrompt(wordData, attempts, _hardCount) {
     console.log('📖 [生词本] 显示提示弹窗:', wordData.word)
 
     this.setData({
       showVocabBookPrompt: true,
       vocabBookWordData: wordData,
       vocabBookAttempts: attempts,
-      vocabBookHardCount: hardCount
+      vocabBookHardCount: _hardCount
     })
   },
 

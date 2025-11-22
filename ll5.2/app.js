@@ -2,6 +2,11 @@
 const themeUtils = require('./utils/theme.js')
 const ProjectPerformanceTest = require('./tools/project-performance-test')
 
+// ✅ Observability Toolkit (Phase 0)
+const Logger = require('./core/infrastructure/logging/Logger')
+const TraceContext = require('./core/infrastructure/logging/TraceContext')
+const Performance = require('./core/infrastructure/logging/Performance')
+
 // ✅ BehaviorTracker 相关导入（遵循 P1-001 Skill + ServiceContainer模式）
 // Day3: 使用ServiceContainer统一管理服务
 const ServiceContainer = require('./core/application/services/ServiceContainer')
@@ -9,7 +14,17 @@ const { BEHAVIOR_CONFIG } = require('./behavior-config')
 
 App({
   onLaunch(options) {
-    console.log('App Launch', options)
+    // ==================== Phase 0: TraceContext初始化 ====================
+    // ✅ W3C_TRACE_CONTEXT Iron Law 1: App启动第一行初始化
+    // ✅ 生成根trace-id和span-id，符合W3C Trace Context v2.0标准
+    const { traceId, spanId } = TraceContext.init()
+    
+    Performance.start('App.Launch')
+    Logger.info('App', 'LaunchStart', { 
+      scene: options.scene,
+      query: options.query,
+      referrerInfo: options.referrerInfo
+    })
     
     // ==================== ServiceContainer 初始化（P1-001 Day 3 完整版）====================
     // ✅ GOOD: 使用ServiceContainer统一管理所有服务
@@ -17,7 +32,7 @@ App({
     // ✅ GOOD: Pages通过getApp().globalData.serviceContainer获取服务
     if (BEHAVIOR_CONFIG.enableSwitch) {
       try {
-        console.log('[App] Initializing ServiceContainer...')
+        Logger.info('App', 'ServiceContainerInitStart', {})
         
         // 初始化ServiceContainer（包含所有Adapters和Services）
         ServiceContainer.init({
@@ -42,14 +57,22 @@ App({
         const tracker = ServiceContainer.getBehaviorTracker()
         this.globalData.tracker = tracker
         
-        console.log('[App] ServiceContainer initialized successfully')
+        Logger.info('App', 'ServiceContainerInitSuccess', {})
       } catch (error) {
-        console.error('[App] Failed to initialize ServiceContainer:', error)
+        Logger.error('App', 'ServiceContainerInitFailed', { 
+          error: error.message,
+          stack: error.stack,
+          errorType: error.name || 'InitError',
+          errorMsg: error.message || 'ServiceContainer init failed',
+          errorCode: 'ERR_APP_SERVICE_INIT',
+          fallback: 'set_null',
+          impact: 'feature_degradation'
+        })
         this.globalData.serviceContainer = null
         this.globalData.tracker = null
       }
     } else {
-      console.log('[App] BehaviorTracker disabled by config')
+      Logger.info('App', 'BehaviorTrackerDisabled', { reason: 'config' })
       this.globalData.serviceContainer = null
       this.globalData.tracker = null
     }
@@ -60,7 +83,7 @@ App({
     
     if (ENABLE_PERFORMANCE_TEST) {
       try {
-        console.log('🚀 启动性能测试...')
+        Logger.info('App', 'PerformanceTestStart', {})
         const perfTest = ProjectPerformanceTest.getInstance()
         perfTest.start()
         
@@ -72,7 +95,14 @@ App({
         // 保存到 globalData，方便在页面和控制台中使用
         this.globalData.perfTest = perfTest
       } catch (error) {
-        console.error('性能测试初始化失败:', error)
+        Logger.error('App', 'PerformanceTestFailed', { 
+          error: error.message,
+          errorType: error.name || 'PerfError',
+          errorMsg: error.message || 'Performance test failed',
+          errorCode: 'ERR_APP_PERF_TEST',
+          fallback: 'skip_operation',
+          impact: 'no_impact'
+        })
       }
     }
     // ===================================================================
@@ -97,48 +127,77 @@ App({
         applyTheme(sys.theme);
       }
     } catch(e) {
-      console.warn('Failed to get system theme:', e);
+      Logger.warn('App', 'ThemeGetFailed', { 
+        error: e.message,
+        errorType: e.name || 'ThemeError',
+        errorMsg: e.message || 'Get theme failed',
+        errorCode: 'ERR_APP_THEME_GET',
+        fallback: 'skip_operation',
+        impact: 'no_impact'
+      });
     }
     
     wx.onThemeChange(({ theme }) => {
-      console.log('System theme changed to:', theme);
+      Logger.info('App', 'ThemeChanged', { theme });
       applyTheme(theme);
     });
     // ====================================================================
     
     // 云开发环境配置 - 动态环境切换
+    // 注意：小程序环境不支持 process.env，直接使用配置值
     const ENV_CONFIG = {
-      develop: process.env.DEV_ENV_ID || 'cloud1-dev-xxx',
-      trial: process.env.TRIAL_ENV_ID || 'cloud1-trial-xxx',
-      release: process.env.RELEASE_ENV_ID || 'cloud1-8gjntqqo65c84728'  // 使用环境变量，保留默认值
+      develop: 'cloud1-dev-xxx',
+      trial: 'cloud1-trial-xxx',
+      release: 'cloud1-8gjntqqo65c84728'
     }
     const currentEnv = __wxConfig.envVersion || 'develop'
     const ENV_ID = ENV_CONFIG[currentEnv]
     
     // 初始化云开发环境
     if (!wx.cloud) {
-      console.error('请使用 2.2.3 或以上的基础库以使用云能力')
+      Logger.error('App', 'CloudInitFailed', { 
+        reason: '基础库版本过低',
+        requiredVersion: '2.2.3+'
+      })
     } else {
       wx.cloud.init({
         env: ENV_ID, // 动态环境ID，根据当前环境自动切换
         traceUser: true,
       })
-      console.log(`云开发环境初始化成功 [${currentEnv}]:`, ENV_ID)
+      Logger.info('App', 'CloudInitSuccess', { 
+        env: currentEnv, 
+        envId: ENV_ID 
+      })
     }
+    
+    Performance.end('App.Launch')
+    Logger.info('App', 'LaunchEnd', {})
   },
   
   onShow(options) {
-    console.log('App Show', options)
+    Logger.info('App', 'ShowStart', { 
+      scene: options.scene 
+    })
     
     // ==================== 网络恢复时自动重传（P1-001 Skill）====================
     // ✅ GOOD: 监听网络状态变化，自动触发离线重传
     if (this.globalData.tracker) {
       wx.onNetworkStatusChange((res) => {
-        console.log('[App] Network status changed:', res.networkType)
+        Logger.info('App', 'NetworkStatusChanged', { 
+          networkType: res.networkType,
+          isConnected: res.isConnected
+        })
         
         if (res.isConnected) {
           this.globalData.tracker.retryOffline().catch(e => {
-            console.warn('[App] Network recovery retry failed:', e)
+            Logger.warn('App', 'NetworkRetryFailed', { 
+              error: e.message,
+              errorType: e.name || 'NetworkError',
+              errorMsg: e.message || 'Network retry failed',
+              errorCode: 'ERR_APP_NETWORK_RETRY',
+              fallback: 'skip_operation',
+              impact: 'no_impact'
+            })
           })
         }
       })
@@ -180,6 +239,13 @@ App({
       console.log('主题初始化完成:', userTheme)
     } catch (error) {
       console.error('主题初始化失败:', error)
+      Logger.error('App', 'ThemeInitFailed', {
+        errorType: error.name || 'ThemeError',
+        errorMsg: error.message || 'Theme initialization failed',
+        errorCode: 'ERR_APP_THEME_INIT',
+        fallback: 'skip_operation',
+        impact: 'no_impact'
+      })
     }
   },
   
@@ -228,6 +294,13 @@ App({
       console.error('错误对象:', error)
       console.error('错误码:', error.code)
       console.error('错误信息:', error.message)
+      Logger.error('App', 'DebugLoginTestFailed', {
+        errorType: error.name || 'CloudFunctionError',
+        errorMsg: error.message || 'Test login cloud function failed',
+        errorCode: 'ERR_APP_DEBUG_LOGIN',
+        fallback: 'log_only',
+        impact: 'no_impact'
+      })
     }
   },
   
@@ -257,6 +330,13 @@ App({
       
     } catch (error) {
       console.error('【云函数调用失败】', error)
+      Logger.error('App', 'DebugQuickTestFailed', {
+        errorType: error.name || 'CloudFunctionError',
+        errorMsg: error.message || 'Quick test cloud function failed',
+        errorCode: 'ERR_APP_DEBUG_QUICK_TEST',
+        fallback: 'log_only',
+        impact: 'no_impact'
+      })
     }
   }
 })

@@ -1,6 +1,11 @@
 // pages/ai-assistant/ai-assistant.js
 // 新架构已启用，旧架构已完全移除
 
+// ✅ Observability Toolkit (Phase 0)
+const Logger = require('../../core/infrastructure/logging/Logger')
+const TraceContext = require('../../core/infrastructure/logging/TraceContext')
+const Performance = require('../../core/infrastructure/logging/Performance')
+
 Page({
   __loadStartTime: Date.now(),
   data: {
@@ -143,15 +148,37 @@ Page({
   },
 
   onLoad(options) {
+    // ✅ Phase 0: 初始化TraceId和Performance
+    const traceId = TraceContext.generate()
+    TraceContext.set(traceId)
+    Performance.start('AIAssistant.Load')
+    
+    Logger.info('AIAssistant', 'LoadStart', { 
+      hasQuestion: Boolean(options.question) 
+    })
+
     // 强制使用新架构（旧架构已完全移除）
     this._initNewArchitecture()
 
     // 如果有传入的问题，直接发送
     if (options.question) {
+      Performance.start('AIAssistant.AutoSend')
       this.viewModel.sendMessage(options.question).catch(error => {
-        console.error('自动发送问题失败:', error)
+        Performance.end('AIAssistant.AutoSend', { success: false })
+        Logger.error('AIAssistant', 'AutoSendFailed', { 
+          error: error.message,
+          question: options.question,
+          errorType: error.name || 'SendError',
+          errorMsg: error.message || 'Auto send message failed',
+          errorCode: 'ERR_AI_AUTO_SEND',
+          fallback: 'silent_fail',
+          impact: 'feature_degradation'
+        })
       })
     }
+    
+    Performance.end('AIAssistant.Load')
+    Logger.info('AIAssistant', 'LoadComplete', {})
   },
 
   onReady() {
@@ -167,12 +194,18 @@ Page({
    * 页面显示时刷新用户数据（Issue #5）
    */
   onShow() {
+    Logger.info('AIAssistant', 'UserDataRefreshStart', {})
+    
     // 刷新用户数据 - 从云数据库/storage获取最新学习数据
     if (this.viewModel && this.viewModel.loadUserData) {
       this.viewModel.loadUserData().catch(error => {
         // Silent fail: 数据加载失败不阻塞页面显示
-        console.warn('[AI-Assistant] 用户数据加载失败', error)
+        Logger.warn('AIAssistant', 'UserDataLoadFailed', { 
+          error: error.message 
+        })
       })
+    } else {
+      Logger.warn('AIAssistant', 'ViewModelNotReady', {})
     }
   },
 
@@ -184,7 +217,7 @@ Page({
    */
   _initNewArchitecture() {
     try {
-      console.log('🤖 [AI-Assistant] 初始化新架构...')
+      Logger.info('AIAssistant', 'ArchitectureInitStart', {})
 
       // 创建DI容器
       const createAIAssistantContainer = require('../../core/infrastructure/di/aiAssistantContainer')
@@ -215,10 +248,18 @@ Page({
         title: 'AI学习助手'
       })
 
-      console.log('✅ [AI-Assistant] 新架构初始化完成')
+      Logger.info('AIAssistant', 'ArchitectureInitSuccess', {})
 
     } catch (error) {
-      console.error('❌ [AI-Assistant] 新架构初始化失败:', error)
+      Logger.error('AIAssistant', 'ArchitectureInitFailed', { 
+        error: error.message,
+        stack: error.stack,
+        errorType: error.name || 'InitError',
+        errorMsg: error.message || 'Architecture init failed',
+        errorCode: 'ERR_AI_ARCH_INIT',
+        fallback: 'throw_error',
+        impact: 'ui_blocked'
+      })
       // 如果新架构初始化失败，抛出错误（不再回退到旧架构）
       throw error
     }
@@ -273,8 +314,21 @@ Page({
     }
 
     try {
+      Performance.start('AIAssistant.SendMessage')
       await this.viewModel.sendMessage(text)
+      Performance.end('AIAssistant.SendMessage', { success: true })
+      Logger.info('AIAssistant', 'SendMessageSuccess', { textLength: text.length })
     } catch (error) {
+      Performance.end('AIAssistant.SendMessage', { success: false })
+      Logger.error('AIAssistant', 'SendMessageFailed', { 
+        error: error.message,
+        textLength: text.length,
+        errorType: error.name || 'SendError',
+        errorMsg: error.message || 'Send message failed',
+        errorCode: 'ERR_AI_SEND_MESSAGE',
+        fallback: 'show_error_toast',
+        impact: 'feature_degradation'
+      })
       wx.showToast({
         title: error.message || '发送失败',
         icon: 'none'
@@ -292,6 +346,14 @@ Page({
     try {
       await this.viewModel.useQuickSuggestion(suggestion)
     } catch (error) {
+      Logger.error('AIAssistant', 'QuickSuggestionFailed', {
+        suggestion: suggestion,
+        errorType: error.name || 'SendError',
+        errorMsg: error.message || 'Use quick suggestion failed',
+        errorCode: 'ERR_AI_QUICK_SUGGEST',
+        fallback: 'show_error_toast',
+        impact: 'no_impact'
+      })
       wx.showToast({
         title: error.message || '发送失败',
         icon: 'none'
@@ -309,6 +371,14 @@ Page({
     try {
       await this.viewModel.executeQuickAction(action)
     } catch (error) {
+      Logger.error('AIAssistant', 'QuickActionFailed', {
+        action: action,
+        errorType: error.name || 'ActionError',
+        errorMsg: error.message || 'Execute quick action failed',
+        errorCode: 'ERR_AI_QUICK_ACTION',
+        fallback: 'show_error_toast',
+        impact: 'no_impact'
+      })
       wx.showToast({
         title: error.message || '功能执行失败',
         icon: 'none'
@@ -326,6 +396,14 @@ Page({
     try {
       await this.viewModel.startCourse(courseId)
     } catch (error) {
+      Logger.error('AIAssistant', 'StartCourseFailed', {
+        courseId: courseId,
+        errorType: error.name || 'CourseError',
+        errorMsg: error.message || 'Start course failed',
+        errorCode: 'ERR_AI_START_COURSE',
+        fallback: 'show_error_toast',
+        impact: 'no_impact'
+      })
       wx.showToast({
         title: error.message || '开始课程失败',
         icon: 'none'
@@ -343,6 +421,14 @@ Page({
     try {
       this.viewModel.switchTab(tab)
     } catch (error) {
+      Logger.error('AIAssistant', 'SwitchTabFailed', {
+        tab: tab,
+        errorType: error.name || 'TabError',
+        errorMsg: error.message || 'Switch tab failed',
+        errorCode: 'ERR_AI_SWITCH_TAB',
+        fallback: 'show_error_toast',
+        impact: 'no_impact'
+      })
       wx.showToast({
         title: error.message || '切换失败',
         icon: 'none'
