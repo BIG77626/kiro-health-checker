@@ -1,0 +1,238 @@
+# Review Verification Pipeline
+# 
+# 目的：将三阶段审查机制固化为 CI 自动化流水线
+# 
+# 触发条件：
+# - PR 修改 simplified/ 目录下的代码
+# - PR 修改 test_review*.py 测试文件
+# - PR 修改 .kiro/specs/ 规格文档
+#
+# 执行策略：
+# - fast-check: 默认运行，59 tests，< 2s，多 Python 版本矩阵
+# - performance-baseline: 需手动打标签 `run-performance`，非阻塞
+#
+# 风险缓解：
+# - R-01: 环境固化（Python 版本矩阵 + pip cache）
+# - R-05: 性能测试非阻塞（continue-on-error: true）
+
+name: Review Verification Pipeline
+
+on:
+  pull_request:
+    paths:
+      - 'll5.2/.trunk/simplified/**'
+      - 'll5.2/.trunk/simplified/tests/test_review*.py'
+      - 'll5.2/.kiro/specs/**'
+      - 'll5.2/scripts/verify_review.py'
+      - '.trunk/simplified/**'
+      - '.kiro/specs/**'
+      - 'scripts/verify_review.py'
+
+jobs:
+  # ==========================================================================
+  # Job 1: 快速回归（59 tests, < 2s）- 多版本矩阵
+  # ==========================================================================
+  fast-check:
+    name: Fast Review Check (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+      fail-fast: false  # 一个版本失败不影响其他版本
+    defaults:
+      run:
+        working-directory: ll5.2
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pydantic pyyaml hypothesis
+
+      - name: Run Fast Review Tests
+        run: |
+          python scripts/verify_review.py -v
+        continue-on-error: false
+
+      - name: Generate JUnit XML Report
+        if: always()
+        run: |
+          python -m pytest \
+            .trunk/simplified/tests/test_review_stage1.py \
+            .trunk/simplified/tests/test_review_stage2.py \
+            .trunk/simplified/tests/test_review_cross_stage.py \
+            .trunk/simplified/tests/test_review_traceability.py \
+            .trunk/simplified/tests/test_review_cli_output.py \
+            .trunk/simplified/tests/test_review_performance.py \
+            -m "not slow" \
+            --junitxml=review_evidence_${{ matrix.python-version }}.xml \
+            -v || true
+
+      - name: Upload Fast Evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fast-evidence-py${{ matrix.python-version }}-${{ github.run_number }}
+          path: |
+            review_evidence_${{ matrix.python-version }}.xml
+          retention-days: 30
+
+  # ==========================================================================
+  # Job 2: 性能基线（62 tests，仅在特定标签触发，非阻塞）
+  # ==========================================================================
+  performance-baseline:
+    name: Performance Baseline Check
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'run-performance')
+    continue-on-error: true  # R-05 缓解：性能测试失败不阻塞合并
+    defaults:
+      run:
+        working-directory: ll5.2
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pydantic pyyaml hypothesis
+
+      - name: Run Performance Baseline Tests
+        id: perf
+        run: |
+          python scripts/verify_review.py --slow -v 2>&1 | tee perf_output.txt
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Generate Performance Report
+        if: always()
+        run: |
+          python -m pytest \
+            .trunk/simplified/tests/test_review_performance.py \
+            -m slow \
+            --junitxml=performance_evidence.xml \
+            -v || true
+
+      - name: Upload Performance Evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-evidence-${{ github.run_number }}
+          path: |
+            performance_evidence.xml
+            perf_output.txt
+          retention-days: 30
+
+  # ==========================================================================
+  # Job 3: 审查结论自动评论
+  # ==========================================================================
+  review-summary:
+    name: Post Review Summary
+    runs-on: ubuntu-latest
+    needs: [fast-check]
+    if: always()
+    permissions:
+      pull-requests: write
+    
+    steps:
+      - name: Download Fast Evidence (Python 3.12)
+        uses: actions/download-artifact@v4
+        with:
+          name: fast-evidence-py3.12-${{ github.run_number }}
+          path: ./evidence
+        continue-on-error: true
+
+      - name: Parse Test Results
+        id: parse
+        run: |
+          if [ -f "./evidence/review_evidence_3.12.xml" ]; then
+            # 解析 JUnit XML 获取测试统计
+            TESTS=$(grep -oP 'tests="\K[0-9]+' ./evidence/review_evidence_3.12.xml | head -1 || echo "0")
+            FAILURES=$(grep -oP 'failures="\K[0-9]+' ./evidence/review_evidence_3.12.xml | head -1 || echo "0")
+            ERRORS=$(grep -oP 'errors="\K[0-9]+' ./evidence/review_evidence_3.12.xml | head -1 || echo "0")
+            SKIPPED=$(grep -oP 'skipped="\K[0-9]+' ./evidence/review_evidence_3.12.xml | head -1 || echo "0")
+            
+            PASSED=$((TESTS - FAILURES - ERRORS - SKIPPED))
+            
+            echo "tests=$TESTS" >> $GITHUB_OUTPUT
+            echo "passed=$PASSED" >> $GITHUB_OUTPUT
+            echo "failures=$FAILURES" >> $GITHUB_OUTPUT
+            echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+            echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
+            
+            if [ "$FAILURES" -eq "0" ] && [ "$ERRORS" -eq "0" ]; then
+              echo "status=✅ PASSED" >> $GITHUB_OUTPUT
+            else
+              echo "status=❌ FAILED" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "tests=0" >> $GITHUB_OUTPUT
+            echo "passed=0" >> $GITHUB_OUTPUT
+            echo "failures=0" >> $GITHUB_OUTPUT
+            echo "errors=0" >> $GITHUB_OUTPUT
+            echo "skipped=0" >> $GITHUB_OUTPUT
+            echo "status=⚠️ NO EVIDENCE" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ steps.parse.outputs.status }}';
+            const tests = '${{ steps.parse.outputs.tests }}';
+            const passed = '${{ steps.parse.outputs.passed }}';
+            const failures = '${{ steps.parse.outputs.failures }}';
+            const skipped = '${{ steps.parse.outputs.skipped }}';
+            
+            const body = `### 🔍 Review Verification Summary
+            
+            | Metric | Value |
+            |--------|-------|
+            | Status | ${status} |
+            | Total Tests | ${tests} |
+            | Passed | ${passed} |
+            | Failed | ${failures} |
+            | Skipped | ${skipped} |
+            
+            **审查阶段覆盖：**
+            - Stage 1: 范围 & 映射
+            - Stage 2: 实现 & Config-as-Policy
+            - Stage 3: Traceability + CLI + Performance
+            
+            **Python 版本矩阵：** 3.10, 3.11, 3.12
+            
+            📦 [Download Evidence](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            
+            > 💡 性能测试需手动打标签 \`run-performance\` 触发，失败不阻塞合并
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
