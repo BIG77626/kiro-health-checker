@@ -1,0 +1,28 @@
+# Test cases for rule SEC-001
+# 检测 eval() 调用
+
+rule_id: "SEC-001"
+description: "Test cases for SEC-001: 检测危险的 eval() 调用"
+
+# Positive cases: code that SHOULD trigger this rule
+positive_cases:
+  - |
+    result = eval(user_input)
+  - |
+    data = eval("1 + 2")
+  - |
+    eval(
+        expression
+    )
+
+# Negative cases: code that should NOT trigger this rule
+negative_cases:
+  - |
+    # No eval usage
+    result = 1 + 2
+  - |
+    # eval in comment: eval(x)
+    pass
+  - |
+    # String containing eval
+    text = "eval is dangerous"

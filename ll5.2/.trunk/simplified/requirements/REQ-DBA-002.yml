@@ -1,0 +1,30 @@
+# REQ-DBA-002: 数据库事务管理
+# 
+# 风险等级: MEDIUM
+# 覆盖规则: DBA-004, DBA-005, DBA-006
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-DBA-002"
+version: "1.0"
+last_modified: "2025-12-19"
+title: "数据库事务必须正确管理"
+description: |
+  所有数据修改操作必须：
+  1. 在事务中执行
+  2. 有回滚机制
+  3. 建议使用连接池
+risk_level: "medium"
+status: "active"
+tags:
+  - database
+  - transaction
+  - reliability
+covered_by_rules:
+  - "DBA-004"
+  - "DBA-005"
+  - "DBA-006"
+min_positive_samples: 2
+min_negative_samples: 2
+changelog:
+  - "v1.0: 初始定义，覆盖事务管理规则"

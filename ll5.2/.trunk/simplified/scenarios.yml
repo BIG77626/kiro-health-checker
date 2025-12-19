@@ -1,0 +1,74 @@
+# Scenario Configuration - 场景配置
+#
+# Task: ARCHITECTURE-SIMPLIFICATION (Task 1.2)
+# Requirements: REQ-2 (场景化配置替代Skill选择)
+#
+# 用户选择业务场景，系统自动映射到固定规则集。
+# 这替代了原来的"Skill智能选择"机制。
+
+version: "1.0.0"
+last_updated: "2025-12-16"
+
+# =============================================================================
+# 场景定义
+# =============================================================================
+
+scenarios:
+  # CLI工具场景
+  - id: cli_tool
+    name: CLI工具
+    description: |
+      命令行工具开发场景。
+      适用于：argparse/click脚本、自动化工具、批处理脚本。
+      重点检查：参数验证、错误处理、文件操作安全。
+    ruleset_id: ruleset_cli
+
+  # API客户端场景
+  - id: api_client
+    name: API客户端
+    description: |
+      HTTP API客户端开发场景。
+      适用于：REST客户端、SDK封装、第三方API调用。
+      重点检查：超时设置、重试机制、错误处理、敏感数据。
+    ruleset_id: ruleset_api
+
+  # 数据处理脚本场景
+  - id: data_script
+    name: 数据处理脚本
+    description: |
+      数据清洗、转换、分析脚本场景。
+      适用于：ETL脚本、数据分析、报表生成。
+      重点检查：输入验证、类型安全、错误处理。
+    ruleset_id: ruleset_data
+
+  # Web后端场景
+  - id: web_backend
+    name: Web后端
+    description: |
+      Web服务后端开发场景。
+      适用于：FastAPI/Flask/Django服务、API端点。
+      重点检查：输入验证、认证授权、SQL注入、XSS。
+    ruleset_id: ruleset_web
+
+  # 通用场景（默认）
+  - id: general
+    name: 通用
+    description: |
+      通用Python代码场景。
+      适用于：不确定具体场景时的默认选择。
+      使用核心安全规则集。
+    ruleset_id: ruleset_core
+
+# =============================================================================
+# 场景→规则集映射说明
+# =============================================================================
+#
+# | 场景ID      | 规则集ID       | 包含的规则类别                    |
+# |-------------|----------------|-----------------------------------|
+# | cli_tool    | ruleset_cli    | core + file + error               |
+# | api_client  | ruleset_api    | core + network + error + security |
+# | data_script | ruleset_data   | core + type + error               |
+# | web_backend | ruleset_web    | core + security + database + network |
+# | general     | ruleset_core   | core + error                      |
+#
+# 规则集定义在 rules/ 目录下的 YAML 文件中。

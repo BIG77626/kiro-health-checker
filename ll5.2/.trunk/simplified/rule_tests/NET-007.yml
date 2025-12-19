@@ -1,0 +1,45 @@
+# Test cases for rule NET-007
+# 检测 URL 中传递敏感信息
+#
+# Pattern: (password|api_key|secret|token)=[^&\s]+
+# 检测 URL 参数中包含敏感信息的情况
+
+rule_id: "NET-007"
+description: "Test cases for NET-007: 禁止在 URL 中传递敏感信息"
+
+# Positive cases: code that SHOULD trigger this rule
+# 注意：所有样本使用 example.com 和 FAKE_/DUMMY_ 前缀的假数据
+positive_cases:
+  - |
+    # URL 中包含 api_key 参数
+    url = f"https://api.example.com?api_key={key}"
+  - |
+    # URL 中包含 password 参数
+    url = "https://api.example.com?password=DUMMY_SECRET_123"
+  - |
+    # URL 中包含 token 参数
+    response = requests.get(f"https://api.example.com/data?token={user_token}")
+  - |
+    # URL 中包含 secret 参数
+    endpoint = f"https://service.example.com/api?secret={api_secret}&user=admin"
+
+# Negative cases: code that should NOT trigger this rule
+negative_cases:
+  - code: |
+      # 函数参数赋值，不是 URL 参数
+      api_key=self.config.get_api_key()
+    metadata:
+      source: false_positive
+      reviewed: true
+      note: "来自 TOOL_TEST_ANALYSIS.md - claude_client.py 行 206 的误报"
+  - |
+    # 使用请求头传递敏感信息（正确做法）
+    headers = {"Authorization": f"Bearer {token}"}
+    response = requests.get(url, headers=headers)
+  - |
+    # 使用请求体传递敏感信息（正确做法）
+    data = {"api_key": api_key, "password": password}
+    response = requests.post(url, json=data)
+  - |
+    # 普通 URL，不包含敏感参数
+    url = "https://api.example.com/users?page=1&limit=10"

@@ -1,0 +1,33 @@
+# REQ-DBA-001: 数据库安全
+# 
+# 风险等级: HIGH
+# 覆盖规则: DBA-001, DBA-002, DBA-003, DBA-007, DBA-008
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-DBA-001"
+version: "1.0"
+last_modified: "2025-12-19"
+title: "数据库操作必须防止SQL注入和连接泄漏"
+description: |
+  所有数据库操作必须：
+  1. 使用参数化查询，禁止字符串拼接构造SQL
+  2. 使用 with 语句或显式关闭连接
+  3. 不在日志中输出完整SQL语句
+  4. 不硬编码数据库密码
+risk_level: "high"
+status: "active"
+tags:
+  - database
+  - security
+  - sql-injection
+covered_by_rules:
+  - "DBA-001"
+  - "DBA-002"
+  - "DBA-003"
+  - "DBA-007"
+  - "DBA-008"
+min_positive_samples: 2
+min_negative_samples: 2
+changelog:
+  - "v1.0: 初始定义，覆盖SQL注入和连接管理规则"

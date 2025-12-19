@@ -1,0 +1,34 @@
+# Test cases for rule ERR-001
+# 检测裸 except 语句
+
+rule_id: "ERR-001"
+description: "Test cases for ERR-001: 禁止裸 except 语句"
+
+# Positive cases: code that SHOULD trigger this rule
+positive_cases:
+  - |
+    try:
+        do_something()
+    except:
+        pass
+  - |
+    try:
+        risky_operation()
+    except:
+        logger.error("Failed")
+
+# Negative cases: code that should NOT trigger this rule
+negative_cases:
+  - |
+    try:
+        do_something()
+    except Exception as e:
+        logger.error(f"Error: {e}")
+  - |
+    try:
+        risky_operation()
+    except (ValueError, TypeError) as e:
+        handle_error(e)
+  - |
+    # No try-except at all
+    result = calculate()

@@ -1,0 +1,29 @@
+# REQ-NET-003: 网络传输安全
+# 
+# 风险等级: HIGH
+# 覆盖规则: NET-004, NET-005
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-NET-003"
+version: "1.0"
+last_modified: "2025-12-19"
+title: "网络传输必须使用安全协议"
+description: |
+  所有网络传输必须：
+  1. 禁止禁用 SSL 证书验证
+  2. 使用 HTTPS 替代 HTTP（本地开发除外）
+risk_level: "high"
+status: "active"
+tags:
+  - network
+  - security
+  - ssl
+  - https
+covered_by_rules:
+  - "NET-004"
+  - "NET-005"
+min_positive_samples: 2
+min_negative_samples: 2
+changelog:
+  - "v1.0: 初始定义，覆盖SSL/TLS安全规则"

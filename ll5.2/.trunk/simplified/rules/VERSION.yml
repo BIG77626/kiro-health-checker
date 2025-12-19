@@ -1,0 +1,26 @@
+# 规则库版本信息
+# =================
+
+version: "1.0.0"
+released_at: "2025-12-16"
+description: "初始版本 - 架构简化方案"
+
+# 规则统计
+stats:
+  total_rules: 16
+  categories:
+    security: 4
+    network: 4
+    file: 4
+    database: 4
+
+# 版本历史
+history:
+  - version: "1.0.0"
+    date: "2025-12-16"
+    changes:
+      - "初始发布"
+      - "包含 core_rules.yml (4条规则)"
+      - "包含 network_rules.yml (4条规则)"
+      - "包含 file_rules.yml (4条规则)"
+      - "包含 database_rules.yml (4条规则)"

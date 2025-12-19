@@ -1,0 +1,126 @@
+# Core Security Rules - 核心安全规则
+#
+# Task: ARCHITECTURE-SIMPLIFICATION (Task 1.3)
+# Requirements: REQ-1 (规则为一等公民)
+
+version: "1.0.0"
+ruleset_id: ruleset_core
+ruleset_name: 核心安全规则集
+last_updated: "2025-12-16"
+
+rules:
+  # 危险调用检测
+  - id: SEC-001
+    category: dangerous
+    description: "禁止使用 eval() 函数执行动态代码"
+    human_description: "这段代码可能会执行任意代码，非常危险，可能被黑客利用"
+    severity: mandatory
+    detector: grep
+    fix_suggestion: "使用 ast.literal_eval() 或 json.loads() 替代"
+    requirement_ids:
+      - "REQ-SEC-001"
+
+  - id: SEC-002
+    category: dangerous
+    description: "禁止使用 exec() 函数执行动态代码"
+    human_description: "这段代码可能会执行任意代码，非常危险，可能被黑客利用"
+    severity: mandatory
+    detector: grep
+    fix_suggestion: "重构代码，避免动态执行"
+
+  - id: SEC-003
+    category: dangerous
+    description: "禁止使用 os.system() 执行系统命令"
+    human_description: "这段代码会直接执行系统命令，可能被黑客利用来控制你的电脑"
+    severity: mandatory
+    detector: grep
+    fix_suggestion: "使用 subprocess.run() 并设置 shell=False"
+
+  - id: SEC-004
+    category: dangerous
+    description: "禁止使用 shell=True 的 subprocess 调用"
+    human_description: "这段代码通过命令行执行命令，可能被黑客利用"
+    severity: mandatory
+    detector: grep
+    fix_suggestion: "使用 shell=False 并传入命令列表"
+
+  - id: SEC-005
+    category: dangerous
+    description: "禁止使用 pickle 反序列化不可信数据"
+    human_description: "这段代码可能会执行隐藏在数据中的恶意代码"
+    severity: mandatory
+    detector: grep
+    fix_suggestion: "使用 json 或其他安全的序列化格式"
+
+  # 安全检测
+  - id: SEC-006
+    category: security
+    description: "禁止硬编码密码或密钥"
+    human_description: "代码中直接写了密码或密钥，这很危险，别人看到代码就能获取你的密码"
+    severity: mandatory
+    detector: grep
+    fix_suggestion: "使用环境变量或配置文件存储敏感信息"
+    requirement_ids:
+      - "REQ-SEC-001"
+
+  - id: SEC-007
+    category: security
+    description: "禁止在日志中输出敏感信息"
+    human_description: "日志中可能会记录密码等敏感信息，这些信息可能被泄露"
+    severity: mandatory
+    detector: grep
+    fix_suggestion: "使用 SecretStr 类型，避免敏感信息进入日志"
+    requirement_ids:
+      - "REQ-SEC-001"
+
+  # 错误处理
+  - id: ERR-001
+    category: error
+    description: "禁止裸 except（必须指定具体异常类型）"
+    human_description: "这段代码会吞掉所有错误，出了问题你可能完全不知道"
+    severity: mandatory
+    detector: grep
+    fix_suggestion: "使用 except (KeyError, ValueError) as e: 指定具体异常"
+    requirement_ids:
+      - "REQ-ERR-001"
+
+  - id: ERR-002
+    category: error
+    description: "禁止 except Exception（过于宽泛）"
+    human_description: "这段代码会隐藏很多错误，出了问题很难排查"
+    severity: mandatory
+    detector: grep
+    fix_suggestion: "捕获具体的异常类型，如 (KeyError, ValueError, IOError)"
+    requirement_ids:
+      - "REQ-ERR-001"
+
+  - id: ERR-003
+    category: error
+    description: "禁止静默吞掉异常（except: pass）"
+    human_description: "这段代码会完全忽略错误，出了问题你完全不会知道"
+    severity: mandatory
+    detector: grep
+    fix_suggestion: "至少记录日志: except ValueError as e: logger.error(e)"
+    requirement_ids:
+      - "REQ-ERR-001"
+
+  # 类型安全
+  - id: TYP-001
+    category: type
+    description: "Optional 字段必须显式指定默认值"
+    human_description: "这段代码可能会因为空值导致程序崩溃"
+    severity: mandatory
+    detector: grep
+    fix_suggestion: "使用 Optional[str] = None 显式指定默认值"
+    requirement_ids:
+      - "REQ-TYP-001"
+
+  - id: TYP-002
+    category: type
+    description: "禁止使用 Any 类型（除非有充分理由）"
+    human_description: "这段代码的类型不明确，可能会导致意外错误"
+    severity: recommended
+    detector: grep
+    fix_suggestion: "使用具体的类型注解，如 str, int, List[str]"
+    requirement_ids:
+      - "REQ-TYP-001"

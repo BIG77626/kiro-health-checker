@@ -1,0 +1,22 @@
+# REQ-NET-001: 网络请求安全
+# 
+# 风险等级: HIGH
+# 覆盖规则: NET-007 (URL敏感信息检测)
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-NET-001"
+title: "禁止在URL中传递敏感信息"
+description: |
+  所有外部HTTP请求不得在URL参数中包含密码、API密钥、令牌等敏感信息。
+  敏感信息应通过请求头(Authorization)或请求体传递。
+risk_level: "high"
+status: "active"
+tags:
+  - network
+  - security
+  - sensitive-data
+covered_by_rules:
+  - "NET-007"
+min_positive_samples: 2
+min_negative_samples: 2

@@ -1,0 +1,68 @@
+# Test cases for rule ERR-003
+# 检测静默吞掉异常的代码（except: pass）
+#
+# Pattern: except[^:]*:\s*\n\s*(pass|\.\.\.)\s*$
+# 检测 except 后直接 pass 或 ... 的情况
+
+rule_id: "ERR-003"
+description: "Test cases for ERR-003: 禁止静默吞掉异常（except: pass）"
+
+# Positive cases: code that SHOULD trigger this rule
+positive_cases:
+  - |
+    # 基本的 except: pass
+    try:
+        do_something()
+    except:
+        pass
+  - |
+    # except SomeError: pass
+    try:
+        risky_operation()
+    except ValueError:
+        pass
+  - |
+    # except 后使用 ...
+    try:
+        process_data()
+    except RuntimeError:
+        ...
+
+# Negative cases: code that should NOT trigger this rule
+negative_cases:
+  - code: |
+      # KeyboardInterrupt: pass 是合理的（优雅退出）
+      try:
+          server.run()
+      except KeyboardInterrupt:
+          pass
+    metadata:
+      source: false_positive
+      reviewed: true
+      note: "来自 TOOL_TEST_ANALYSIS.md - http_service.py 行 132 的误报"
+  - code: |
+      # SystemExit: pass 是合理的
+      try:
+          main()
+      except SystemExit:
+          pass
+    metadata:
+      source: manual
+      reviewed: true
+      note: "SystemExit 是合理的退出场景"
+  - code: |
+      # 清理临时文件时忽略 OSError 是合理的
+      try:
+          Path(tmp_path).unlink()
+      except OSError:
+          pass
+    metadata:
+      source: false_positive
+      reviewed: true
+      note: "来自 TOOL_TEST_ANALYSIS.md - deep_reviewer.py 行 174 的误报"
+  - |
+    # except 后有日志记录（不是静默吞掉）
+    try:
+        do_something()
+    except ValueError as e:
+        logger.error(f"Error: {e}")

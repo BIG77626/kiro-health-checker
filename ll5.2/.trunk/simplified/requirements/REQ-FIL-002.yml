@@ -1,0 +1,32 @@
+# REQ-FIL-002: 文件写入安全
+# 
+# 风险等级: MEDIUM
+# 覆盖规则: FIL-005, FIL-006, FIL-007, FIL-008
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-FIL-002"
+version: "1.0"
+last_modified: "2025-12-19"
+title: "文件写入必须安全可靠"
+description: |
+  所有文件写入操作必须：
+  1. 使用 with 语句确保关闭
+  2. 重要文件应先写临时文件再原子替换
+  3. 创建文件时应指定安全的权限
+  4. 敏感文件应设置只有所有者可读写
+risk_level: "medium"
+status: "active"
+tags:
+  - file
+  - security
+  - permissions
+covered_by_rules:
+  - "FIL-005"
+  - "FIL-006"
+  - "FIL-007"
+  - "FIL-008"
+min_positive_samples: 2
+min_negative_samples: 2
+changelog:
+  - "v1.0: 初始定义，覆盖文件写入安全规则"

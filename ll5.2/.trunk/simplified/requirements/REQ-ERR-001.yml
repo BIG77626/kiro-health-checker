@@ -1,0 +1,24 @@
+# REQ-ERR-001: 错误处理规范
+# 
+# 风险等级: MEDIUM
+# 覆盖规则: ERR-001, ERR-002, ERR-003
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-ERR-001"
+title: "必须正确处理异常"
+description: |
+  所有异常必须被正确捕获和处理，禁止裸except，
+  禁止静默吞掉异常，必须保留异常链。
+risk_level: "medium"
+status: "active"
+tags:
+  - error-handling
+  - exception
+  - defensive
+covered_by_rules:
+  - "ERR-001"
+  - "ERR-002"
+  - "ERR-003"
+min_positive_samples: 2
+min_negative_samples: 2

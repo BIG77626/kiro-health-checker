@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kiro-health-checker"
+version = "0.1.0"
+description = "AI生成规则的质量雷达 - 需求覆盖度检查和双向追踪工具"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Kiro Team"}
+]
+keywords = [
+    "code-review",
+    "rule-testing",
+    "requirement-traceability",
+    "ai-code-quality",
+    "health-check"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+]
+dependencies = [
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "hypothesis>=6.0",
+]
+
+[project.scripts]
+kiro-health-check = "simplified.health_check:main"
+
+[project.urls]
+Homepage = "https://github.com/kiro-team/kiro-health-checker"
+Documentation = "https://github.com/kiro-team/kiro-health-checker#readme"
+Repository = "https://github.com/kiro-team/kiro-health-checker"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["simplified*"]
+
+[tool.setuptools.package-data]
+simplified = [
+    "rules/*.yml",
+    "requirements/*.yml",
+    "rule_tests/*.yml",
+    "rule_tests/**/*.yml",
+    "*.yml",
+]

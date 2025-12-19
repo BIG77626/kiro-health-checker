@@ -1,0 +1,31 @@
+# Health Check Configuration
+# 健康检查配置（策略层）
+#
+# 位置：与 health_check.py 同级
+# 原则：配置即策略，代码即机制
+#
+# 缺失此文件时，health_check.py 将使用默认值优雅降级
+
+version: 1  # 显式版本号，便于将来演进
+
+# 需求层策略
+requirements:
+  coverage_threshold: 10.0        # V1：低阈值，仅用于点亮仪表盘
+  exit_on_failure: false          # V1 不 gate，V2 再考虑
+  high_risk_gate_enabled: false   # 预留，默认关闭
+
+# 追踪策略
+traceability:
+  warn_on_missing_backlinks: true
+  warn_on_orphans: true
+  warn_on_dangling: true
+
+# 规则策略
+rules:
+  min_positive_cases: 1           # 与 rule_tests/config.yml 对齐
+  min_negative_cases: 1
+
+# 输出策略
+output:
+  show_requirement_layer: true
+  show_traceability_details: true

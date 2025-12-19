@@ -1,0 +1,41 @@
+# Test cases for rule SEC-006
+# 检测硬编码的密码或密钥
+#
+# 检测代码中直接写入的密码、API 密钥等敏感信息
+# 注意：所有样本使用 FAKE_/DUMMY_ 前缀的假数据，严禁真实凭据
+
+rule_id: "SEC-006"
+description: "Test cases for SEC-006: 禁止硬编码密码或密钥"
+
+# Positive cases: code that SHOULD trigger this rule
+positive_cases:
+  - |
+    # 硬编码密码
+    password = "DUMMY_PASSWORD_123"
+  - |
+    # 硬编码 API 密钥
+    api_key = "FAKE_API_KEY_1234567890ABCDEF"
+  - |
+    # 硬编码 secret
+    secret = "FAKE_SECRET_KEY_ABCDEF123456"
+  - |
+    # 在字典中硬编码密码
+    config = {
+        "password": "DUMMY_HARDCODED_PASSWORD",
+        "username": "admin"
+    }
+
+# Negative cases: code that should NOT trigger this rule
+negative_cases:
+  - |
+    # 从环境变量获取密码
+    password = os.environ.get("PASSWORD")
+  - |
+    # 从配置文件获取 API 密钥
+    api_key = config.get("api_key")
+  - |
+    # 使用 getenv 获取 secret
+    secret = os.getenv("SECRET_KEY")
+  - |
+    # 从 Pydantic Settings 获取
+    password = settings.database_password

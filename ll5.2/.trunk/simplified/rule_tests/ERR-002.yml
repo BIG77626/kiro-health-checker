@@ -1,0 +1,54 @@
+# Test cases for rule ERR-002
+# 检测过于宽泛的 except Exception 语句
+#
+# 检测 except Exception: 或 except Exception as e: 这类过于宽泛的异常捕获
+
+rule_id: "ERR-002"
+description: "Test cases for ERR-002: 禁止 except Exception（过于宽泛）"
+
+# Positive cases: code that SHOULD trigger this rule
+positive_cases:
+  - |
+    # 基本的 except Exception
+    try:
+        do_something()
+    except Exception:
+        pass
+  - |
+    # except Exception as e
+    try:
+        risky_operation()
+    except Exception as e:
+        logger.error(f"Error: {e}")
+  - |
+    # except Exception 带有处理逻辑
+    try:
+        process_data()
+    except Exception as error:
+        handle_error(error)
+        raise
+
+# Negative cases: code that should NOT trigger this rule
+negative_cases:
+  - |
+    # 捕获具体异常类型 ValueError
+    try:
+        do_something()
+    except ValueError as e:
+        logger.error(f"Value error: {e}")
+  - |
+    # 捕获多个具体异常类型
+    try:
+        risky_operation()
+    except (TypeError, KeyError) as e:
+        handle_error(e)
+  - |
+    # 捕获 IOError
+    try:
+        read_file()
+    except IOError as e:
+        logger.warning(f"IO error: {e}")
+  - |
+    # 没有 try-except 的代码
+    result = calculate()
+    process(result)

@@ -1,0 +1,7 @@
+# 案例资产存储目录
+# 
+# 使用 scripts/add_case_asset.sh 自动生成案例文件
+# 格式: {DATE}-{ID}.md
+#
+# 示例:
+#   ./scripts/add_case_asset.sh "悬空引用" "Rule引用了不存在的REQ" "修复方案"

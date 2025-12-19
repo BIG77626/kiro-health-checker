@@ -1,0 +1,50 @@
+# Test cases for rule DBA-003
+# 检测数据库连接管理问题
+#
+# Pattern: connect\s*\(
+# 检测数据库连接是否使用 with 语句或显式关闭
+
+rule_id: "DBA-003"
+description: "Test cases for DBA-003: 数据库连接必须使用 with 语句或显式关闭"
+
+# Positive cases: code that SHOULD trigger this rule
+positive_cases:
+  - |
+    # 没有使用 with 语句的 sqlite3 连接
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users")
+  - |
+    # 没有使用 with 语句的 psycopg2 连接
+    conn = psycopg2.connect(host="localhost", database="mydb")
+    cursor = conn.cursor()
+  - |
+    # 没有使用 with 语句的 mysql 连接
+    conn = mysql.connector.connect(host="localhost", user="root")
+    cursor = conn.cursor()
+
+# Negative cases: code that should NOT trigger this rule
+negative_cases:
+  - |
+    # 使用 with 语句管理连接
+    with sqlite3.connect("database.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users")
+  - |
+    # 使用 contextmanager 模式
+    @contextmanager
+    def get_connection():
+        conn = sqlite3.connect("database.db")
+        try:
+            yield conn
+        finally:
+            conn.close()
+  - |
+    # 使用连接池
+    pool = create_engine("sqlite:///database.db")
+    with pool.connect() as conn:
+        result = conn.execute(query)
+  - |
+    # 没有数据库连接的代码
+    result = process_data()
+    save_to_file(result)

@@ -1,0 +1,101 @@
+# File Operation Rules - 文件操作规则
+#
+# Task: ARCHITECTURE-SIMPLIFICATION (Task 1.3)
+# Requirements: REQ-1 (规则为一等公民), REQ-5.1 (文件操作触发人工复核)
+
+version: "1.0.0"
+ruleset_id: ruleset_file
+ruleset_name: 文件操作规则集
+last_updated: "2025-12-17"
+
+rules:
+  # 路径安全
+  - id: FIL-001
+    category: file
+    description: "禁止使用用户输入直接构造文件路径"
+    human_description: "这段代码可能会让攻击者访问你电脑上的任意文件"
+    severity: mandatory
+    detector: grep
+    pattern: "open\\s*\\(.*\\+"
+    fix_suggestion: "使用 pathlib 并验证路径: Path(base_dir) / sanitized_filename"
+    requirement_ids:
+      - "REQ-FIL-001"
+
+  - id: FIL-002
+    category: file
+    description: "文件路径必须验证不包含 .. 或绝对路径"
+    human_description: "这段代码可能会让攻击者访问你电脑上的任意文件"
+    severity: mandatory
+    detector: grep
+    pattern: "\\.\\."
+    fix_suggestion: "使用 Path.resolve() 并检查是否在允许的目录内"
+    requirement_ids:
+      - "REQ-FIL-001"
+
+  # 文件删除安全
+  - id: FIL-003
+    category: file
+    description: "文件删除操作必须有确认机制"
+    human_description: "这段代码会删除文件，请确保这是你想要的操作"
+    severity: mandatory
+    detector: grep
+    pattern: "os\\.remove|os\\.unlink|shutil\\.rmtree"
+    fix_suggestion: "添加确认机制或使用回收站: send2trash 库"
+    triggers_human_review: true
+    requirement_ids:
+      - "REQ-FIL-001"
+
+  - id: FIL-004
+    category: file
+    description: "禁止删除根目录或系统目录"
+    human_description: "这段代码可能会删除重要的系统文件，非常危险"
+    severity: mandatory
+    detector: grep
+    pattern: "rmtree.*[\"']/[\"']"
+    fix_suggestion: "添加路径白名单检查"
+    requirement_ids:
+      - "REQ-FIL-001"
+
+  # 文件写入安全
+  - id: FIL-005
+    category: file
+    description: "文件写入应使用 with 语句确保关闭"
+    human_description: "这段代码可能会导致文件无法正确关闭，造成数据丢失"
+    severity: mandatory
+    detector: grep
+    pattern: "open\\s*\\(.*[\"']w[\"']"
+    fix_suggestion: "使用 with open(path, 'w') as f: ..."
+    requirement_ids:
+      - "REQ-FIL-002"
+
+  - id: FIL-006
+    category: file
+    description: "写入重要文件应先写临时文件再原子替换"
+    human_description: "这段代码在写入过程中如果出错，可能会损坏原文件"
+    severity: recommended
+    detector: manual
+    fix_suggestion: "使用 tempfile + os.replace() 实现原子写入"
+    requirement_ids:
+      - "REQ-FIL-002"
+
+  # 权限检查
+  - id: FIL-007
+    category: file
+    description: "创建文件时应指定安全的权限"
+    human_description: "这段代码创建的文件可能被其他用户读取"
+    severity: recommended
+    detector: grep
+    pattern: "os\\.chmod.*0o777"
+    fix_suggestion: "使用更严格的权限: 0o644 或 0o600"
+    requirement_ids:
+      - "REQ-FIL-002"
+
+  - id: FIL-008
+    category: file
+    description: "敏感文件应设置只有所有者可读写"
+    human_description: "包含敏感信息的文件应该只有你自己能访问"
+    severity: mandatory
+    detector: manual
+    fix_suggestion: "使用 os.chmod(path, 0o600)"
+    requirement_ids:
+      - "REQ-FIL-002"

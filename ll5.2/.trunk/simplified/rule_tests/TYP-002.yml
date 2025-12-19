@@ -1,0 +1,39 @@
+# Test cases for rule TYP-002
+# 检测 Any 类型的使用
+#
+# 检测代码中使用 Any 类型注解的情况（除非有充分理由）
+
+rule_id: "TYP-002"
+description: "Test cases for TYP-002: 禁止使用 Any 类型（除非有充分理由）"
+
+# Positive cases: code that SHOULD trigger this rule
+positive_cases:
+  - |
+    # 参数使用 Any 类型
+    def process(data: Any) -> str:
+        return str(data)
+  - |
+    # 返回值使用 Any 类型
+    def get_data() -> Any:
+        return fetch_from_api()
+  - |
+    # 变量注解使用 Any
+    result: Any = None
+
+# Negative cases: code that should NOT trigger this rule
+negative_cases:
+  - |
+    # 使用具体类型 Optional[str]
+    def process(data: Optional[str]) -> str:
+        return data or ""
+  - |
+    # 使用具体类型 List[int]
+    def get_numbers() -> List[int]:
+        return [1, 2, 3]
+  - |
+    # 使用 Union 类型
+    def parse(value: Union[str, int]) -> str:
+        return str(value)
+  - |
+    # 使用 Dict 类型
+    config: Dict[str, str] = {}

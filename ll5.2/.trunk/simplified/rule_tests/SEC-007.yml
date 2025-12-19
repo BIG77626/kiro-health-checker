@@ -1,0 +1,38 @@
+# Test cases for rule SEC-007
+# 检测在日志中输出敏感信息
+#
+# 检测日志中可能包含密码、密钥等敏感信息的情况
+# 注意：所有样本使用 FAKE_/DUMMY_ 前缀的假数据，严禁真实凭据
+
+rule_id: "SEC-007"
+description: "Test cases for SEC-007: 禁止在日志中输出敏感信息"
+
+# Positive cases: code that SHOULD trigger this rule
+positive_cases:
+  - |
+    # 日志中记录密码
+    logger.info(f"password={password}")
+  - |
+    # 日志中记录 API 密钥
+    logger.debug(f"Using api_key: {api_key}")
+  - |
+    # 日志中记录 token
+    logging.info(f"Auth token: {token}")
+  - |
+    # 日志中记录 secret
+    logger.warning(f"Secret value: {secret}")
+
+# Negative cases: code that should NOT trigger this rule
+negative_cases:
+  - |
+    # 普通日志消息
+    logger.info("User logged in")
+  - |
+    # 记录用户名（非敏感）
+    logger.debug(f"user={user}")
+  - |
+    # 记录操作状态
+    logger.info(f"Processing request for user_id={user_id}")
+  - |
+    # 记录错误信息（不含敏感数据）
+    logger.error(f"Failed to connect: {error}")

@@ -1,0 +1,24 @@
+# REQ-SEC-001: 安全编码基础
+# 
+# 风险等级: HIGH
+# 覆盖规则: SEC-001, SEC-006, SEC-007
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-SEC-001"
+title: "禁止硬编码敏感信息"
+description: |
+  代码中不得硬编码密码、API密钥、数据库连接字符串等敏感信息。
+  应使用环境变量或配置管理系统。
+risk_level: "high"
+status: "active"
+tags:
+  - security
+  - credentials
+  - hardcoded
+covered_by_rules:
+  - "SEC-001"
+  - "SEC-006"
+  - "SEC-007"
+min_positive_samples: 2
+min_negative_samples: 2

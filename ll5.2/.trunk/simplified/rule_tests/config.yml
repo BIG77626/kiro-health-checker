@@ -1,0 +1,29 @@
+# Rule Test Samples Configuration
+# 规则测试样本配置
+#
+# 调整阈值只需修改此文件，无需改动测试代码
+
+# 最小样本数阈值
+# 当前值：1（过渡阶段）
+# 目标值：3（稳定后提高）
+min_positive_cases: 1
+min_negative_cases: 1
+
+# 覆盖率阈值（百分比）
+# 当前值：20.0（过渡阶段）
+# 长期目标：50.0
+coverage_threshold: 20.0
+
+# 高优先级规则列表
+# 这些规则必须有测试文件，且满足最小样本数要求
+high_priority_rules:
+  - SEC-001  # eval() detection
+  - SEC-006  # hardcoded secrets
+  - SEC-007  # logging sensitive data
+  - ERR-001  # bare except
+  - ERR-002  # except Exception
+  - ERR-003  # silent exception swallowing
+  - NET-001  # HTTP timeout
+  - NET-007  # URL sensitive parameters
+  - DBA-003  # database connection management
+  - TYP-002  # Any type usage

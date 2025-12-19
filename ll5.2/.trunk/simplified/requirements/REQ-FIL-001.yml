@@ -1,0 +1,32 @@
+# REQ-FIL-001: 文件路径安全
+# 
+# 风险等级: HIGH
+# 覆盖规则: FIL-001, FIL-002, FIL-003, FIL-004
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-FIL-001"
+version: "1.0"
+last_modified: "2025-12-19"
+title: "文件操作必须防止路径穿越攻击"
+description: |
+  所有文件操作必须：
+  1. 禁止使用用户输入直接构造文件路径
+  2. 验证路径不包含 .. 或绝对路径
+  3. 文件删除操作必须有确认机制
+  4. 禁止删除根目录或系统目录
+risk_level: "high"
+status: "active"
+tags:
+  - file
+  - security
+  - path-traversal
+covered_by_rules:
+  - "FIL-001"
+  - "FIL-002"
+  - "FIL-003"
+  - "FIL-004"
+min_positive_samples: 2
+min_negative_samples: 2
+changelog:
+  - "v1.0: 初始定义，覆盖路径安全规则"

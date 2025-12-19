@@ -1,0 +1,28 @@
+# REQ-TYP-001: 类型安全
+# 
+# 风险等级: MEDIUM
+# 覆盖规则: TYP-001, TYP-002
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-TYP-001"
+version: "1.0"
+last_modified: "2025-12-19"
+title: "代码必须保持类型安全"
+description: |
+  所有代码必须：
+  1. Optional 字段必须显式指定默认值
+  2. 禁止使用 Any 类型（除非有充分理由）
+risk_level: "medium"
+status: "active"
+tags:
+  - type-safety
+  - python
+  - best-practice
+covered_by_rules:
+  - "TYP-001"
+  - "TYP-002"
+min_positive_samples: 2
+min_negative_samples: 2
+changelog:
+  - "v1.0: 初始定义，覆盖类型安全规则"

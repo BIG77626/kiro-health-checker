@@ -1,0 +1,24 @@
+# Test cases for rule NET-001
+# 检测网络请求缺少超时设置
+
+rule_id: "NET-001"
+description: "Test cases for NET-001: 网络请求必须设置超时"
+
+# Positive cases: code that SHOULD trigger this rule (missing timeout)
+positive_cases:
+  - |
+    response = requests.get(url)
+  - |
+    data = requests.post(api_url, json=payload)
+  - |
+    requests.put(endpoint, data=body)
+
+# Negative cases: code that should NOT trigger this rule (has timeout)
+negative_cases:
+  - |
+    response = requests.get(url, timeout=30)
+  - |
+    data = requests.post(api_url, json=payload, timeout=10)
+  - |
+    # No requests usage
+    result = fetch_local_data()

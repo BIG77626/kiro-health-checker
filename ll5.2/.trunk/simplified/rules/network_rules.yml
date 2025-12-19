@@ -1,0 +1,108 @@
+# Network Rules - 网络请求规则
+#
+# Task: ARCHITECTURE-SIMPLIFICATION (Task 1.3)
+# Requirements: REQ-1 (规则为一等公民), REQ-5.2 (网络请求触发人工复核)
+#
+# 网络请求相关的安全和最佳实践规则。
+
+version: "1.0.0"
+ruleset_id: ruleset_network
+ruleset_name: 网络请求规则集
+last_updated: "2025-12-16"
+
+rules:
+  # ==========================================================================
+  # 超时设置
+  # ==========================================================================
+
+  - id: NET-001
+    category: network
+    description: "HTTP 请求必须设置超时"
+    human_description: "这段代码发送网络请求但没有设置超时，可能会导致程序卡住"
+    severity: mandatory
+    detector: grep
+    pattern: 'requests\.(get|post|put|delete|patch)\s*\([^)]*\)'
+    check_absence: 'timeout\s*='
+    fix_suggestion: "添加 timeout 参数: requests.get(url, timeout=30)"
+    requirement_ids:
+      - "REQ-NET-002"
+
+  - id: NET-002
+    category: network
+    description: "aiohttp 请求必须设置超时"
+    human_description: "这段代码发送网络请求但没有设置超时，可能会导致程序卡住"
+    severity: mandatory
+    detector: grep
+    pattern: 'aiohttp\.ClientSession\s*\('
+    check_absence: 'timeout\s*='
+    fix_suggestion: "使用 ClientTimeout: timeout=aiohttp.ClientTimeout(total=30)"
+    requirement_ids:
+      - "REQ-NET-002"
+
+  - id: NET-003
+    category: network
+    description: "urllib 请求必须设置超时"
+    human_description: "这段代码发送网络请求但没有设置超时，可能会导致程序卡住"
+    severity: mandatory
+    detector: grep
+    pattern: 'urllib\.request\.urlopen\s*\([^)]*\)'
+    check_absence: 'timeout\s*='
+    fix_suggestion: "添加 timeout 参数: urlopen(url, timeout=30)"
+    requirement_ids:
+      - "REQ-NET-002"
+
+  # ==========================================================================
+  # SSL/TLS 安全
+  # ==========================================================================
+
+  - id: NET-004
+    category: network
+    description: "禁止禁用 SSL 证书验证"
+    human_description: "这段代码禁用了安全检查，可能会让你的数据被窃取"
+    severity: mandatory
+    detector: grep
+    pattern: 'verify\s*=\s*False'
+    fix_suggestion: "移除 verify=False，使用正确的证书"
+    requirement_ids:
+      - "REQ-NET-003"
+
+  - id: NET-005
+    category: network
+    description: "禁止使用不安全的 HTTP（应使用 HTTPS）"
+    human_description: "这段代码使用不加密的连接，你的数据可能被窃取"
+    severity: recommended
+    detector: grep
+    pattern: 'http://(?!localhost|127\.0\.0\.1)'
+    fix_suggestion: "使用 https:// 替代 http://"
+    requirement_ids:
+      - "REQ-NET-003"
+
+  # ==========================================================================
+  # 重试机制
+  # ==========================================================================
+
+  - id: NET-006
+    category: network
+    description: "网络请求应实现重试机制"
+    human_description: "网络请求可能会偶尔失败，建议添加重试机制提高稳定性"
+    severity: recommended
+    detector: grep
+    pattern: '@retry|tenacity\.retry|Retrying'
+    fix_suggestion: "使用 tenacity 库: @retry(stop=stop_after_attempt(3))"
+    requirement_ids:
+      - "REQ-NET-002"
+
+  # ==========================================================================
+  # 敏感数据传输
+  # ==========================================================================
+
+  - id: NET-007
+    category: network
+    description: "禁止在 URL 中传递敏感信息"
+    human_description: "URL 中包含密码或密钥，这些信息可能会被记录在日志中"
+    severity: mandatory
+    detector: grep
+    pattern: '(password|api_key|secret|token)=[^&\s]+'
+    fix_suggestion: "使用请求头或请求体传递敏感信息"
+    requirement_ids:
+      - "REQ-NET-001"

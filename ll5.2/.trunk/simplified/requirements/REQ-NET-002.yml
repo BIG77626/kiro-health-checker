@@ -1,0 +1,31 @@
+# REQ-NET-002: 网络请求超时和重试
+# 
+# 风险等级: MEDIUM
+# 覆盖规则: NET-001, NET-002, NET-003, NET-006
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-NET-002"
+version: "1.0"
+last_modified: "2025-12-19"
+title: "网络请求必须设置超时和重试机制"
+description: |
+  所有网络请求必须：
+  1. 设置合理的超时时间
+  2. 实现重试机制提高稳定性
+  3. 支持 requests, aiohttp, urllib 等常用库
+risk_level: "medium"
+status: "active"
+tags:
+  - network
+  - timeout
+  - reliability
+covered_by_rules:
+  - "NET-001"
+  - "NET-002"
+  - "NET-003"
+  - "NET-006"
+min_positive_samples: 2
+min_negative_samples: 2
+changelog:
+  - "v1.0: 初始定义，覆盖超时和重试规则"

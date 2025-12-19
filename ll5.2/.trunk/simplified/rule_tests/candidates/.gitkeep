@@ -1,0 +1,2 @@
+# This file ensures the candidates directory is tracked by git
+# Candidate sample files will be stored here before promotion to rule_tests/

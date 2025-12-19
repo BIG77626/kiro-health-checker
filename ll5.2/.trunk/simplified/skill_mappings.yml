@@ -1,0 +1,219 @@
+# Skill到规则的映射配置
+# 
+# 格式说明：
+# - skill_name: Skill名称（大写，用连字符分隔）
+# - rule_ids: 关联的规则ID列表
+# - inherits_from: 继承的父Skill（可选）
+# - skill_tags: Skill标签，用于规则匹配
+# - description: Skill描述
+#
+# 继承机制：
+# - 子Skill会继承父Skill的所有规则
+# - 支持多级继承，但会检测循环继承
+
+version: "1.0.0"
+
+mappings:
+  # =============================================================================
+  # 基础Skills
+  # =============================================================================
+  
+  - skill_name: "CORE-SAFETY"
+    rule_ids:
+      - "SEC-001"  # 硬编码密码检测
+      - "SEC-002"  # 敏感信息泄露
+      - "ERR-001"  # 禁止裸except
+      - "ERR-002"  # 禁止静默吞异常
+    skill_tags:
+      - "safety"
+      - "core"
+    description: "核心安全检查，所有代码都应遵守"
+
+  # =============================================================================
+  # Pydantic相关Skills
+  # =============================================================================
+  
+  - skill_name: "PYDANTIC-TYPE-SAFETY"
+    rule_ids:
+      - "TYP-001"  # Optional字段必须有默认值
+      - "TYP-002"  # 使用Field添加验证约束
+      - "TYP-003"  # 使用ConfigDict替代class Config
+    inherits_from: "CORE-SAFETY"
+    skill_tags:
+      - "type-safety"
+      - "pydantic"
+      - "validation"
+    description: "Pydantic类型安全检查"
+
+  - skill_name: "PYDANTIC-VALIDATION"
+    rule_ids:
+      - "TYP-001"
+      - "TYP-002"
+    inherits_from: "PYDANTIC-TYPE-SAFETY"
+    skill_tags:
+      - "type-safety"
+      - "pydantic"
+      - "validation"
+    description: "Pydantic验证检查"
+
+  # =============================================================================
+  # 错误处理Skills
+  # =============================================================================
+  
+  - skill_name: "ERROR-HANDLING"
+    rule_ids:
+      - "ERR-001"  # 禁止裸except
+      - "ERR-002"  # 禁止静默吞异常
+      - "ERR-003"  # 异常链保留
+      - "ERR-004"  # 自定义异常继承Exception
+    inherits_from: "CORE-SAFETY"
+    skill_tags:
+      - "error-handling"
+      - "exception"
+      - "defensive"
+    description: "错误处理最佳实践"
+
+  - skill_name: "EXCEPTION-HANDLING"
+    rule_ids:
+      - "ERR-001"
+      - "ERR-002"
+    inherits_from: "ERROR-HANDLING"
+    skill_tags:
+      - "error-handling"
+      - "exception"
+    description: "异常处理检查"
+
+  # =============================================================================
+  # Python防御性编程Skills
+  # =============================================================================
+  
+  - skill_name: "PYTHON-DEFENSIVE"
+    rule_ids:
+      - "DEF-001"  # 禁止truthiness检查Optional
+      - "DEF-002"  # 防止除零错误
+      - "DEF-003"  # 边界检查
+    inherits_from: "CORE-SAFETY"
+    skill_tags:
+      - "defensive"
+      - "python"
+      - "safety"
+    description: "Python防御性编程检查"
+
+  - skill_name: "DEFENSIVE-PROGRAMMING"
+    rule_ids:
+      - "DEF-001"
+      - "DEF-002"
+    inherits_from: "PYTHON-DEFENSIVE"
+    skill_tags:
+      - "defensive"
+      - "safety"
+    description: "防御性编程检查"
+
+  # =============================================================================
+  # 安全相关Skills
+  # =============================================================================
+  
+  - skill_name: "SECURITY"
+    rule_ids:
+      - "SEC-001"  # 硬编码密码检测
+      - "SEC-002"  # 敏感信息泄露
+      - "SEC-003"  # SQL注入检测
+      - "SEC-004"  # 路径注入检测
+    inherits_from: "CORE-SAFETY"
+    skill_tags:
+      - "security"
+      - "safety"
+    description: "安全检查"
+
+  - skill_name: "INPUT-VALIDATION"
+    rule_ids:
+      - "SEC-003"
+      - "SEC-004"
+      - "TYP-002"
+    inherits_from: "SECURITY"
+    skill_tags:
+      - "security"
+      - "validation"
+      - "input"
+    description: "输入验证检查"
+
+  # =============================================================================
+  # 网络相关Skills
+  # =============================================================================
+  
+  - skill_name: "NETWORK-SAFETY"
+    rule_ids:
+      - "NET-001"  # 网络请求必须设置超时
+      - "NET-002"  # 禁止禁用SSL验证
+      - "NET-003"  # 重试机制
+    inherits_from: "CORE-SAFETY"
+    skill_tags:
+      - "network"
+      - "safety"
+      - "timeout"
+    description: "网络安全检查"
+
+  - skill_name: "HTTP-CLIENT"
+    rule_ids:
+      - "NET-001"
+      - "NET-002"
+    inherits_from: "NETWORK-SAFETY"
+    skill_tags:
+      - "network"
+      - "http"
+      - "client"
+    description: "HTTP客户端检查"
+
+  # =============================================================================
+  # 文件操作Skills
+  # =============================================================================
+  
+  - skill_name: "FILE-SAFETY"
+    rule_ids:
+      - "FIL-001"  # 路径注入检测
+      - "FIL-002"  # 危险删除检测
+      - "FIL-003"  # 文件权限检查
+    inherits_from: "CORE-SAFETY"
+    skill_tags:
+      - "file"
+      - "safety"
+      - "path"
+    description: "文件操作安全检查"
+
+  - skill_name: "PATH-VALIDATION"
+    rule_ids:
+      - "FIL-001"
+      - "SEC-004"
+    inherits_from: "FILE-SAFETY"
+    skill_tags:
+      - "file"
+      - "path"
+      - "security"
+    description: "路径验证检查"
+
+  # =============================================================================
+  # 数据库Skills
+  # =============================================================================
+  
+  - skill_name: "DATABASE-SAFETY"
+    rule_ids:
+      - "DB-001"   # SQL注入检测
+      - "DB-002"   # 连接泄漏检测
+      - "DB-003"   # 事务管理
+    inherits_from: "CORE-SAFETY"
+    skill_tags:
+      - "database"
+      - "sql"
+      - "safety"
+    description: "数据库安全检查"
+
+  - skill_name: "SQL-INJECTION"
+    rule_ids:
+      - "DB-001"
+      - "SEC-003"
+    inherits_from: "DATABASE-SAFETY"
+    skill_tags:
+      - "database"
+      - "sql"
+      - "security"
+    description: "SQL注入检查"
