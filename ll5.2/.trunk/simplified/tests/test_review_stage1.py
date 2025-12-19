@@ -11,6 +11,9 @@ Stage 1 Review Verification - 范围 & 映射基础检查（行为级）
 - 不检查 Pydantic 内部 API（如 model_fields）
 - 通过构造实例、访问字段、验证默认值来验证行为
 - 测试的是「契约」而非「实现细节」
+
+CI Comment Fix Verification - 2024-12-19
+此注释用于触发 CI 验证评论修复效果
 """
 
 from pathlib import Path
@@ -55,12 +58,12 @@ def test_rule_requirement_ids_field_behavior() -> None:
 
     # 行为验证：字段可访问
     assert hasattr(rule, "requirement_ids"), "Rule 缺少 requirement_ids 属性"
-    
+
     # 行为验证：默认值为空列表
     assert rule.requirement_ids == [], (
         f"Rule.requirement_ids 默认值应为空列表，实际为 {rule.requirement_ids}"
     )
-    
+
     # 行为验证：可以设置值
     rule_with_reqs = Rule(
         id="TEST-002",
@@ -91,17 +94,17 @@ def test_requirement_coverage_result_field_behavior() -> None:
     assert result.coverage_percentage == 0.0, (
         f"coverage_percentage 默认值应为 0.0，实际为 {result.coverage_percentage}"
     )
-    
+
     assert hasattr(result, "total_requirements"), (
         "RequirementCoverageResult 缺少 total_requirements 属性"
     )
     assert result.total_requirements == 0
-    
+
     assert hasattr(result, "requirements_with_rules"), (
         "RequirementCoverageResult 缺少 requirements_with_rules 属性"
     )
     assert result.requirements_with_rules == 0
-    
+
     assert hasattr(result, "requirements_with_samples"), (
         "RequirementCoverageResult 缺少 requirements_with_samples 属性"
     )
@@ -124,8 +127,8 @@ def test_requirement_model_field_behavior() -> None:
     
     验证方式：构造实例，检查字段行为。
     """
-    from ..requirement_models import Requirement
     from ..models import RiskLevel
+    from ..requirement_models import Requirement
 
     # 构造最小有效 Requirement
     req = Requirement(
@@ -136,7 +139,7 @@ def test_requirement_model_field_behavior() -> None:
     # 行为验证：必填字段可访问
     assert req.id == "REQ-NET-001"
     assert req.title == "测试需求"
-    
+
     # 行为验证：默认值正确
     assert req.risk_level == RiskLevel.MEDIUM, (
         f"risk_level 默认值应为 MEDIUM，实际为 {req.risk_level}"
@@ -157,6 +160,7 @@ def test_requirement_id_format_validation() -> None:
     验证方式：构造无效 ID，期望抛出 ValidationError。
     """
     from pydantic import ValidationError
+
     from ..requirement_models import Requirement
 
     # 无效格式应该被拒绝
