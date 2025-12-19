@@ -170,26 +170,63 @@ jobs:
         id: parse
         run: |
           if [ -f "./evidence/review_evidence_3.12.xml" ]; then
-            # 解析 JUnit XML 获取测试统计
-            TESTS=$(grep -oP 'tests="\K[0-9]+' ./evidence/review_evidence_3.12.xml | head -1 || echo "0")
-            FAILURES=$(grep -oP 'failures="\K[0-9]+' ./evidence/review_evidence_3.12.xml | head -1 || echo "0")
-            ERRORS=$(grep -oP 'errors="\K[0-9]+' ./evidence/review_evidence_3.12.xml | head -1 || echo "0")
-            SKIPPED=$(grep -oP 'skipped="\K[0-9]+' ./evidence/review_evidence_3.12.xml | head -1 || echo "0")
+            echo "=== XML File Content (first 20 lines) ==="
+            head -20 ./evidence/review_evidence_3.12.xml || true
+            echo "=== End of XML Preview ==="
             
-            PASSED=$((TESTS - FAILURES - ERRORS - SKIPPED))
-            
-            echo "tests=$TESTS" >> $GITHUB_OUTPUT
-            echo "passed=$PASSED" >> $GITHUB_OUTPUT
-            echo "failures=$FAILURES" >> $GITHUB_OUTPUT
-            echo "errors=$ERRORS" >> $GITHUB_OUTPUT
-            echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
-            
-            if [ "$FAILURES" -eq "0" ] && [ "$ERRORS" -eq "0" ]; then
-              echo "status=✅ PASSED" >> $GITHUB_OUTPUT
-            else
-              echo "status=❌ FAILED" >> $GITHUB_OUTPUT
-            fi
+            # 使用 Python 解析 JUnit XML（更可靠）
+            python3 << 'EOF'
+          import xml.etree.ElementTree as ET
+          import os
+          
+          xml_file = "./evidence/review_evidence_3.12.xml"
+          output_file = os.environ.get("GITHUB_OUTPUT", "/dev/stdout")
+          
+          try:
+              tree = ET.parse(xml_file)
+              root = tree.getroot()
+              
+              # JUnit XML 格式：<testsuite tests="X" failures="Y" errors="Z" skipped="W">
+              # 或者 pytest 格式：<testsuites><testsuite ...>
+              testsuite = root if root.tag == 'testsuite' else root.find('.//testsuite')
+              
+              if testsuite is not None:
+                  tests = int(testsuite.get('tests', 0))
+                  failures = int(testsuite.get('failures', 0))
+                  errors = int(testsuite.get('errors', 0))
+                  skipped = int(testsuite.get('skipped', 0))
+              else:
+                  # 尝试从 testsuites 根节点获取
+                  tests = int(root.get('tests', 0))
+                  failures = int(root.get('failures', 0))
+                  errors = int(root.get('errors', 0))
+                  skipped = int(root.get('skipped', 0))
+              
+              passed = tests - failures - errors - skipped
+              status = "✅ PASSED" if failures == 0 and errors == 0 else "❌ FAILED"
+              
+              with open(output_file, "a") as f:
+                  f.write(f"tests={tests}\n")
+                  f.write(f"passed={passed}\n")
+                  f.write(f"failures={failures}\n")
+                  f.write(f"errors={errors}\n")
+                  f.write(f"skipped={skipped}\n")
+                  f.write(f"status={status}\n")
+              
+              print(f"Parsed: tests={tests}, passed={passed}, failures={failures}, errors={errors}, skipped={skipped}")
+              
+          except Exception as e:
+              print(f"Error parsing XML: {e}")
+              with open(output_file, "a") as f:
+                  f.write("tests=0\n")
+                  f.write("passed=0\n")
+                  f.write("failures=0\n")
+                  f.write("errors=0\n")
+                  f.write("skipped=0\n")
+                  f.write("status=⚠️ PARSE ERROR\n")
+          EOF
           else
+            echo "XML file not found: ./evidence/review_evidence_3.12.xml"
             echo "tests=0" >> $GITHUB_OUTPUT
             echo "passed=0" >> $GITHUB_OUTPUT
             echo "failures=0" >> $GITHUB_OUTPUT
