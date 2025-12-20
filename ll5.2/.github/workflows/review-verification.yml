@@ -85,6 +85,11 @@ jobs:
             -m "not slow" \
             --junitxml=review_evidence_${{ matrix.python-version }}.xml \
             -v || true
+          echo "=== Generated XML file ==="
+          ls -la review_evidence_${{ matrix.python-version }}.xml || echo "XML file not found in working dir"
+          pwd
+          echo "=== XML content preview ==="
+          head -5 review_evidence_${{ matrix.python-version }}.xml || true
 
       - name: Upload Fast Evidence
         if: always()
@@ -93,6 +98,7 @@ jobs:
           name: fast-evidence-py${{ matrix.python-version }}-${{ github.run_number }}
           path: ll5.2/review_evidence_${{ matrix.python-version }}.xml
           retention-days: 30
+          if-no-files-found: warn
 
   # ==========================================================================
   # Job 2: 性能基线（62 tests，仅在特定标签触发，非阻塞）
@@ -164,6 +170,15 @@ jobs:
           name: fast-evidence-py3.12-${{ github.run_number }}
           path: ./evidence
         continue-on-error: true
+
+      - name: Debug - List downloaded files
+        run: |
+          echo "=== Current directory ==="
+          pwd
+          echo "=== Evidence directory contents ==="
+          ls -la ./evidence/ || echo "Evidence directory not found"
+          echo "=== Looking for XML files ==="
+          find . -name "*.xml" -type f 2>/dev/null || echo "No XML files found"
 
       - name: Parse Test Results
         id: parse
