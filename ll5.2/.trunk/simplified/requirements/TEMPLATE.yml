@@ -1,0 +1,27 @@
+# REQ-{DOMAIN}-{NNN}: 需求标题
+#
+# 风险等级: HIGH/MEDIUM/LOW
+# 覆盖规则: 待填写
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-{DOMAIN}-{NNN}"
+version: "1.0"
+last_modified: "2025-12-20"
+changelog:
+  - "v1.0: 初始定义"
+
+title: "需求标题（一句话）"
+description: |
+  详细描述需求背景、上下文、边界条件。
+  支持多行文本。
+
+risk_level: "high"  # high/medium/low
+status: "active"    # active/deprecated/review
+
+tags: []
+
+covered_by_rules: []
+
+min_positive_samples: 2
+min_negative_samples: 1
