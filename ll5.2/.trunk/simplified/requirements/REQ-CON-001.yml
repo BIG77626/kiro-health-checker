@@ -1,0 +1,29 @@
+# REQ-CON-001: 并发安全
+# 
+# 风险等级: HIGH
+# 覆盖规则: CON-001, CON-002
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-CON-001"
+version: "1.0"
+last_modified: "2025-12-20"
+title: "并发代码必须保证线程安全"
+description: |
+  所有并发代码必须：
+  1. 共享资源访问必须使用锁保护
+  2. 禁止在锁内执行阻塞操作
+  3. 避免死锁风险
+risk_level: "high"
+status: "active"
+tags:
+  - concurrency
+  - thread-safety
+  - python
+covered_by_rules:
+  - "CON-001"
+  - "CON-002"
+min_positive_samples: 2
+min_negative_samples: 2
+changelog:
+  - "v1.0: 初始定义，覆盖并发安全规则"

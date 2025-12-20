@@ -27,6 +27,8 @@ rules:
     severity: mandatory
     detector: grep
     fix_suggestion: "重构代码，避免动态执行"
+    requirement_ids:
+      - "REQ-SEC-002"
 
   - id: SEC-003
     category: dangerous
@@ -35,6 +37,8 @@ rules:
     severity: mandatory
     detector: grep
     fix_suggestion: "使用 subprocess.run() 并设置 shell=False"
+    requirement_ids:
+      - "REQ-SEC-002"
 
   - id: SEC-004
     category: dangerous
@@ -43,6 +47,8 @@ rules:
     severity: mandatory
     detector: grep
     fix_suggestion: "使用 shell=False 并传入命令列表"
+    requirement_ids:
+      - "REQ-SEC-002"
 
   - id: SEC-005
     category: dangerous
@@ -93,6 +99,7 @@ rules:
     fix_suggestion: "捕获具体的异常类型，如 (KeyError, ValueError, IOError)"
     requirement_ids:
       - "REQ-ERR-001"
+      - "REQ-ERR-002"
 
   - id: ERR-003
     category: error
@@ -103,6 +110,7 @@ rules:
     fix_suggestion: "至少记录日志: except ValueError as e: logger.error(e)"
     requirement_ids:
       - "REQ-ERR-001"
+      - "REQ-ERR-002"
 
   # 类型安全
   - id: TYP-001
@@ -124,3 +132,77 @@ rules:
     fix_suggestion: "使用具体的类型注解，如 str, int, List[str]"
     requirement_ids:
       - "REQ-TYP-001"
+
+  # ==========================================================================
+  # 算法安全 (REQ-ALG-001)
+  # ==========================================================================
+
+  - id: ALG-001
+    category: algorithm
+    description: "循环中必须处理空集合边界条件"
+    human_description: "这段代码在空列表时可能会出错"
+    severity: mandatory
+    detector: grep
+    fix_suggestion: "在循环前检查: if not items: return default"
+    requirement_ids:
+      - "REQ-ALG-001"
+
+  - id: ALG-002
+    category: algorithm
+    description: "避免 O(n²) 以上的嵌套循环"
+    human_description: "这段代码的性能可能很差，数据量大时会很慢"
+    severity: recommended
+    detector: manual
+    fix_suggestion: "考虑使用字典或集合优化查找"
+    requirement_ids:
+      - "REQ-ALG-001"
+
+  # ==========================================================================
+  # 资源管理 (REQ-RES-001)
+  # ==========================================================================
+
+  - id: RES-001
+    category: resource
+    description: "文件操作必须使用 with 语句"
+    human_description: "这段代码可能会导致文件无法正确关闭"
+    severity: mandatory
+    detector: grep
+    pattern: "open\\s*\\("
+    fix_suggestion: "使用 with open(path) as f: ..."
+    requirement_ids:
+      - "REQ-RES-001"
+
+  - id: RES-002
+    category: resource
+    description: "锁必须使用 with 语句或 try-finally 释放"
+    human_description: "这段代码可能会导致死锁"
+    severity: mandatory
+    detector: grep
+    pattern: "\\.acquire\\s*\\("
+    fix_suggestion: "使用 with lock: 或在 finally 中 release()"
+    requirement_ids:
+      - "REQ-RES-001"
+
+  # ==========================================================================
+  # 并发安全 (REQ-CON-001)
+  # ==========================================================================
+
+  - id: CON-001
+    category: concurrency
+    description: "共享变量访问必须使用锁保护"
+    human_description: "这段代码在多线程环境下可能会出现数据竞争"
+    severity: mandatory
+    detector: manual
+    fix_suggestion: "使用 threading.Lock() 保护共享资源"
+    requirement_ids:
+      - "REQ-CON-001"
+
+  - id: CON-002
+    category: concurrency
+    description: "禁止在持有锁时执行阻塞 I/O"
+    human_description: "这段代码可能会导致其他线程长时间等待"
+    severity: mandatory
+    detector: manual
+    fix_suggestion: "在锁外执行 I/O 操作，只在锁内访问共享数据"
+    requirement_ids:
+      - "REQ-CON-001"

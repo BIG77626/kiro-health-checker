@@ -1,0 +1,30 @@
+# REQ-SEC-002: 危险函数调用
+# 
+# 风险等级: HIGH
+# 覆盖规则: SEC-002, SEC-003, SEC-004
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-SEC-002"
+version: "1.0"
+last_modified: "2025-12-20"
+title: "禁止使用危险的系统调用"
+description: |
+  代码中禁止使用以下危险函数：
+  1. exec() - 动态代码执行
+  2. os.system() - 系统命令执行
+  3. subprocess with shell=True - Shell 注入风险
+risk_level: "high"
+status: "active"
+tags:
+  - security
+  - dangerous-call
+  - injection
+covered_by_rules:
+  - "SEC-002"
+  - "SEC-003"
+  - "SEC-004"
+min_positive_samples: 2
+min_negative_samples: 2
+changelog:
+  - "v1.0: 初始定义，覆盖危险函数调用规则"

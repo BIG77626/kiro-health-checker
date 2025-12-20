@@ -1,0 +1,29 @@
+# REQ-RES-001: 资源管理
+# 
+# 风险等级: HIGH
+# 覆盖规则: RES-001, RES-002
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-RES-001"
+version: "1.0"
+last_modified: "2025-12-20"
+title: "资源必须正确释放"
+description: |
+  所有资源（文件、连接、锁等）必须：
+  1. 使用 with 语句或 try-finally 确保释放
+  2. 避免资源泄漏
+  3. 超时机制防止资源长期占用
+risk_level: "high"
+status: "active"
+tags:
+  - resource
+  - memory
+  - leak-prevention
+covered_by_rules:
+  - "RES-001"
+  - "RES-002"
+min_positive_samples: 2
+min_negative_samples: 2
+changelog:
+  - "v1.0: 初始定义，覆盖资源管理规则"

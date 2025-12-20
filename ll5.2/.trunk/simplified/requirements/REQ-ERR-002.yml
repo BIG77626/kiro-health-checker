@@ -1,0 +1,29 @@
+# REQ-ERR-002: 异常处理完整性
+# 
+# 风险等级: MEDIUM
+# 覆盖规则: ERR-002, ERR-003
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-ERR-002"
+version: "1.0"
+last_modified: "2025-12-20"
+title: "异常处理必须完整且有意义"
+description: |
+  所有异常处理必须：
+  1. 避免过于宽泛的 except Exception
+  2. 禁止静默吞掉异常（except: pass）
+  3. 异常信息必须记录日志
+risk_level: "medium"
+status: "active"
+tags:
+  - error-handling
+  - exception
+  - logging
+covered_by_rules:
+  - "ERR-002"
+  - "ERR-003"
+min_positive_samples: 2
+min_negative_samples: 2
+changelog:
+  - "v1.0: 初始定义，覆盖异常处理完整性规则"

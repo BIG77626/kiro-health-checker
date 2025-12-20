@@ -1,0 +1,29 @@
+# REQ-ALG-001: 算法安全
+# 
+# 风险等级: MEDIUM
+# 覆盖规则: ALG-001, ALG-002
+#
+# 需求覆盖度是风险雷达，不是安全证明
+
+id: "REQ-ALG-001"
+version: "1.0"
+last_modified: "2025-12-20"
+title: "算法实现必须考虑边界条件"
+description: |
+  所有算法实现必须：
+  1. 处理空输入和边界值
+  2. 避免整数溢出
+  3. 考虑时间复杂度，避免 O(n²) 以上的嵌套循环
+risk_level: "medium"
+status: "active"
+tags:
+  - algorithm
+  - boundary
+  - performance
+covered_by_rules:
+  - "ALG-001"
+  - "ALG-002"
+min_positive_samples: 2
+min_negative_samples: 2
+changelog:
+  - "v1.0: 初始定义，覆盖算法安全规则"
